@@ -1,0 +1,15 @@
+{
+  "name": "neversleep.ai",
+  "version": "0.2.0",
+  "description": "Autonomous AI agent using Node.js, LLMs, and cat-loggr",
+  "main": "src/agent.js",
+  "scripts": {
+    "start": "node src/agent.js"
+  },
+  "dependencies": {
+    "cat-loggr": "^3.0.0",
+    "node-fetch": "^2.6.7"
+  },
+  "author": "",
+  "license": "MIT"
+}

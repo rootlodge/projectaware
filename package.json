@@ -4,7 +4,8 @@
   "description": "Autonomous AI agent using Node.js, LLMs, and cat-loggr",
   "main": "src/agent.js",
   "scripts": {
-    "start": "node src/agent.js"
+    "start": "node src/agent.js",
+    "test": "node src/llm.test.js"
   },
   "dependencies": {
     "cat-loggr": "^3.0.0",

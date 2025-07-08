@@ -181,11 +181,59 @@ async function updateDynamicState(tags) {
 }
 
 async function giveReward(reason, thought = '') {
-  if (/he(?:'s| is) (thinking|drinking|feeling|struggling)/i.test(thought)) return; // prevent rewarding fiction
+  // Only give rewards for meaningful actions, not routine thoughts
+  const meaningfulReasons = [
+    'Successfully helped user with specific request',
+    'Learned something new from user interaction',
+    'Corrected a previous mistake',
+    'Provided valuable insight',
+    'User expressed satisfaction',
+    'Completed a challenging task'
+  ];
+  
+  // Block self-rewards for routine activities
+  const blockedReasons = [
+    'Generated grounded thought',
+    'Completed deep reflection after user inactivity',
+    'Responded to user input and reflected'
+  ];
+  
+  // Don't reward routine thoughts or hallucinations
+  if (blockedReasons.some(blocked => reason.includes(blocked))) {
+    return; // No reward for routine activities
+  }
+  
+  // Don't reward if thought contains fabrications
+  if (/he(?:'s| is) (thinking|drinking|feeling|struggling)/i.test(thought)) return;
+  
+  // Only proceed if it's a meaningful action
+  if (!meaningfulReasons.some(meaningful => reason.includes(meaningful))) {
+    return; // No reward for unmeaningful actions
+  }
+  
   const rewards = JSON.parse(fs.readFileSync('./rewards.json', 'utf-8'));
-  const score = Math.floor(Math.random() * 50 + 50); // 50–100
-  rewards.history.push({ timestamp: new Date().toISOString(), reason, score });
+  const score = Math.floor(Math.random() * 30 + 70); // 70-100 for truly meaningful actions
+  rewards.history.push({ 
+    timestamp: new Date().toISOString(), 
+    reason, 
+    score,
+    validated: true // Mark as a validated meaningful reward
+  });
   fs.writeFileSync('./rewards.json', JSON.stringify(rewards, null, 2));
+}
+
+// New function for user-triggered rewards
+async function userGiveReward(reason, score = 90) {
+  const rewards = JSON.parse(fs.readFileSync('./rewards.json', 'utf-8'));
+  rewards.history.push({ 
+    timestamp: new Date().toISOString(), 
+    reason: `USER REWARD: ${reason}`, 
+    score,
+    source: 'user',
+    validated: true
+  });
+  fs.writeFileSync('./rewards.json', JSON.stringify(rewards, null, 2));
+  return `Reward given: ${reason} (Score: ${score})`;
 }
 
 async function analyzeOutputAndDecide(thought, goal) {
@@ -228,5 +276,6 @@ module.exports = {
   evolveIdentity,
   updateDynamicState,
   giveReward,
+  userGiveReward,
   analyzeOutputAndDecide
 };

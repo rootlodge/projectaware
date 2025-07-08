@@ -11,6 +11,7 @@ const {
   evolveIdentity,
   updateDynamicState,
   giveReward,
+  userGiveReward,
   analyzeOutputAndDecide
 } = require('./brain');
 
@@ -61,6 +62,14 @@ async function runThoughtLoop() {
         continue;
       }
 
+      if (userInput.toLowerCase().startsWith('reward:')) {
+        const reason = userInput.substring(7).trim();
+        const result = await userGiveReward(reason);
+        logThought(`[User Reward] ${result}`);
+        currentStatus = 'reward given';
+        continue;
+      }
+
       saveMessage('user', userInput);
       const recent = await getRecentMessages(10);
       const recentLogs = recent.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
@@ -86,7 +95,7 @@ async function runThoughtLoop() {
       saveMessage('reflection', reflection);
       logThought(`[Reflection]\n${reflection}`);
 
-      await giveReward('Responded to user input and reflected.', reply);
+      // Removed automatic self-reward - only reward for truly meaningful actions
 
       currentStatus = 'input';
 
@@ -103,7 +112,7 @@ async function runThoughtLoop() {
         logThought(`[Deep Reflection]\n${deepReflection}`);
 
         await evolveIdentity(memoryLogs);
-        await giveReward('Completed deep reflection after user inactivity.', deepReflection);
+        // Removed automatic self-reward for routine reflection
 
         lastInputTime = Date.now();
         currentStatus = 'reflecting';
@@ -119,7 +128,7 @@ async function runThoughtLoop() {
         await updateDynamicState(tags);
 
         logThought(`[Thought] (${tags.mood} | ${tags.goal})\n${idleThought}`);
-        await giveReward('Generated grounded thought.', idleThought);
+        // Removed automatic self-reward for routine thoughts
 
         const decision = await analyzeOutputAndDecide(idleThought, tags.goal);
         currentStatus = decision;
@@ -148,6 +157,11 @@ async function runThoughtLoop() {
 }
 
 console.clear();
-console.log(chalk.cyanBright('🧠 Neversleep is running...\nType at any time to interact. Use `goal: your goal` to assign goals.'));
+console.log(chalk.cyanBright('🧠 Neversleep is running...'));
+console.log(chalk.yellow('Commands:'));
+console.log(chalk.gray('• goal: [your goal] - Assign a new goal'));
+console.log(chalk.gray('• reward: [reason] - Give a meaningful reward'));
+console.log(chalk.gray('• Type normally to chat'));
+console.log(chalk.cyan('\nReady for input...'));
 fs.ensureDirSync('./logs');
 runThoughtLoop();

@@ -12,10 +12,11 @@ const {
   updateDynamicState,
   giveReward,
   userGiveReward,
+  analyzeSatisfaction,
   analyzeOutputAndDecide
 } = require('./brain');
 
-const { saveMessage, getRecentMessages } = require('./memory');
+const { saveMessage, getRecentMessages, getConversationHistory, getUserResponsePatterns } = require('./memory');
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 let inputBuffer = '';
@@ -70,6 +71,27 @@ async function runThoughtLoop() {
         continue;
       }
 
+      if (userInput.toLowerCase().startsWith('analyze') || userInput.toLowerCase().startsWith('satisfaction')) {
+        const conversationHistory = await getConversationHistory(20);
+        const satisfactionAnalysis = await analyzeSatisfaction(conversationHistory);
+        const userPatterns = await getUserResponsePatterns(50);
+        
+        console.log(chalk.magenta.bold('\n📊 SATISFACTION ANALYSIS:'));
+        console.log(chalk.white(satisfactionAnalysis));
+        console.log(chalk.cyan.bold('\n📈 USER PATTERNS:'));
+        console.log(chalk.gray(`Positive indicators: ${userPatterns.positive_indicators}`));
+        console.log(chalk.gray(`Negative indicators: ${userPatterns.negative_indicators}`));
+        console.log(chalk.gray(`Questions asked: ${userPatterns.questions}`));
+        console.log(chalk.gray(`Short responses: ${userPatterns.short_responses}`));
+        console.log(chalk.gray(`Commands used: ${userPatterns.commands}`));
+        console.log(chalk.gray(`Total interactions: ${userPatterns.total_interactions}`));
+        
+        saveMessage('satisfaction_analysis', satisfactionAnalysis);
+        logThought(`[Manual Satisfaction Analysis]\n${satisfactionAnalysis}`);
+        currentStatus = 'analysis complete';
+        continue;
+      }
+
       saveMessage('user', userInput);
       const recent = await getRecentMessages(10);
       const recentLogs = recent.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
@@ -81,7 +103,15 @@ async function runThoughtLoop() {
       const tags = await tagThought(thought, identity.context);
       await updateDynamicState(tags);
 
-      const replyPrompt = `${identity.context}\n\nUser: ${userInput}\nAI:`;
+      const replyPrompt = `${identity.context}
+
+Based on recent conversation patterns, focus on:
+- Providing clear, helpful responses
+- Being attentive to Dylan's satisfaction level
+- Adjusting response style based on feedback
+
+User: ${userInput}
+AI:`;
       const reply = await askLLM(replyPrompt);
       saveMessage('ai', reply);
       logThought(`USER ➜ ${userInput}\nNEVERSLEEP ➜ ${reply}`);
@@ -111,11 +141,21 @@ async function runThoughtLoop() {
         saveMessage('reflection', deepReflection);
         logThought(`[Deep Reflection]\n${deepReflection}`);
 
+        // Analyze user satisfaction patterns
+        const conversationHistory = await getConversationHistory(15);
+        const satisfactionAnalysis = await analyzeSatisfaction(conversationHistory);
+        saveMessage('satisfaction_analysis', satisfactionAnalysis);
+        logThought(`[Satisfaction Analysis]\n${satisfactionAnalysis}`);
+
+        // Get user response patterns
+        const userPatterns = await getUserResponsePatterns(30);
+        logThought(`[User Patterns] Positive: ${userPatterns.positive_indicators}, Negative: ${userPatterns.negative_indicators}, Questions: ${userPatterns.questions}, Total: ${userPatterns.total_interactions}`);
+
         await evolveIdentity(memoryLogs);
         // Removed automatic self-reward for routine reflection
 
         lastInputTime = Date.now();
-        currentStatus = 'reflecting';
+        currentStatus = 'analyzing satisfaction';
 
       } else {
         const recent = await getRecentMessages(10);
@@ -161,6 +201,7 @@ console.log(chalk.cyanBright('🧠 Neversleep is running...'));
 console.log(chalk.yellow('Commands:'));
 console.log(chalk.gray('• goal: [your goal] - Assign a new goal'));
 console.log(chalk.gray('• reward: [reason] - Give a meaningful reward'));
+console.log(chalk.gray('• analyze - Analyze user satisfaction patterns'));
 console.log(chalk.gray('• Type normally to chat'));
 console.log(chalk.cyan('\nReady for input...'));
 fs.ensureDirSync('./logs');

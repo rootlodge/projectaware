@@ -13,6 +13,7 @@
     "clean-logs": "Remove-Item ./logs/*.log -ErrorAction SilentlyContinue; echo \"Logs cleaned\"",
     "clean-memory": "Remove-Item ./memory.db -ErrorAction SilentlyContinue; echo \"Memory database reset\"",
     "clean-rewards": "node cleanup-rewards.js",
+    "analyze": "node -e \"const {getConversationHistory, getUserResponsePatterns} = require('./memory'); const {analyzeSatisfaction} = require('./brain'); (async()=>{const h=await getConversationHistory(20); const a=await analyzeSatisfaction(h); const p=await getUserResponsePatterns(30); console.log('SATISFACTION:',a); console.log('PATTERNS:',p);})()\"",
     "reset": "npm run clean-logs && npm run clean-memory && echo \"Full reset complete\"",
     "debug": "node --inspect agent.js",
     "test": "echo \"Error: no test specified\" && exit 1"

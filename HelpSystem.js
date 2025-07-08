@@ -225,19 +225,31 @@ class HelpSystem {
     
     // Central Brain Commands
     this.addCommand('brain', {
-      category: 'brain',
-      description: 'Show central brain (CEREBRUM) status',
+      category: 'cerebrum',
+      description: 'Show Central Brain (CEREBRUM) status and sub-agents',
       usage: 'brain',
       examples: ['brain', 'central brain'],
-      details: 'Display CEREBRUM status, sub-agents, decision thresholds, and system state.'
+      details: 'Display CEREBRUM identity, specialized sub-agents, decision thresholds, and system state.'
+    });
+    
+    this.addCommand('process through brain', {
+      category: 'cerebrum',
+      description: 'Route input through Central Brain orchestration',
+      usage: 'process through brain <input>',
+      examples: [
+        'process through brain Hello, how are you?',
+        'process through brain Analyze my performance',
+        'process through brain Change my name to Alex'
+      ],
+      details: 'Send input through CEREBRUM for intelligent processing with specialist delegation when needed.'
     });
     
     this.addCommand('clean memory', {
-      category: 'brain',
-      description: 'Clean all memory and start fresh',
+      category: 'cerebrum',
+      description: 'Clear all memory and start fresh',
       usage: 'clean memory',
       examples: ['clean memory', 'clear memory'],
-      details: 'WARNING: This will permanently delete all memory, logs, and state. Cannot be undone.'
+      details: 'Completely wipe all memory, logs, cache, and state. Creates a fresh start.'
     });
 
     // Organize commands by category
@@ -384,6 +396,7 @@ class HelpSystem {
     
     const categoryDescriptions = {
       system: 'Core system commands and status',
+      cerebrum: 'Central Brain (CEREBRUM) orchestration and control',
       emotion: 'Emotion tracking and analysis',
       cache: 'Response caching system',
       'multi-agent': 'Multi-agent workflows and management',
@@ -399,15 +412,17 @@ class HelpSystem {
     
     console.log(chalk.magenta.bold('\n🔍 GETTING STARTED:'));
     console.log(chalk.gray('• Try "help system" to see core system commands'));
+    console.log(chalk.gray('• Try "help cerebrum" to learn about Central Brain control'));
     console.log(chalk.gray('• Try "help emotion" to learn about emotion tracking'));
     console.log(chalk.gray('• Try "help multi-agent" to explore multi-agent workflows'));
     console.log(chalk.gray('• Try "help search ai" to find AI-related commands'));
     
     console.log(chalk.green.bold('\n✨ TIPS:'));
-    console.log(chalk.gray('• Commands are case-insensitive'));
-    console.log(chalk.gray('• Use Tab completion for command suggestions (future feature)'));
-    console.log(chalk.gray('• Most commands have multiple aliases (e.g., "state" or "status")'));
-    console.log(chalk.gray('• Use "analyze" regularly to understand conversation patterns'));
+    console.log(chalk.gray('• All user input is processed through CEREBRUM (Central Brain)'));
+    console.log(chalk.gray('• CEREBRUM decides when to use specialist agents automatically'));
+    console.log(chalk.gray('• Use "brain" to see CEREBRUM status and sub-agents'));
+    console.log(chalk.gray('• Use "clean memory" for a completely fresh start'));
+    console.log(chalk.gray('• Commands are case-insensitive and have multiple aliases'));
   }
   
   /**

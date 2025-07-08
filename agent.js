@@ -637,6 +637,27 @@ async function runThoughtLoop() {
         continue;
       }
 
+      // Memory cleaning command
+      if (userInput.toLowerCase().startsWith('clean memory') || userInput.toLowerCase().startsWith('clear memory')) {
+        console.log(chalk.yellow('🧹 Cleaning all memory...'));
+        
+        try {
+          const result = await centralBrain.cleanAllMemory();
+          
+          if (result.success) {
+            console.log(chalk.green('✅ Memory cleaned successfully!'));
+            console.log(chalk.white(result.message));
+            logThought(`[Memory Clean] All memory has been cleared - fresh start`);
+          } else {
+            console.log(chalk.red('❌ Memory cleaning failed'));
+            console.log(chalk.gray(result.error));
+          }
+        } catch (error) {
+          console.log(chalk.red(`❌ Memory cleaning error: ${error.message}`));
+        }
+        continue;
+      }
+
       saveMessage('user', userInput);
       
       // Analyze user emotion from input
@@ -678,43 +699,35 @@ async function runThoughtLoop() {
         continue;
       }
       
-      const recent = await getRecentMessages(10);
-      const recentLogs = recent.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
-
-      const thought = await think(identity.context, recentLogs);
-      saveMessage('thought', thought);
-      logThought(`[Thought]\n${thought}`);
-
-      const tags = await tagThought(thought, identity.context);
-      await updateDynamicState(tags);
-
-      const replyPrompt = `${identity.context}
-
-Based on recent conversation patterns, focus on:
-- Providing clear, helpful responses
-- Being attentive to Dylan's satisfaction level
-- Adjusting response style based on feedback
-
-User: ${userInput}
-AI:`;
-      const reply = await askLLM(replyPrompt);
-      saveMessage('ai', reply);
-      logThought(`USER ➜ ${userInput}\n${identity.name.toUpperCase()} ➜ ${reply}`);
-
-      if (/call me|my new name is|i am reborn as/i.test(reply.toLowerCase())) {
-        await evolveIdentity(reply);
-        logThought('[!] Identity updated due to self-declared name change.');
+      // Route all user input through Central Brain
+      try {
+        const result = await centralBrain.process(userInput, 'user_input');
+        
+        // Save user input to memory
+        saveMessage('user', userInput);
+        
+        // Display response
+        console.log(chalk.green.bold(`\n${identity.name}:`), chalk.white(result.response));
+        
+        // Log the interaction
+        logThought(`USER ➜ ${userInput}\n${identity.name.toUpperCase()} ➜ ${result.response}`);
+        
+        // Save AI response to memory
+        saveMessage('ai', result.response);
+        
+        // Check for identity changes mentioned in response
+        if (/call me|my new name is|i am reborn as/i.test(result.response.toLowerCase())) {
+          await evolveIdentity(result.response);
+          logThought('[!] Identity updated due to self-declared name change.');
+        }
+        
+        currentStatus = 'response completed';
+        
+      } catch (error) {
+        console.log(chalk.red(`❌ Central brain processing failed: ${error.message}`));
+        logThought(`[Error] Central brain processing failed: ${error.message}`);
+        currentStatus = 'error';
       }
-
-      // Record user interaction in state
-      stateManager.recordInteraction('user_message', {
-        satisfaction: 'pending', // Will be updated based on user response patterns
-        tone: 'conversational'
-      });
-
-      const reflection = await reflectOnMemory(recentLogs);
-      saveMessage('reflection', reflection);
-      logThought(`[Reflection]\n${reflection}`);
 
       // Reset processing flag and show clean response
       processingInput = false;
@@ -756,26 +769,19 @@ AI:`;
           continue;
         }
 
-        const recent = await getRecentMessages(10);
-        const recentLogs = recent.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
-
-        const idleThought = await think(identity.context, recentLogs);
+        // Use central brain for independent thinking during inactivity
+        const thinkingResult = await centralBrain.independentThinking();
         
+        if (thinkingResult && !processingInput && !inputBuffer) {
+          logThought(`[Independent Thinking] CEREBRUM reflects:\n${thinkingResult.thoughts}`);
+        }
+
         // Check again if user started typing
         if (processingInput || inputBuffer) {
           continue;
         }
         
-        saveMessage('thought', idleThought);
-
-        const tags = await tagThought(idleThought, identity.context);
-        await updateDynamicState(tags);
-
-        logThought(`[Thought] (${tags.mood} | ${tags.goal})\n${idleThought}`);
-        // Removed automatic self-reward for routine thoughts
-
-        const decision = await analyzeOutputAndDecide(idleThought, tags.goal);
-        currentStatus = decision;
+        currentStatus = 'thinking independently';
 
         if (decision === 'sleep') {
           logThought(`[System] Entering sleep mode. Waiting for input...`);

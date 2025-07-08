@@ -223,6 +223,23 @@ class HelpSystem {
       details: 'Change the AI\'s identity name and associated traits.'
     });
     
+    // Central Brain Commands
+    this.addCommand('brain', {
+      category: 'brain',
+      description: 'Show central brain (CEREBRUM) status',
+      usage: 'brain',
+      examples: ['brain', 'central brain'],
+      details: 'Display CEREBRUM status, sub-agents, decision thresholds, and system state.'
+    });
+    
+    this.addCommand('clean memory', {
+      category: 'brain',
+      description: 'Clean all memory and start fresh',
+      usage: 'clean memory',
+      examples: ['clean memory', 'clear memory'],
+      details: 'WARNING: This will permanently delete all memory, logs, and state. Cannot be undone.'
+    });
+
     // Organize commands by category
     this.organizeByCategory();
   }

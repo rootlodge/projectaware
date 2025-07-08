@@ -1,8 +1,6 @@
 {
-  "emotion": "neutral",
-  "emotionIntensity": 0.5,
-  "emotionConfidence": 0.7,
-  "emotionContext": "generated_thought",
-  "timestamp": "2025-07-08T17:16:02.139Z",
+  "mood": "neutral",
+  "goal": "continue thinking",
+  "timestamp": "2025-07-08T17:22:05.246Z",
   "sessionId": "session_1751958514414_rgo3yeus2"
 }

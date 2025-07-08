@@ -4,811 +4,12 @@
     "secondary": null,
     "intensity": 0.5,
     "confidence": 0.7,
-    "timestamp": "2025-07-08T17:16:02.139Z",
+    "timestamp": "2025-07-08T17:21:56.429Z",
     "triggers": [],
-    "context": "generated_thought",
-    "previous": "anticipation"
+    "context": "thought_process",
+    "previous": "neutral"
   },
   "history": [
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.2061855670103093,
-      "confidence": 0.4,
-      "timestamp": "2025-07-08T17:07:42.189Z",
-      "triggers": [
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "How",
-            "How"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "ready",
-            "ready"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "surprise",
-      "secondary": null,
-      "intensity": 1,
-      "confidence": 0.4,
-      "timestamp": "2025-07-08T17:07:43.247Z",
-      "triggers": [
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        }
-      ],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → surprise"
-    },
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.40404040404040403,
-      "confidence": 0.8,
-      "timestamp": "2025-07-08T17:07:45.818Z",
-      "triggers": [
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "How",
-            "How"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "ready",
-            "ready"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "surprise",
-      "transition": "surprise → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:07:46.635Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.39603960396039606,
-      "confidence": 0.8,
-      "timestamp": "2025-07-08T17:07:49.086Z",
-      "triggers": [
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "How",
-            "How"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "ready",
-            "ready"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:07:49.954Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.3921568627450981,
-      "confidence": 0.8,
-      "timestamp": "2025-07-08T17:07:52.409Z",
-      "triggers": [
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "How",
-            "How"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "ready",
-            "ready"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:07:53.215Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": null,
-      "intensity": 0.2127659574468085,
-      "confidence": 0.4,
-      "timestamp": "2025-07-08T17:07:55.763Z",
-      "triggers": [
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:07:56.628Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": null,
-      "intensity": 0.2631578947368421,
-      "confidence": 0.4,
-      "timestamp": "2025-07-08T17:07:59.161Z",
-      "triggers": [
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:08:00.028Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": null,
-      "intensity": 1,
-      "confidence": 0.4,
-      "timestamp": "2025-07-08T17:08:00.060Z",
-      "triggers": [
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "how",
-            "how"
-          ]
-        }
-      ],
-      "context": "central_brain_analysis",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:11:20.918Z",
-      "triggers": [],
-      "context": "user_input",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": null,
-      "intensity": 0.2631578947368421,
-      "confidence": 0.4,
-      "timestamp": "2025-07-08T17:11:20.993Z",
-      "triggers": [
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:11:22.324Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.10178117048346057,
-      "confidence": 0.8,
-      "timestamp": "2025-07-08T17:11:54.775Z",
-      "triggers": [
-        {
-          "emotion": "fear",
-          "pattern": "/\\b(help|oh god|please no)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "What",
-            "What"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "Ready",
-            "Ready"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(finally|almost|about to)\\b/i",
-          "matches": [
-            "almost",
-            "almost"
-          ]
-        },
-        {
-          "emotion": "trust",
-          "pattern": "/\\b(friend|ally|support|help|care|love|respect)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:11:57.163Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.1,
-      "confidence": 0.8,
-      "timestamp": "2025-07-08T17:11:59.721Z",
-      "triggers": [
-        {
-          "emotion": "fear",
-          "pattern": "/\\b(help|oh god|please no)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "What",
-            "What"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "Ready",
-            "Ready"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(finally|almost|about to)\\b/i",
-          "matches": [
-            "almost",
-            "almost"
-          ]
-        },
-        {
-          "emotion": "trust",
-          "pattern": "/\\b(friend|ally|support|help|care|love|respect)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:12:02.229Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.1,
-      "confidence": 0.8,
-      "timestamp": "2025-07-08T17:12:04.886Z",
-      "triggers": [
-        {
-          "emotion": "fear",
-          "pattern": "/\\b(help|oh god|please no)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "What",
-            "What"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "Ready",
-            "Ready"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(finally|almost|about to)\\b/i",
-          "matches": [
-            "almost",
-            "almost"
-          ]
-        },
-        {
-          "emotion": "trust",
-          "pattern": "/\\b(friend|ally|support|help|care|love|respect)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:12:07.512Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.1,
-      "confidence": 0.8,
-      "timestamp": "2025-07-08T17:12:10.040Z",
-      "triggers": [
-        {
-          "emotion": "fear",
-          "pattern": "/\\b(help|oh god|please no)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "What",
-            "What"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "Ready",
-            "Ready"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(finally|almost|about to)\\b/i",
-          "matches": [
-            "almost",
-            "almost"
-          ]
-        },
-        {
-          "emotion": "trust",
-          "pattern": "/\\b(friend|ally|support|help|care|love|respect)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:12:12.536Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.1,
-      "confidence": 0.8,
-      "timestamp": "2025-07-08T17:12:15.124Z",
-      "triggers": [
-        {
-          "emotion": "fear",
-          "pattern": "/\\b(help|oh god|please no)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "What",
-            "What"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "Ready",
-            "Ready"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(finally|almost|about to)\\b/i",
-          "matches": [
-            "almost",
-            "almost"
-          ]
-        },
-        {
-          "emotion": "trust",
-          "pattern": "/\\b(friend|ally|support|help|care|love|respect)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:12:17.660Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.1,
-      "confidence": 0.8,
-      "timestamp": "2025-07-08T17:12:20.321Z",
-      "triggers": [
-        {
-          "emotion": "fear",
-          "pattern": "/\\b(help|oh god|please no)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "What",
-            "What"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "Ready",
-            "Ready"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(finally|almost|about to)\\b/i",
-          "matches": [
-            "almost",
-            "almost"
-          ]
-        },
-        {
-          "emotion": "trust",
-          "pattern": "/\\b(friend|ally|support|help|care|love|respect)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        }
-      ],
-      "context": "thought_process",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
-    {
-      "primary": "neutral",
-      "secondary": null,
-      "intensity": 0.5,
-      "confidence": 0.7,
-      "timestamp": "2025-07-08T17:12:22.924Z",
-      "triggers": [],
-      "context": "generated_thought",
-      "previous": "surprise",
-      "transition": "surprise → neutral"
-    },
-    {
-      "primary": "surprise",
-      "secondary": "anticipation",
-      "intensity": 0.1,
-      "confidence": 0.8,
-      "timestamp": "2025-07-08T17:13:25.977Z",
-      "triggers": [
-        {
-          "emotion": "fear",
-          "pattern": "/\\b(help|oh god|please no)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
-          "matches": [
-            "unexpected",
-            "unexpected"
-          ]
-        },
-        {
-          "emotion": "surprise",
-          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
-          "matches": [
-            "What",
-            "What"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
-          "matches": [
-            "Ready",
-            "Ready"
-          ]
-        },
-        {
-          "emotion": "anticipation",
-          "pattern": "/\\b(finally|almost|about to)\\b/i",
-          "matches": [
-            "almost",
-            "almost"
-          ]
-        },
-        {
-          "emotion": "trust",
-          "pattern": "/\\b(friend|ally|support|help|care|love|respect)\\b/i",
-          "matches": [
-            "help",
-            "help"
-          ]
-        }
-      ],
-      "context": "identity_evolution",
-      "previous": "neutral",
-      "transition": "neutral → surprise"
-    },
     {
       "primary": "surprise",
       "secondary": "anticipation",
@@ -1748,28 +949,911 @@
       "context": "generated_thought",
       "previous": "anticipation",
       "transition": "anticipation → neutral"
+    },
+    {
+      "primary": "anticipation",
+      "secondary": "joy",
+      "intensity": 0.14084507042253522,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T17:16:05.136Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(happy|joy|excited|great|awesome|wonderful|fantastic|amazing|love|enjoy|delighted|thrilled|pleased)\\b/i",
+          "matches": [
+            "excited",
+            "excited"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "what",
+            "what"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(excited|anticipate|expect|hope|look forward|can't wait|soon|tomorrow)\\b/i",
+          "matches": [
+            "excited",
+            "excited"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
+          "matches": [
+            "eager",
+            "eager"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → anticipation"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:16:07.843Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "anticipation",
+      "transition": "anticipation → neutral"
+    },
+    {
+      "primary": "anticipation",
+      "secondary": "joy",
+      "intensity": 0.24539877300613497,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T17:16:10.939Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(happy|joy|excited|great|awesome|wonderful|fantastic|amazing|love|enjoy|delighted|thrilled|pleased)\\b/i",
+          "matches": [
+            "excited",
+            "excited"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "what",
+            "what"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(excited|anticipate|expect|hope|look forward|can't wait|soon|tomorrow)\\b/i",
+          "matches": [
+            "excited",
+            "excited"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
+          "matches": [
+            "eager",
+            "eager"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → anticipation"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:16:12.776Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "anticipation",
+      "transition": "anticipation → neutral"
+    },
+    {
+      "primary": "anticipation",
+      "secondary": "joy",
+      "intensity": 0.22598870056497175,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T17:16:15.794Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(happy|joy|excited|great|awesome|wonderful|fantastic|amazing|love|enjoy|delighted|thrilled|pleased)\\b/i",
+          "matches": [
+            "excited",
+            "excited"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "what",
+            "what"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(excited|anticipate|expect|hope|look forward|can't wait|soon|tomorrow)\\b/i",
+          "matches": [
+            "excited",
+            "excited"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
+          "matches": [
+            "eager",
+            "eager"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → anticipation"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:16:17.811Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "anticipation",
+      "transition": "anticipation → neutral"
+    },
+    {
+      "primary": "joy",
+      "secondary": "surprise",
+      "intensity": 0.10869565217391305,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T17:16:20.613Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(happy|joy|excited|great|awesome|wonderful|fantastic|amazing|love|enjoy|delighted|thrilled|pleased)\\b/i",
+          "matches": [
+            "fantastic",
+            "fantastic"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "what",
+            "what"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
+          "matches": [
+            "eager",
+            "eager"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → joy"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:16:22.412Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "joy",
+      "transition": "joy → neutral"
+    },
+    {
+      "primary": "joy",
+      "secondary": "surprise",
+      "intensity": 0.10869565217391305,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T17:16:25.260Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(happy|joy|excited|great|awesome|wonderful|fantastic|amazing|love|enjoy|delighted|thrilled|pleased)\\b/i",
+          "matches": [
+            "fantastic",
+            "fantastic"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "what",
+            "what"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
+          "matches": [
+            "eager",
+            "eager"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → joy"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:16:26.253Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "joy",
+      "transition": "joy → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:16:29.009Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:16:30.141Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "anticipation",
+      "secondary": "joy",
+      "intensity": 0.1,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T17:17:41.969Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(happy|joy|excited|great|awesome|wonderful|fantastic|amazing|love|enjoy|delighted|thrilled|pleased)\\b/i",
+          "matches": [
+            "excited",
+            "excited"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "what",
+            "what"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(excited|anticipate|expect|hope|look forward|can't wait|soon|tomorrow)\\b/i",
+          "matches": [
+            "excited",
+            "excited"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(planning|preparing|ready|eager|keen)\\b/i",
+          "matches": [
+            "eager",
+            "eager"
+          ]
+        }
+      ],
+      "context": "identity_evolution",
+      "previous": "neutral",
+      "transition": "neutral → anticipation"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:17:44.191Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "anticipation",
+      "transition": "anticipation → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:17:46.104Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:17:49.448Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:17:51.306Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:17:54.314Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:17:56.165Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:17:58.968Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:00.762Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:03.517Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:05.381Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:08.173Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:10.132Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:13.025Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:15.194Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:18.179Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:20.114Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:22.953Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:25.016Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:27.831Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:29.736Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:32.408Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:34.237Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:37.266Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:39.303Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:42.202Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:18:44.025Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:19:48.839Z",
+      "triggers": [],
+      "context": "identity_evolution",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:19:51.190Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:19:54.196Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:19:57.495Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:00.973Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:04.220Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:07.732Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:10.898Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:14.501Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:17.516Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:20.446Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:23.273Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:26.705Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:29.661Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:32.664Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:35.536Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:38.750Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:41.534Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:44.589Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:47.434Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:20:50.604Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:21:48.326Z",
+      "triggers": [],
+      "context": "identity_evolution",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:21:50.535Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:21:53.292Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T17:21:56.429Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
     }
   ],
   "patterns": {
     "emotionFrequency": {
       "surprise": {
-        "count": 18,
-        "totalIntensity": 5.039285355160158,
+        "count": 2,
+        "totalIntensity": 0.2,
         "contexts": {
-          "thought_process": 15,
-          "generated_thought": 1,
-          "central_brain_analysis": 1,
-          "identity_evolution": 1
+          "thought_process": 2
         },
-        "averageIntensity": 0.27996029750889767
+        "averageIntensity": 0.1
       },
       "neutral": {
-        "count": 33,
-        "totalIntensity": 16.5,
+        "count": 78,
+        "totalIntensity": 39,
         "contexts": {
-          "generated_thought": 29,
-          "user_input": 1,
-          "thought_process": 3
+          "generated_thought": 47,
+          "thought_process": 29,
+          "identity_evolution": 2
         },
         "averageIntensity": 0.5
       },
@@ -1783,70 +1867,96 @@
         "averageIntensity": 0.10447040460453794
       },
       "joy": {
-        "count": 2,
-        "totalIntensity": 1.1,
+        "count": 4,
+        "totalIntensity": 1.3173913043478263,
         "contexts": {
           "user_input": 1,
-          "thought_process": 1
+          "thought_process": 3
         },
-        "averageIntensity": 0.55
+        "averageIntensity": 0.32934782608695656
       },
       "anticipation": {
-        "count": 4,
-        "totalIntensity": 0.5565701407226369,
+        "count": 8,
+        "totalIntensity": 1.268802684716279,
         "contexts": {
-          "thought_process": 4
+          "thought_process": 7,
+          "identity_evolution": 1
         },
-        "averageIntensity": 0.13914253518065922
+        "averageIntensity": 0.15860033558953487
       }
     },
     "transitions": {
-      "neutral → surprise": 15,
-      "surprise → surprise": 3,
-      "surprise → neutral": 15,
+      "surprise → surprise": 1,
+      "surprise → neutral": 2,
+      "neutral → surprise": 1,
       "neutral → trust": 8,
       "trust → neutral": 7,
-      "neutral → neutral": 6,
+      "neutral → neutral": 58,
       "trust → joy": 1,
       "joy → joy": 1,
-      "joy → neutral": 1,
-      "neutral → anticipation": 4,
-      "anticipation → neutral": 4
+      "joy → neutral": 3,
+      "neutral → anticipation": 8,
+      "anticipation → neutral": 8,
+      "neutral → joy": 2
     },
     "dominantEmotion": "neutral",
-    "emotionalStability": 0.4
+    "emotionalStability": 1
   },
   "triggers": {
-    "surprise": {
-      "/\\b(omg|wtf|what|how)\\b/i": {
-        "count": 26,
+    "fear": {
+      "/\\b(help|oh god|please no)\\b/i": {
+        "count": 10,
         "examples": [
-          "How",
-          "How",
-          "How",
-          "How",
-          "How",
-          "How",
-          "How",
-          "How",
-          "how",
-          "how",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help"
+        ]
+      }
+    },
+    "surprise": {
+      "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i": {
+        "count": 2,
+        "examples": [
+          "unexpected",
+          "unexpected",
+          "unexpected",
+          "unexpected"
+        ]
+      },
+      "/\\b(omg|wtf|what|how)\\b/i": {
+        "count": 20,
+        "examples": [
           "What",
           "What",
-          "What",
-          "What",
-          "What",
-          "What",
-          "What",
-          "What",
-          "What",
-          "What",
-          "What",
-          "What",
-          "What",
-          "What",
-          "What",
-          "What",
+          "what",
+          "what",
+          "what",
+          "what",
+          "what",
+          "what",
+          "what",
+          "what",
+          "what",
+          "what",
+          "what",
+          "what",
           "what",
           "what",
           "what",
@@ -1874,75 +1984,28 @@
           "what",
           "what"
         ]
-      },
-      "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i": {
-        "count": 16,
-        "examples": [
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected",
-          "unexpected"
-        ]
       }
     },
     "anticipation": {
       "/\\b(planning|preparing|ready|eager|keen)\\b/i": {
-        "count": 17,
+        "count": 12,
         "examples": [
-          "ready",
-          "ready",
-          "ready",
-          "ready",
-          "ready",
-          "ready",
-          "ready",
-          "ready",
           "Ready",
           "Ready",
           "Ready",
           "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
-          "Ready",
+          "eager",
+          "eager",
+          "eager",
+          "eager",
+          "eager",
+          "eager",
+          "eager",
+          "eager",
+          "eager",
+          "eager",
+          "eager",
+          "eager",
           "eager",
           "eager",
           "eager",
@@ -1954,22 +2017,8 @@
         ]
       },
       "/\\b(finally|almost|about to)\\b/i": {
-        "count": 9,
+        "count": 2,
         "examples": [
-          "almost",
-          "almost",
-          "almost",
-          "almost",
-          "almost",
-          "almost",
-          "almost",
-          "almost",
-          "almost",
-          "almost",
-          "almost",
-          "almost",
-          "almost",
-          "almost",
           "almost",
           "almost",
           "almost",
@@ -1977,8 +2026,16 @@
         ]
       },
       "/\\b(excited|anticipate|expect|hope|look forward|can't wait|soon|tomorrow)\\b/i": {
-        "count": 6,
+        "count": 10,
         "examples": [
+          "excited",
+          "excited",
+          "excited",
+          "excited",
+          "excited",
+          "excited",
+          "excited",
+          "excited",
           "excited",
           "excited",
           "excited",
@@ -1994,87 +2051,7 @@
         ]
       }
     },
-    "fear": {
-      "/\\b(help|oh god|please no)\\b/i": {
-        "count": 17,
-        "examples": [
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help"
-        ]
-      }
-    },
     "trust": {
-      "/\\b(friend|ally|support|help|care|love|respect)\\b/i": {
-        "count": 17,
-        "examples": [
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help",
-          "help"
-        ]
-      },
       "/\\b(trust|believe|rely|depend|faith|confidence|sure|certain|loyal)\\b/i": {
         "count": 10,
         "examples": [
@@ -2099,11 +2076,36 @@
           "believe",
           "believe"
         ]
+      },
+      "/\\b(friend|ally|support|help|care|love|respect)\\b/i": {
+        "count": 10,
+        "examples": [
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help",
+          "help"
+        ]
       }
     },
     "joy": {
       "/\\b(happy|joy|excited|great|awesome|wonderful|fantastic|amazing|love|enjoy|delighted|thrilled|pleased)\\b/i": {
-        "count": 6,
+        "count": 12,
         "examples": [
           "excited",
           "excited",
@@ -2116,10 +2118,22 @@
           "excited",
           "excited",
           "excited",
+          "excited",
+          "excited",
+          "excited",
+          "excited",
+          "excited",
+          "excited",
+          "excited",
+          "fantastic",
+          "fantastic",
+          "fantastic",
+          "fantastic",
+          "excited",
           "excited"
         ]
       }
     }
   },
-  "timestamp": "2025-07-08T17:16:02.144Z"
+  "timestamp": "2025-07-08T17:21:56.431Z"
 }

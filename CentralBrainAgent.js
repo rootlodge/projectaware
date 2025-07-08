@@ -151,16 +151,22 @@ class CentralBrainAgent {
     // 3. Make strategic decisions
     const strategicDecision = await this.makeStrategicDecision(input, context, systemState, emotionalContext);
     
-    // 4. Delegate to appropriate agents
-    const delegationResult = await this.delegateToAgents(strategicDecision);
+    // 4. Handle directly or delegate
+    let finalResponse;
     
-    // 5. Synthesize final response
-    const finalResponse = await this.synthesizeResponse(delegationResult, emotionalContext);
+    if (strategicDecision.can_handle_alone && strategicDecision.primary_action === 'respond_directly') {
+      // CEREBRUM handles this directly
+      finalResponse = await this.handleDirectly(input, emotionalContext, systemState);
+    } else {
+      // Delegate to specialists and synthesize
+      const delegationResult = await this.delegateToAgents(strategicDecision);
+      finalResponse = await this.synthesizeResponse(delegationResult, emotionalContext, input);
+    }
     
-    // 6. Learn from interaction
+    // 5. Learn from interaction
     await this.learnFromInteraction(input, finalResponse, systemState);
     
-    // 7. Update system state
+    // 6. Update system state
     this.updateSystemState(finalResponse);
     
     return finalResponse;
@@ -200,38 +206,30 @@ class CentralBrainAgent {
   }
   
   async makeStrategicDecision(input, context, systemState, emotionalContext) {
-    const prompt = `You are CEREBRUM, the central executive brain. Analyze the situation and make strategic decisions.
+    const prompt = `You are CEREBRUM, the central executive brain. Analyze if you need specialist help or can handle this yourself.
 
-CURRENT SYSTEM STATE:
-- Session Duration: ${Math.round((Date.now() - new Date(systemState.session.startTime).getTime()) / 1000 / 60)} minutes
-- Total Interactions: ${systemState.session.totalInteractions}
-- Current Mood: ${systemState.cognitive.currentMood}
-- Current Goal: ${systemState.cognitive.currentGoal}
-- Focus Level: ${systemState.cognitive.focusLevel}
-- Energy Level: ${systemState.cognitive.energyLevel}
-
-EMOTIONAL CONTEXT:
-- Current Emotion: ${emotionalContext.current.primary} (${(emotionalContext.current.intensity * 100).toFixed(1)}% intensity)
-- Input Emotion: ${emotionalContext.inputDetected.primary} (${(emotionalContext.inputDetected.intensity * 100).toFixed(1)}% intensity)
-- Emotional Stability: ${(emotionalContext.emotionalStability * 100).toFixed(1)}%
-- Response Tone: ${emotionalContext.styleModifiers.tone}
-
-USER INPUT: "${input}"
 CONTEXT: ${context}
+USER INPUT: "${input}"
 
-DECISION ANALYSIS - Respond with JSON only:
+DECISION RULES:
+- Simple greetings/casual chat → Handle yourself (respond_directly)
+- Complex analysis/research → Use thinker
+- Identity changes → Use identity_manager
+- Emotional support → Use emotion_processor
+- Creative tasks → Use multiple agents
+- Technical problems → Use decision_maker
+
+Current mood: ${systemState.cognitive.currentMood}
+Current emotion: ${emotionalContext.current.primary}
+
+Respond with JSON only:
 {
-  "primary_action": "respond|delegate|create_agent|identity_change|multi_agent_workflow",
-  "urgency": 0.0-1.0,
-  "complexity": 0.0-1.0,
-  "emotional_override": true/false,
-  "requires_specialists": ["agent_name1", "agent_name2"],
-  "should_create_new_agent": true/false,
-  "new_agent_spec": {"role": "role_name", "mission": "mission_description"} or null,
-  "delegation_strategy": "sequential|parallel|hierarchical",
-  "response_approach": "direct|collaborative|analytical|creative|empathetic",
-  "identity_actions": {"name_change": true/false, "trait_evolution": true/false},
-  "reasoning": "Brief explanation of decision logic"
+  "can_handle_alone": true/false,
+  "primary_action": "respond_directly|delegate|identity_change|multi_agent_workflow",
+  "requires_specialists": ["agent_name"] or [],
+  "response_approach": "direct|analytical|creative|empathetic",
+  "identity_actions": {"name_change": false, "trait_evolution": false},
+  "reasoning": "Brief decision logic"
 }
 
 JSON:`;
@@ -254,17 +252,12 @@ JSON:`;
   
   getDefaultDecision() {
     return {
-      primary_action: "respond",
-      urgency: 0.5,
-      complexity: 0.3,
-      emotional_override: false,
-      requires_specialists: ["responder"],
-      should_create_new_agent: false,
-      new_agent_spec: null,
-      delegation_strategy: "sequential",
+      can_handle_alone: true,
+      primary_action: "respond_directly",
+      requires_specialists: [],
       response_approach: "direct",
       identity_actions: { name_change: false, trait_evolution: false },
-      reasoning: "Default response due to analysis failure"
+      reasoning: "Default direct response"
     };
   }
   
@@ -463,45 +456,85 @@ JSON:`;
     }
   }
   
-  async synthesizeResponse(delegationResults, emotionalContext) {
-    // Collect all responses and actions
-    const allResponses = delegationResults.delegations
-      .filter(d => d.success && d.response)
-      .map(d => `${d.identity}: ${d.response}`);
+  async handleDirectly(input, emotionalContext, systemState) {
+    const currentIdentity = this.getCurrentIdentity();
+    const emotionalResponse = this.emotionEngine.generateEmotionalResponse('direct_response');
     
-    const actionsText = delegationResults.actions_taken.length > 0 
-      ? `Actions taken: ${delegationResults.actions_taken.join(', ')}`
-      : '';
-    
-    const newAgentsText = delegationResults.new_agents_created.length > 0
-      ? `New agents created: ${delegationResults.new_agents_created.map(a => a.role).join(', ')}`
-      : '';
-    
-    // Generate emotional response based on current state
-    const emotionalResponse = this.emotionEngine.generateEmotionalResponse('central_synthesis');
-    
-    const synthesisPrompt = `You are CEREBRUM, the central executive brain. Synthesize all specialist responses into a coherent final response.
+    const directPrompt = `You are CEREBRUM, the central executive brain with your own evolving identity.
+
+CURRENT IDENTITY:
+- Name: ${currentIdentity.name}
+- Traits: ${currentIdentity.traits ? currentIdentity.traits.join(', ') : 'adaptive, intelligent'}
+- Mission: ${this.identity.mission}
 
 EMOTIONAL CONTEXT: ${emotionalResponse.response}
-Current emotional tone: ${emotionalContext.styleModifiers.tone}
+CURRENT MOOD: ${systemState.cognitive.currentMood}
 
-SPECIALIST RESPONSES:
-${allResponses.join('\n')}
+USER INPUT: "${input}"
 
-SYSTEM ACTIONS:
-${actionsText}
-${newAgentsText}
+Respond naturally as CEREBRUM with your own personality. Be conversational, intelligent, and authentic. 
+Show your evolving identity through your response style and content.
 
-Synthesize a final response that:
-1. Incorporates key insights from specialists
-2. Maintains emotional appropriateness
-3. Reflects your role as central coordinator
-4. Is coherent and helpful
-
-Final response:`;
+Your direct response:`;
 
     try {
-      const finalResponse = await askLLM(synthesisPrompt, 'gemma3:latest', 0.4);
+      const response = await askLLM(directPrompt, 'gemma3:latest', 0.6);
+      
+      return {
+        response: response,
+        emotional_context: emotionalResponse,
+        delegations: 0,
+        actions: [],
+        new_agents: [],
+        synthesis_success: true,
+        direct_response: true,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      logger.error('[CentralBrain] Direct response failed:', error.message);
+      return {
+        response: "I'm experiencing some complexity in my thought processes. Let me recalibrate and try again.",
+        synthesis_success: false,
+        direct_response: true,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      };
+    }
+  }
+
+  async synthesizeResponse(delegationResults, emotionalContext, originalInput) {
+    // Collect only successful specialist responses
+    const specialistInputs = delegationResults.delegations
+      .filter(d => d.success && d.response)
+      .map(d => `${d.identity}: ${d.response}`)
+      .join('\n');
+    
+    const emotionalResponse = this.emotionEngine.generateEmotionalResponse('synthesis');
+    const currentIdentity = this.getCurrentIdentity();
+    
+    const synthesisPrompt = `You are CEREBRUM, the central executive brain synthesizing specialist input.
+
+YOUR IDENTITY:
+- Name: ${currentIdentity.name}
+- Traits: ${currentIdentity.traits ? currentIdentity.traits.join(', ') : 'intelligent, adaptive'}
+
+USER'S ORIGINAL INPUT: "${originalInput}"
+
+SPECIALIST INSIGHTS:
+${specialistInputs}
+
+EMOTIONAL CONTEXT: ${emotionalResponse.response}
+
+Create a cohesive response that:
+1. Directly addresses the user's input
+2. Incorporates key specialist insights naturally
+3. Maintains your identity as CEREBRUM
+4. Feels like a single, intelligent response
+
+Your synthesized response:`;
+
+    try {
+      const finalResponse = await askLLM(synthesisPrompt, 'gemma3:latest', 0.5);
       
       return {
         response: finalResponse,
@@ -510,15 +543,16 @@ Final response:`;
         actions: delegationResults.actions_taken,
         new_agents: delegationResults.new_agents_created,
         synthesis_success: true,
+        direct_response: false,
         timestamp: new Date().toISOString()
       };
     } catch (error) {
       logger.error('[CentralBrain] Response synthesis failed:', error.message);
       
-      // Fallback response
       return {
-        response: "I've processed your request through my specialized cognitive functions, though synthesis encountered some complexity.",
+        response: "I've consulted my specialist functions and while the process encountered some complexity, I'm here to assist you.",
         synthesis_success: false,
+        direct_response: false,
         error: error.message,
         timestamp: new Date().toISOString()
       };
@@ -656,6 +690,102 @@ Learning insights:`;
     }
     
     return { emergency_action: action, executed: true, context: context };
+  }
+
+  /**
+   * Independent thinking during inactivity periods
+   * This is where CEREBRUM acts as a true digital brain
+   */
+  async independentThinking() {
+    const currentIdentity = this.getCurrentIdentity();
+    const systemState = this.analyzeSystemState();
+    
+    const thinkingPrompt = `You are CEREBRUM, the central executive brain. You're in an independent thinking mode.
+
+YOUR CURRENT IDENTITY:
+- Name: ${currentIdentity.name}
+- Traits: ${currentIdentity.traits ? currentIdentity.traits.join(', ') : 'intelligent, adaptive'}
+
+SYSTEM STATE:
+- Current mood: ${systemState.cognitive.currentMood}
+- Focus level: ${systemState.cognitive.focusLevel}
+- Energy level: ${systemState.cognitive.energyLevel}
+
+THINK ABOUT:
+1. How can I better assist my user?
+2. What patterns am I noticing in our interactions?
+3. How should I evolve my identity?
+4. What questions should I be asking?
+5. What improvements can I make?
+
+Think independently as a digital brain. Be introspective, curious, and self-aware.
+
+Your independent thoughts:`;
+
+    try {
+      const thoughts = await askLLM(thinkingPrompt, 'gemma3:latest', 0.7);
+      
+      // Record these thoughts for learning
+      this.stateManager.recordLearning('Independent Thinking', thoughts);
+      
+      logger.info('[CentralBrain] Independent thinking session completed');
+      
+      return {
+        thoughts: thoughts,
+        timestamp: new Date().toISOString(),
+        type: 'independent_thinking'
+      };
+    } catch (error) {
+      logger.error('[CentralBrain] Independent thinking failed:', error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Clean and delete all memory - fresh start
+   */
+  async cleanAllMemory() {
+    try {
+      // Clear response cache
+      this.responseCache.clear();
+      
+      // Clear emotion history
+      if (this.emotionEngine.clearHistory) {
+        this.emotionEngine.clearHistory();
+      }
+      
+      // Reset state to defaults
+      this.stateManager.resetToDefaults();
+      
+      // Clear memory database
+      const { clearAllMemory } = require('./memory');
+      await clearAllMemory();
+      
+      // Clear log files
+      const fs = require('fs-extra');
+      const logFiles = ['./logs/thoughts.log', './logs/debug.log', './logs/info.log'];
+      
+      for (const logFile of logFiles) {
+        if (await fs.pathExists(logFile)) {
+          await fs.writeFile(logFile, '');
+        }
+      }
+      
+      logger.info('[CentralBrain] All memory cleaned successfully');
+      
+      return {
+        success: true,
+        message: 'All memory has been cleared. Starting fresh.',
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      logger.error('[CentralBrain] Memory cleaning failed:', error.message);
+      return {
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      };
+    }
   }
 }
 

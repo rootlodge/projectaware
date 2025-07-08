@@ -3,12 +3,14 @@
     "startTime": "2025-07-08T07:08:34.413Z",
     "sessionId": "session_1751958514414_rgo3yeus2",
     "totalInteractions": 22,
-    "lastActivity": "2025-07-08T17:16:02.141Z"
+    "lastActivity": "2025-07-08T17:22:05.249Z"
   },
   "cognitive": {
     "focusLevel": 0.7999999999999999,
     "energyLevel": 0.95,
-    "confidenceLevel": 0.8
+    "confidenceLevel": 0.8,
+    "currentMood": "neutral",
+    "currentGoal": "continue thinking"
   },
   "social": {
     "userEngagement": "moderate",

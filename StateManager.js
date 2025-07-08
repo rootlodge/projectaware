@@ -262,6 +262,68 @@ class StateManager {
   isObject(item) {
     return item && typeof item === 'object' && !Array.isArray(item);
   }
+
+  resetToDefaults() {
+    const defaultState = {
+      session: {
+        startTime: new Date().toISOString(),
+        sessionId: this.generateSessionId(),
+        totalInteractions: 0,
+        lastActivity: new Date().toISOString()
+      },
+      cognitive: {
+        currentMood: 'neutral',
+        currentGoal: 'continue thinking',
+        focusLevel: 0.7,
+        energyLevel: 1.0,
+        confidenceLevel: 0.8
+      },
+      social: {
+        userEngagement: 'moderate',
+        conversationTone: 'friendly',
+        lastUserSatisfaction: 'unknown',
+        relationshipStage: 'building'
+      },
+      learning: {
+        newConceptsLearned: 0,
+        topicsExplored: [],
+        userPreferences: {},
+        adaptationsMade: []
+      },
+      performance: {
+        responseQuality: 0.8,
+        taskCompletionRate: 0.0,
+        hallucinationCount: 0,
+        correctionsReceived: 0
+      },
+      evolution: {
+        identityChanges: 0,
+        traitEvolutions: [],
+        lastEvolution: new Date().toISOString()
+      }
+    };
+    
+    try {
+      fs.writeFileSync(this.stateFile, JSON.stringify(defaultState, null, 2));
+      
+      // Reset dynamic state too
+      const defaultDynamic = {
+        mood: 'neutral',
+        goal: 'continue thinking',
+        currentFocus: 'general',
+        energyLevel: 1.0,
+        lastUpdate: new Date().toISOString()
+      };
+      
+      fs.writeFileSync(this.dynamicFile, JSON.stringify(defaultDynamic, null, 2));
+      
+      logger.info('[StateManager] State reset to defaults');
+      return true;
+    } catch (error) {
+      logger.error('[StateManager] Failed to reset state:', error.message);
+      return false;
+    }
+  }
 }
 
 module.exports = StateManager;

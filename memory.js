@@ -103,4 +103,14 @@ function getUserResponsePatterns(limit = 50) {
   });
 }
 
-module.exports = { saveMessage, getRecentMessages, getContextSummary, getConversationHistory, getUserResponsePatterns };
+function clearAllMemory() {
+  return new Promise((resolve, reject) => {
+    db.run(`DELETE FROM messages`, (err) => {
+      if (err) return reject(err);
+      console.log('All memory cleared from database');
+      resolve();
+    });
+  });
+}
+
+module.exports = { saveMessage, getRecentMessages, getContextSummary, getConversationHistory, getUserResponsePatterns, clearAllMemory };

@@ -13,7 +13,8 @@ const {
   giveReward,
   userGiveReward,
   analyzeSatisfaction,
-  analyzeOutputAndDecide
+  analyzeOutputAndDecide,
+  stateManager
 } = require('./brain');
 
 const { saveMessage, getRecentMessages, getConversationHistory, getUserResponsePatterns } = require('./memory');
@@ -142,6 +143,33 @@ async function runThoughtLoop() {
         continue;
       }
 
+      if (userInput.toLowerCase().startsWith('state') || userInput.toLowerCase().startsWith('status')) {
+        const state = stateManager.getState();
+        const summary = stateManager.getSessionSummary();
+        
+        console.log(chalk.blue.bold('\n🔧 SYSTEM STATE:'));
+        console.log(chalk.gray(`Session Duration: ${Math.round(summary.duration / 1000 / 60)} minutes`));
+        console.log(chalk.gray(`Total Interactions: ${summary.interactions}`));
+        console.log(chalk.gray(`Concepts Learned: ${summary.conceptsLearned}`));
+        console.log(chalk.gray(`Identity Changes: ${summary.identityChanges}`));
+        console.log(chalk.gray(`Current Mood: ${summary.currentMood}`));
+        console.log(chalk.gray(`User Engagement: ${summary.userEngagement}`));
+        
+        console.log(chalk.cyan.bold('\n⚡ COGNITIVE STATE:'));
+        console.log(chalk.gray(`Focus Level: ${state.cognitive.focusLevel}`));
+        console.log(chalk.gray(`Energy Level: ${state.cognitive.energyLevel}`));
+        console.log(chalk.gray(`Confidence Level: ${state.cognitive.confidenceLevel}`));
+        
+        console.log(chalk.green.bold('\n📈 PERFORMANCE:'));
+        console.log(chalk.gray(`Response Quality: ${state.performance.responseQuality}`));
+        console.log(chalk.gray(`Task Completion Rate: ${state.performance.taskCompletionRate}`));
+        console.log(chalk.gray(`Hallucination Count: ${state.performance.hallucinationCount}`));
+        
+        logThought(`[State Query] User requested system state information`);
+        currentStatus = 'state reported';
+        continue;
+      }
+
       saveMessage('user', userInput);
       
       // Check if user is requesting a name change
@@ -199,11 +227,15 @@ AI:`;
         logThought('[!] Identity updated due to self-declared name change.');
       }
 
+      // Record user interaction in state
+      stateManager.recordInteraction('user_message', {
+        satisfaction: 'pending', // Will be updated based on user response patterns
+        tone: 'conversational'
+      });
+
       const reflection = await reflectOnMemory(recentLogs);
       saveMessage('reflection', reflection);
       logThought(`[Reflection]\n${reflection}`);
-
-      // Removed automatic self-reward - only reward for truly meaningful actions
 
       // Reset processing flag and show clean response
       processingInput = false;
@@ -298,8 +330,13 @@ console.log(chalk.yellow('Commands:'));
 console.log(chalk.gray('• goal: [your goal] - Assign a new goal'));
 console.log(chalk.gray('• reward: [reason] - Give a meaningful reward'));
 console.log(chalk.gray('• analyze - Analyze user satisfaction patterns'));
+console.log(chalk.gray('• state - View detailed system state and performance'));
 console.log(chalk.gray('• Type normally to chat'));
-console.log(chalk.cyan('\n✨ Responsive mode: Internal processes pause when you type'));
-console.log(chalk.cyan('Ready for input...'));
+console.log(chalk.cyan('\n✨ Enhanced Features:'));
+console.log(chalk.cyan('• Responsive interruption when you type'));
+console.log(chalk.cyan('• Advanced identity evolution with trait reflection'));
+console.log(chalk.cyan('• Anti-hallucination system for grounded responses'));
+console.log(chalk.cyan('• Comprehensive state tracking and analysis'));
+console.log(chalk.cyan('\nReady for input...'));
 fs.ensureDirSync('./logs');
 runThoughtLoop();

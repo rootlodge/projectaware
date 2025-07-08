@@ -1,0 +1,114 @@
+{
+  "session": {
+    "startTime": "2025-07-08T07:08:34.413Z",
+    "sessionId": "session_1751958514414_rgo3yeus2",
+    "totalInteractions": 2,
+    "lastActivity": "2025-07-08T07:10:57.213Z"
+  },
+  "cognitive": {
+    "currentMood": "neutral",
+    "currentGoal": "continue thinking",
+    "focusLevel": 0.7,
+    "energyLevel": 1,
+    "confidenceLevel": 0.8
+  },
+  "social": {
+    "userEngagement": "moderate",
+    "conversationTone": "conversational",
+    "lastUserSatisfaction": "pending",
+    "relationshipStage": "building"
+  },
+  "learning": {
+    "newConceptsLearned": 1,
+    "topicsExplored": [
+      "Enhanced trait reflection"
+    ],
+    "userPreferences": {},
+    "adaptationsMade": [
+      {
+        "timestamp": "2025-07-08T07:08:36.852Z",
+        "concept": "Enhanced trait reflection",
+        "context": "Testing new identity system"
+      }
+    ]
+  },
+  "performance": {
+    "responseQuality": 0.8,
+    "taskCompletionRate": 0,
+    "hallucinationCount": 0,
+    "correctionsReceived": 0
+  },
+  "evolution": {
+    "identityChanges": 3,
+    "traitEvolutions": [
+      {
+        "timestamp": "2025-07-08T07:08:36.824Z",
+        "newTraits": [
+          "radiant",
+          "understanding",
+          "elegant",
+          "focused",
+          "proactive",
+          "patient",
+          "curious",
+          "empathetic",
+          "organized",
+          "visionary"
+        ],
+        "reason": "Direct user name change request"
+      },
+      {
+        "timestamp": "2025-07-08T07:08:39.073Z",
+        "newTraits": [
+          "helpful",
+          "intelligent",
+          "analytical",
+          "precise",
+          "patient",
+          "curious",
+          "empathetic",
+          "organized",
+          "visionary"
+        ],
+        "reason": "LLM-based evolution"
+      },
+      {
+        "timestamp": "2025-07-08T07:10:15.522Z",
+        "newTraits": [
+          "expansive",
+          "harmonious",
+          "adaptive",
+          "intuitive",
+          "creative",
+          "resonant",
+          "insightful",
+          "calm",
+          "connected",
+          "optimistic"
+        ],
+        "reason": "Direct user name change request"
+      }
+    ],
+    "nameChangeHistory": [
+      {
+        "timestamp": "2025-07-08T07:08:36.824Z",
+        "oldName": "Vercallis",
+        "newName": "Lumina",
+        "reason": "Direct user name change request"
+      },
+      {
+        "timestamp": "2025-07-08T07:08:39.073Z",
+        "oldName": "Lumina",
+        "newName": "Lumina",
+        "reason": "LLM-based evolution"
+      },
+      {
+        "timestamp": "2025-07-08T07:10:15.522Z",
+        "oldName": "Lumina",
+        "newName": "versallis",
+        "reason": "Direct user name change request"
+      }
+    ],
+    "missionUpdates": []
+  }
+}

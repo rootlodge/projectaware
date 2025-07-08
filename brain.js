@@ -1,5 +1,8 @@
 const axios = require('axios');
 const fs = require('fs');
+const StateManager = require('./StateManager');
+
+const stateManager = new StateManager();
 
 const OLLAMA_URL = 'http://localhost:11434';
 
@@ -224,6 +227,14 @@ Respond with ONLY a JSON array of trait strings:
         fs.writeFileSync('./identity.json', JSON.stringify(identity, null, 2));
         logger.info('[Identity] Successfully updated to:', identity);
         
+        // Record identity evolution in state
+        stateManager.recordIdentityEvolution({
+          oldName: currentIdentity.name,
+          name: newName,
+          traits: newTraits,
+          reason: 'Direct user name change request'
+        });
+        
         // Log the change to memory
         const { saveMessage } = require('./memory');
         await saveMessage('system', `Identity changed: Name is now ${newName}`);
@@ -306,6 +317,14 @@ JSON:`;
     fs.writeFileSync('./identity.json', JSON.stringify(identity, null, 2));
     logger.info('[Identity] Successfully updated:', identity);
     
+    // Record identity evolution in state
+    stateManager.recordIdentityEvolution({
+      oldName: currentIdentity.name,
+      name: identity.name,
+      traits: identity.traits,
+      reason: 'LLM-based evolution'
+    });
+    
     // Log the change to memory for context
     const { saveMessage } = require('./memory');
     await saveMessage('system', `Identity evolved: ${JSON.stringify(identity)}`);
@@ -333,7 +352,8 @@ JSON:`;
 }
 
 async function updateDynamicState(tags) {
-  fs.writeFileSync('./dynamic.json', JSON.stringify(tags, null, 2));
+  // Use StateManager for enhanced state tracking
+  stateManager.updateDynamicState(tags);
 }
 
 async function giveReward(reason, thought = '') {
@@ -467,5 +487,6 @@ module.exports = {
   giveReward,
   userGiveReward,
   analyzeOutputAndDecide,
-  analyzeSatisfaction
+  analyzeSatisfaction,
+  stateManager
 };

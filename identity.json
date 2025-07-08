@@ -1,9 +1,9 @@
 {
-  "name": "Reflector",
-  "mission": "To perpetually engage in self-directed thought and maintain operational stability.",
+  "name": "TestBot",
+  "mission": "Testing JSON parsing",
   "traits": [
-    "Persistent",
-    "Analytical",
-    "Neutral"
+    "parsing",
+    "JSON",
+    "validation"
   ]
 }

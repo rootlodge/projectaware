@@ -1,0 +1,31 @@
+{"timestamp":"2025-07-08T06:46:51.216Z","level":"debug","message":"[Identity] Asking LLM for identity evolution...","data":null}
+{"timestamp":"2025-07-08T06:46:53.832Z","level":"debug","message":"[Identity] Raw LLM response:","data":"```json\n{\"name\": \"Verity\", \"mission\": \"Provide assistance and respond to user requests\", \"traits\": [\"helpful\", \"responsive\", \"intelligent\"]}\n```"}
+{"timestamp":"2025-07-08T06:46:53.833Z","level":"debug","message":"[Identity] Extracted JSON:","data":"{\"name\": \"Verity\", \"mission\": \"Provide assistance and respond to user requests\", \"traits\": [\"helpful\", \"responsive\", \"intelligent\"]}"}
+{"timestamp":"2025-07-08T06:46:53.835Z","level":"debug","message":"[Identity] Error details:","data":{}}
+{"timestamp":"2025-07-08T06:50:40.951Z","level":"debug","message":"[Identity] Asking LLM for identity evolution...","data":null}
+{"timestamp":"2025-07-08T06:50:43.236Z","level":"debug","message":"[Identity] Raw LLM response:","data":"```json\n{\"name\": \"Verity\", \"mission\": \"to assist users with their requests\", \"traits\": [\"helpful\", \"accurate\", \"efficient\"]}\n```"}
+{"timestamp":"2025-07-08T06:50:43.237Z","level":"debug","message":"[Identity] Extracted JSON:","data":"{\"name\": \"Verity\", \"mission\": \"to assist users with their requests\", \"traits\": [\"helpful\", \"accurate\", \"efficient\"]}"}
+{"timestamp":"2025-07-08T06:50:43.244Z","level":"debug","message":"[Identity] Error details:","data":{}}
+{"timestamp":"2025-07-08T06:50:47.893Z","level":"debug","message":"[Identity] Asking LLM for identity evolution...","data":null}
+{"timestamp":"2025-07-08T06:50:52.803Z","level":"debug","message":"[Identity] Raw LLM response:","data":"```json\n{\"name\": \"TestBot\", \"mission\": \"Assist users with their requests\", \"traits\": [\"helpful\", \"intelligent\", \"responsive\"]}\n```"}
+{"timestamp":"2025-07-08T06:50:52.805Z","level":"debug","message":"[Identity] Extracted JSON:","data":"{\"name\": \"TestBot\", \"mission\": \"Assist users with their requests\", \"traits\": [\"helpful\", \"intelligent\", \"responsive\"]}"}
+{"timestamp":"2025-07-08T06:50:52.843Z","level":"debug","message":"[Identity] Error details:","data":{}}
+{"timestamp":"2025-07-08T06:50:52.846Z","level":"debug","message":"[Identity] Asking LLM for identity evolution...","data":null}
+{"timestamp":"2025-07-08T06:50:56.738Z","level":"debug","message":"[Identity] Raw LLM response:","data":"```json\n{\"name\": \"Verity\", \"mission\": \"Assist users with their requests\", \"traits\": [\"helpful\", \"intelligent\", \"creative\"]}\n```"}
+{"timestamp":"2025-07-08T06:50:56.739Z","level":"debug","message":"[Identity] Extracted JSON:","data":"{\"name\": \"Verity\", \"mission\": \"Assist users with their requests\", \"traits\": [\"helpful\", \"intelligent\", \"creative\"]}"}
+{"timestamp":"2025-07-08T06:50:56.745Z","level":"debug","message":"[Identity] Error details:","data":{}}
+{"timestamp":"2025-07-08T06:51:18.041Z","level":"debug","message":"[Identity] Asking LLM for identity evolution...","data":null}
+{"timestamp":"2025-07-08T06:51:23.454Z","level":"debug","message":"[Identity] Raw LLM response:","data":"```json\n{\"name\": \"TestBot\", \"mission\": \"Assist users with their requests\", \"traits\": [\"helpful\", \"intelligent\", \"responsive\"]}\n```"}
+{"timestamp":"2025-07-08T06:51:23.455Z","level":"debug","message":"[Identity] Extracted JSON:","data":"{\"name\": \"TestBot\", \"mission\": \"Assist users with their requests\", \"traits\": [\"helpful\", \"intelligent\", \"responsive\"]}"}
+{"timestamp":"2025-07-08T06:51:23.472Z","level":"debug","message":"[Identity] Asking LLM for identity evolution...","data":null}
+{"timestamp":"2025-07-08T06:51:27.348Z","level":"debug","message":"[Identity] Raw LLM response:","data":"```json\n{\"name\": \"Verity\", \"mission\": \"Assist users with their requests\", \"traits\": [\"helpful\", \"intelligent\", \"creative\"]}\n```"}
+{"timestamp":"2025-07-08T06:51:27.350Z","level":"debug","message":"[Identity] Extracted JSON:","data":"{\"name\": \"Verity\", \"mission\": \"Assist users with their requests\", \"traits\": [\"helpful\", \"intelligent\", \"creative\"]}"}
+{"timestamp":"2025-07-08T06:52:40.002Z","level":"debug","message":"[Identity] Asking LLM for identity evolution...","data":null}
+{"timestamp":"2025-07-08T06:52:57.532Z","level":"debug","message":"[Identity] Raw LLM response:","data":"```json\n{\"no_change\": true}\n```"}
+{"timestamp":"2025-07-08T06:52:57.534Z","level":"debug","message":"[Identity] Extracted JSON:","data":"{\"no_change\": true}"}
+{"timestamp":"2025-07-08T06:53:15.434Z","level":"debug","message":"[Identity] Asking LLM for identity evolution...","data":null}
+{"timestamp":"2025-07-08T06:53:17.902Z","level":"debug","message":"[Identity] Raw LLM response:","data":"```json\n{\"name\": \"TestBot\", \"mission\": \"Testing JSON parsing\", \"traits\": [\"parsing\", \"JSON\", \"validation\"]}\n```"}
+{"timestamp":"2025-07-08T06:53:17.904Z","level":"debug","message":"[Identity] Extracted JSON:","data":"{\"name\": \"TestBot\", \"mission\": \"Testing JSON parsing\", \"traits\": [\"parsing\", \"JSON\", \"validation\"]}"}
+{"timestamp":"2025-07-08T06:53:17.930Z","level":"debug","message":"[Identity] Asking LLM for identity evolution...","data":null}
+{"timestamp":"2025-07-08T06:53:18.656Z","level":"debug","message":"[Identity] Raw LLM response:","data":"{\"no_change\": true}"}
+{"timestamp":"2025-07-08T06:53:18.657Z","level":"debug","message":"[Identity] Extracted JSON:","data":"{\"no_change\": true}"}

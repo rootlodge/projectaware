@@ -214,12 +214,11 @@ JSON:`;
     };
     
     fs.writeFileSync('./identity.json', JSON.stringify(identity, null, 2));
-    logger.success('[Identity] Successfully updated:', identity);
+    logger.info('[Identity] Successfully updated:', identity);
     
     // Log the change to memory for context
-    const Memory = require('./memory');
-    const memory = new Memory();
-    await memory.logMessage('system', `Identity evolved: ${JSON.stringify(identity)}`);
+    const { saveMessage } = require('./memory');
+    await saveMessage('system', `Identity evolved: ${JSON.stringify(identity)}`);
     
   } catch (err) {
     logger.error('[Identity] Evolution failed:', err.message);

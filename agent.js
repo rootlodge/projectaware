@@ -145,7 +145,7 @@ async function runThoughtLoop() {
       saveMessage('user', userInput);
       
       // Check if user is requesting a name change
-      if (/call me|my name is|name yourself|rename|i am reborn as|your new name|be called/i.test(userInput.toLowerCase())) {
+      if (/call me|my name is|name yourself|rename|i am reborn as|your new name|be called|change your name|your name is|call yourself|you are now|become|you should be called/i.test(userInput.toLowerCase())) {
         const nameChangePrompt = `User wants to change my name or identity. User said: "${userInput}"
         
 If they want me to have a specific name, respond with: {"name": "NewName", "mission": "updated mission", "traits": ["trait1", "trait2"]}
@@ -156,6 +156,13 @@ Extract or choose a name and respond in JSON format only.`;
         const nameResult = await askLLM(nameChangePrompt);
         await evolveIdentity(nameResult);
         logThought(`[!] Name change requested by user: ${userInput}`);
+        
+        // Reload identity after change to use new name in response
+        const updatedIdentity = loadIdentity();
+        console.log(chalk.green.bold(`\n${updatedIdentity.name}:`), chalk.white(`I have changed my name to ${updatedIdentity.name} as requested.`));
+        processingInput = false;
+        currentStatus = 'ready';
+        continue;
       }
       
       const recent = await getRecentMessages(10);
@@ -179,7 +186,7 @@ User: ${userInput}
 AI:`;
       const reply = await askLLM(replyPrompt);
       saveMessage('ai', reply);
-      logThought(`USER ➜ ${userInput}\nNEVERSLEEP ➜ ${reply}`);
+      logThought(`USER ➜ ${userInput}\n${identity.name.toUpperCase()} ➜ ${reply}`);
 
       if (/call me|my new name is|i am reborn as/i.test(reply.toLowerCase())) {
         await evolveIdentity(reply);
@@ -195,7 +202,7 @@ AI:`;
       // Reset processing flag and show clean response
       processingInput = false;
       currentStatus = 'ready';
-      console.log(chalk.green.bold('\nNeversleep:'), chalk.white(reply));
+      console.log(chalk.green.bold(`\n${identity.name}:`), chalk.white(reply));
 
     } else if (!sleepMode && !processingInput) {
       const now = Date.now();
@@ -279,7 +286,8 @@ AI:`;
 }
 
 console.clear();
-console.log(chalk.cyanBright('🧠 Neversleep is running...'));
+const identity = loadIdentity();
+console.log(chalk.cyanBright(`🧠 ${identity.name} is running...`));
 console.log(chalk.yellow('Commands:'));
 console.log(chalk.gray('• goal: [your goal] - Assign a new goal'));
 console.log(chalk.gray('• reward: [reason] - Give a meaningful reward'));

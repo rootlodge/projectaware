@@ -55,4 +55,52 @@ function getContextSummary(limit = 50) {
   });
 }
 
-module.exports = { saveMessage, getRecentMessages, getContextSummary };
+function getConversationHistory(limit = 30) {
+  return new Promise((resolve, reject) => {
+    db.all(`SELECT role, content, timestamp FROM messages 
+            WHERE role IN ('user', 'ai') 
+            ORDER BY id DESC LIMIT ?`, [limit], (err, rows) => {
+      if (err) return reject(err);
+      
+      // Format for satisfaction analysis
+      const formatted = rows
+        .reverse()
+        .map(row => {
+          const time = new Date(row.timestamp).toLocaleTimeString();
+          return `[${time}] ${row.role.toUpperCase()}: ${row.content}`;
+        })
+        .join('\n');
+      
+      resolve(formatted);
+    });
+  });
+}
+
+function getUserResponsePatterns(limit = 50) {
+  return new Promise((resolve, reject) => {
+    db.all(`SELECT content, timestamp FROM messages 
+            WHERE role = 'user' 
+            ORDER BY id DESC LIMIT ?`, [limit], (err, rows) => {
+      if (err) return reject(err);
+      
+      const patterns = {
+        short_responses: rows.filter(r => r.content.length < 20).length,
+        questions: rows.filter(r => r.content.includes('?')).length,
+        positive_indicators: rows.filter(r => 
+          /good|great|thanks|perfect|excellent|nice|helpful/i.test(r.content)
+        ).length,
+        negative_indicators: rows.filter(r => 
+          /no|wrong|bad|stop|fix|problem|error|issue/i.test(r.content)
+        ).length,
+        commands: rows.filter(r => 
+          r.content.startsWith('goal:') || r.content.startsWith('reward:')
+        ).length,
+        total_interactions: rows.length
+      };
+      
+      resolve(patterns);
+    });
+  });
+}
+
+module.exports = { saveMessage, getRecentMessages, getContextSummary, getConversationHistory, getUserResponsePatterns };

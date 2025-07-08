@@ -1,7 +1,7 @@
 {
   "hallucination_detection": {
     "enabled": true,
-    "max_response_length": 2000,
+    "max_response_length": 20000,
     "blocked_patterns": [
       "project.*meteor",
       "working on.*\\w+(?:js|py|html)",
@@ -25,10 +25,10 @@
     "temperature": 0.3,
     "top_p": 0.8,
     "repeat_penalty": 1.1,
-    "max_tokens": 15000
+    "max_tokens": 125000
   },
   "memory_settings": {
-    "max_context_messages": 2000,
+    "max_context_messages": 20000,
     "min_message_length": 10,
     "filter_repetitive": true
   }

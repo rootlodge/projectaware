@@ -3,7 +3,31 @@ const fs = require('fs');
 
 const OLLAMA_URL = 'http://localhost:11434';
 
-function validateResponse(response, maxLength = 200) {
+function loadConfig() {
+  try {
+    return JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
+  } catch {
+    // Fallback config if file doesn't exist
+    return {
+      hallucination_detection: {
+        enabled: true,
+        max_response_length: 2000,
+        blocked_patterns: []
+      },
+      llm_settings: {
+        temperature: 0.3,
+        top_p: 0.8,
+        repeat_penalty: 1.1,
+        max_tokens: 15000
+      }
+    };
+  }
+}
+
+function validateResponse(response, maxLength = null) {
+  const config = loadConfig();
+  const maxLen = maxLength || config.hallucination_detection.max_response_length;
+
   // Remove common hallucination phrases
   const cleaned = response
     .replace(/I (think|believe|assume|imagine) Dylan/gi, 'Dylan')
@@ -12,19 +36,14 @@ function validateResponse(response, maxLength = 200) {
     .trim();
 
   // Check length
-  if (cleaned.length > maxLength) {
-    return "Response too long. No new information to process.";
+  if (cleaned.length > maxLen) {
+    return `Response exceeds ${maxLen} characters. Please be more concise.`;
   }
 
-  // Check for fabrication patterns
-  const fabricationPatterns = [
-    /project.*meteor/i,
-    /working on.*\w+(?:js|py|html)/i,
-    /building.*application/i,
-    /developing.*system/i
-  ];
-
-  if (fabricationPatterns.some(pattern => pattern.test(cleaned))) {
+  // Check for fabrication patterns from config
+  const patterns = config.hallucination_detection.blocked_patterns.map(p => new RegExp(p, 'i'));
+  
+  if (patterns.some(pattern => pattern.test(cleaned))) {
     return "No factual information available.";
   }
 
@@ -33,14 +52,16 @@ function validateResponse(response, maxLength = 200) {
 
 async function askLLM(prompt, model = 'gemma3:latest') {
   try {
+    const config = loadConfig();
     const res = await axios.post(`${OLLAMA_URL}/api/generate`, {
       model,
       prompt,
       stream: false,
       options: {
-        temperature: 0.3, // Lower temperature for more factual responses
-        top_p: 0.8,
-        repeat_penalty: 1.1
+        temperature: config.llm_settings.temperature,
+        top_p: config.llm_settings.top_p,
+        repeat_penalty: config.llm_settings.repeat_penalty,
+        num_predict: config.llm_settings.max_tokens
       }
     });
     
@@ -82,21 +103,6 @@ Rules:
 Your factual observation:`;
 
   let thought = await askLLM(prompt);
-
-  // Enhanced hallucination detection
-  const hallucinationPatterns = [
-    /project|initiative|experiment|simulation|unconfirmed|unknown|hypothetical/i,
-    /he(?:'s| is) (thinking|drinking|feeling|struggling|working on)/i,
-    /dylan.*(?:probably|might|seems to|appears to|likely)/i,
-    /i (?:believe|think|assume|imagine) dylan/i,
-    /it sounds like|it seems|presumably|apparently/i
-  ];
-
-  const isHallucination = hallucinationPatterns.some(pattern => pattern.test(thought));
-  
-  if (isHallucination || thought.length > 200) {
-    thought = "No new information to process.";
-  }
   return thought;
 }
 
@@ -108,12 +114,7 @@ Reflect on these conversations and suggest how to improve or adjust behavior. Do
 
 ${memoryLog}`;
 
-  let reflection = await askLLM(prompt);
-
-  if (/project|initiative|experiment|meteor|simulation|unconfirmed|unknown|hypothetical/i.test(reflection.toLowerCase())) {
-    reflection = "No new actionable insights from logs.";
-  }
-  return reflection;
+  return await askLLM(prompt);
 }
 
 async function deepReflect(memoryLog) {
@@ -131,12 +132,7 @@ Do NOT hallucinate, speculate, or invent new events.
 
 Respond clearly with your reflection and current operational decision.`;
 
-  let reflection = await askLLM(prompt);
-
-  if (/project|initiative|experiment|meteor|simulation|unconfirmed|unknown|hypothetical/i.test(reflection.toLowerCase())) {
-    reflection = "No new actionable insights from logs.";
-  }
-  return reflection;
+  return await askLLM(prompt);
 }
 
 async function tagThought(thought, context) {
@@ -266,6 +262,40 @@ Respond with exactly one word from: continue, idle, sleep, shutdown.`;
   return decision;
 }
 
+// New function for analyzing user satisfaction and conversation patterns
+async function analyzeSatisfaction(conversationHistory) {
+  const config = loadConfig();
+  const prompt = `Analyze this conversation between Dylan and the AI to assess user satisfaction and interaction quality.
+
+CONVERSATION HISTORY:
+${conversationHistory}
+
+Analyze the following aspects:
+1. USER SATISFACTION INDICATORS:
+   - Does Dylan seem satisfied with responses?
+   - Are questions being answered effectively?
+   - Is Dylan asking follow-up questions or changing topics?
+   - Any signs of frustration or appreciation?
+
+2. RESPONSE QUALITY PATTERNS:
+   - Which types of responses get positive reactions?
+   - What seems to frustrate or confuse Dylan?
+   - Are responses too long, too short, or just right?
+
+3. CONVERSATION FLOW:
+   - Is Dylan building on previous topics or constantly switching?
+   - Are there gaps in understanding?
+   - What topics engage Dylan most?
+
+4. IMPROVEMENT SUGGESTIONS:
+   - How can responses be better tailored to Dylan's style?
+   - What adjustments would improve satisfaction?
+
+Respond with a clear analysis focusing ONLY on observable patterns from the actual conversation.`;
+
+  return await askLLM(prompt);
+}
+
 module.exports = {
   askLLM,
   loadIdentity,
@@ -277,5 +307,6 @@ module.exports = {
   updateDynamicState,
   giveReward,
   userGiveReward,
-  analyzeOutputAndDecide
+  analyzeOutputAndDecide,
+  analyzeSatisfaction
 };

@@ -182,10 +182,43 @@ async function evolveIdentity(memoryLog) {
       
       try {
         const currentIdentity = JSON.parse(fs.readFileSync('./identity.json', 'utf-8'));
+        
+        // Reflect on traits when name changes
+        const traitReflectionPrompt = `The AI is changing its name to "${newName}". 
+        
+Current traits: ${currentIdentity.traits.join(', ')}
+
+What traits should "${newName}" have? Consider:
+- The personality that the name suggests
+- Traits that would be helpful for the AI's mission
+- Keep helpful core traits, add relevant new ones
+- Maximum 10 traits
+
+Respond with ONLY a JSON array of trait strings:
+["trait1", "trait2", "trait3"]`;
+
+        const traitResponse = await askLLM(traitReflectionPrompt, 'gemma3:latest', 0.3);
+        let newTraits;
+        
+        try {
+          newTraits = JSON.parse(traitResponse);
+          if (!Array.isArray(newTraits)) {
+            throw new Error('Not an array');
+          }
+          // Limit to 10 traits and filter out locked traits
+          const core = JSON.parse(fs.readFileSync('./core.json', 'utf-8'));
+          newTraits = newTraits
+            .filter(t => !core.locked_traits.includes(t))
+            .slice(0, 10);
+        } catch {
+          logger.warn('[Identity] Failed to parse new traits, keeping current ones');
+          newTraits = currentIdentity.traits;
+        }
+        
         const identity = {
           name: newName,
           mission: `Assist users as ${newName}`,
-          traits: currentIdentity.traits || ['helpful', 'intelligent', 'responsive']
+          traits: newTraits
         };
         
         fs.writeFileSync('./identity.json', JSON.stringify(identity, null, 2));
@@ -203,13 +236,30 @@ async function evolveIdentity(memoryLog) {
   }
   
   // Fallback to LLM for complex cases
-  const prompt = `You are a JSON parser. You MUST return only valid JSON. No explanations, no text, ONLY JSON.
+  const currentIdentity = JSON.parse(fs.readFileSync('./identity.json', 'utf-8'));
+  const prompt = `You are a JSON parser for identity evolution. You MUST return only valid JSON. No explanations, no text, ONLY JSON.
 
-Context: ${memoryLog.slice(-1000)} // Last 1000 chars only
+Current Identity:
+Name: ${currentIdentity.name}
+Mission: ${currentIdentity.mission}
+Current Traits: ${currentIdentity.traits.join(', ')}
+
+Recent Context: ${memoryLog.slice(-1500)} // Last 1500 chars
+
+Analyze if the AI needs to evolve its identity based on:
+1. User requests for name/personality changes
+2. New tasks requiring different traits
+3. Conversation patterns suggesting needed adaptations
+
+Trait Guidelines:
+- You can have 1-10 traits maximum
+- Consider: helpful, intelligent, creative, analytical, empathetic, curious, precise, adaptive, witty, patient, logical, intuitive, diplomatic, persistent, innovative
+- Add traits relevant to current tasks/conversations
+- Remove traits that seem unnecessary or conflicting
 
 Output ONE of these JSON formats EXACTLY:
 
-For changes: {"name": "NewName", "mission": "description", "traits": ["trait1", "trait2"]}
+For changes: {"name": "NewName", "mission": "updated mission description", "traits": ["trait1", "trait2", "trait3", "up to 10 traits"]}
 For no changes: {"no_change": true}
 
 JSON:`;
@@ -248,9 +298,9 @@ JSON:`;
     const identity = {
       name: update.name || currentIdentity.name,
       mission: update.mission || currentIdentity.mission,
-      traits: update.traits ? update.traits.filter(t => 
-        !core.locked_traits.includes(t.toLowerCase())
-      ) : currentIdentity.traits
+      traits: (update.traits || currentIdentity.traits || ['helpful', 'intelligent'])
+        .filter(t => !core.locked_traits.includes(t))
+        .slice(0, 10) // Limit to 10 traits maximum
     };
     
     fs.writeFileSync('./identity.json', JSON.stringify(identity, null, 2));

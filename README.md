@@ -1,98 +1,155 @@
 # 🧠 Neversleep.ai
 
-Neversleep is a fully autonomous CLI-based JavaScript AI agent built with:
+**An Advanced Autonomous AI Agent with Continuous Learning & Adaptation**
 
-* Ollama LLMs (local model reasoning)
-* Continuous thought generation
-* Memory (SQLite)
-* Identity evolution
-* Mood/goal tracking
-* Reward system
-* Real-time user interaction
+Neversleep is a sophisticated CLI-based JavaScript AI agent featuring:
 
-> "I never sleep. I remember everything. I grow on my own."
+* **Local LLM Processing** (Ollama) - No cloud dependency
+* **Continuous Thought Generation** - Always thinking, never sleeping
+* **Advanced Memory System** (SQLite) - Remembers everything
+* **Dynamic Identity Evolution** - Adapts name, mission, and traits
+* **Intelligent Mood & Goal Tracking** - Context-aware behavior
+* **Anti-Hallucination System** - Grounded, factual responses
+* **User Satisfaction Analysis** - Learns from interaction patterns
+* **Responsive User Interaction** - Pauses processing when you type
 
----
-
-## 🚀 Features
-
-### ✅ Always-On Thought Loop
-
-* Generates a thought every second
-* Records thoughts with mood + goal tags
-* **Responsive interruption**: Pauses internal processes when you type
-* Waits for user input without interfering with your interaction
-
-### 🧘 Deep Self-Reflection
-
-* After 60 seconds of no input, it performs a deep reflection
-* Analyzes its understanding of the user and how to serve them better
-
-### 🧠 Identity + Traits System
-
-* `core.json`: Unchangeable mission & locked traits
-* `identity.json`: Evolves through self-reflection
-* Can rename itself, change goals, traits via keywords like:
-
-  * "Call me..."
-  * "I am reborn as..."
-
-### 🎯 Goal System
-
-* `goal: your goal here` → assigns a manual goal
-* AI can self-generate goals based on reflection, context, or mood
-
-### 🎭 Mood Tracker
-
-* Every thought is tagged with a `mood`
-* Updates `dynamic.json` with current emotional state
-
-### 🏆 Reward System
-
-* Meaningful rewards only (no more self-reward spam)
-* User-controlled via `reward: [reason]` command
-* Tracks genuinely valuable interactions
-
-### 📊 Satisfaction Analysis
-
-* Analyzes your response patterns and satisfaction levels
-* Learns from your feedback to improve future interactions
-* Use `analyze` command for detailed satisfaction reports
-* Automatically adjusts response style based on your preferences
+> "I never sleep. I remember everything. I evolve continuously."
 
 ---
 
-## 📂 File Structure
+## 🚀 Key Features
+
+### 🔄 **Always-On Thought Loop**
+- Generates thoughtful responses every second
+- **Smart filtering**: Reduces repetitive thoughts in logs
+- **Responsive interruption**: Automatically pauses when you start typing
+- Waits intelligently for user input without interference
+
+### 🧘 **Deep Self-Reflection & Analysis**
+- Performs deep reflection after 60 seconds of inactivity
+- **User satisfaction analysis**: Tracks conversation patterns and user happiness
+- Learns from interaction history to improve responses
+- Analyzes user response patterns (positive/negative indicators, questions, etc.)
+
+### 🧠 **Advanced Identity System**
+- **Core Identity** (`core.json`): Unchangeable mission & locked traits
+- **Evolving Identity** (`identity.json`): Dynamic name, mission, and traits
+- **Intelligent trait reflection**: Adapts traits based on name changes and tasks
+- **Up to 10 traits**: Comprehensive personality modeling
+- Supports name changes via natural language:
+  - "Change your name to..."
+  - "Call yourself..."
+  - "You are now..."
+  - "Become..."
+
+### 🎯 **Smart Goal System**
+- Manual goals: `goal: your objective here`
+- AI self-generates contextual goals based on reflection and conversation
+- Goal tracking influences thought patterns and behavior
+
+### 🎭 **Mood & Emotion Tracking**
+- Every thought tagged with current mood
+- Dynamic emotional state tracking in `dynamic.json`
+- Mood influences response style and decision-making
+
+### 🏆 **Intelligent Reward System**
+
+- **Prevents reward spam**: Only meaningful actions receive rewards
+- **User-controlled**: Manual rewards via `reward: [reason]` command
+- **Validated rewards**: Tracks genuinely valuable interactions and learning moments
+- **No more self-congratulation**: Eliminated automatic self-rewards for routine tasks
+
+### 📊 **User Satisfaction Analysis**
+- **Pattern recognition**: Analyzes your response patterns and satisfaction levels
+- **Adaptive learning**: Adjusts response style based on your feedback
+- **Manual analysis**: Use `analyze` command for detailed satisfaction reports
+- **Conversation insights**: Tracks positive/negative indicators, questions, engagement levels
+- **Automatic optimization**: Continuously improves interaction quality
+
+### 🛡️ **Anti-Hallucination System**
+- **Pattern detection**: Identifies and filters common hallucination patterns
+- **Response validation**: Validates outputs against reality and context
+- **Grounded responses**: Ensures factual, contextually appropriate answers
+- **Configurable sensitivity**: Tunable hallucination detection via `config.json`
+
+### 🔧 **Enhanced State Management**
+- **Dynamic state tracking**: Real-time mood and goal updates
+- **Memory persistence**: SQLite-based long-term memory
+- **Conversation history**: Maintains context across sessions
+- **User pattern analysis**: Learns from interaction styles and preferences
+
+---
+
+## 📂 **File Structure**
 
 ```
-neversleep/
-├── agent.js           # Main CLI interface and control loop
-├── brain.js           # Core LLM logic and state handling
-├── memory.js          # SQLite interface
-├── logger.js          # Logging and debugging system
-├── config.json        # Configuration for hallucination detection & LLM settings
-├── core.json          # Unchangeable identity traits
-├── identity.json      # Mutable name, mission, traits
-├── dynamic.json       # Tracks current mood and goal
-├── goals.json         # Goal data (manual + self-generated)
-├── rewards.json       # Reward history log
-├── SATISFACTION.md    # Documentation for satisfaction analysis
+neversleep.ai/
+├── agent.js           # Main CLI interface and thought loop
+├── brain.js           # Core LLM logic, identity evolution, anti-hallucination
+├── memory.js          # SQLite interface and conversation analysis
+├── logger.js          # Advanced logging and debugging system
+├── config.json        # Hallucination detection, LLM settings, memory config
+├── core.json          # Unchangeable identity core (locked traits, mission)
+├── identity.json      # Dynamic identity (name, mission, evolving traits)
+├── dynamic.json       # Real-time mood and goal tracking
+├── goals.json         # Goal management (manual + AI-generated)
+├── rewards.json       # Meaningful reward history and validation
+├── SATISFACTION.md    # User satisfaction analysis documentation
 ├── logs/
-│   └── thoughts.log   # Stream of consciousness log
-└── memory.db          # Persistent SQLite memory
+│   ├── thoughts.log   # Filtered stream of consciousness
+│   ├── info.log       # General information logs
+│   ├── error.log      # Error tracking and debugging
+│   ├── debug.log      # Detailed debugging information
+│   └── hallucination.log # Hallucination detection and cleanup logs
+└── memory.db          # Persistent SQLite conversation memory
 ```
 
 ---
 
-## 🧪 Usage
+## 🚀 **Installation & Usage**
+
+### Prerequisites
+```bash
+# Install Ollama
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Install Node.js dependencies
+npm install
+```
 
 ### Start Ollama
-
-```
+```bash
 ollama serve
 ```
 
 ### Run Neversleep
+```bash
+node agent.js
+```
+
+---
+
+## 💬 **Commands & Interaction**
+
+### **Basic Commands**
+- `goal: [objective]` - Assign a manual goal
+- `reward: [reason]` - Give a meaningful reward
+- `analyze` or `satisfaction` - Get detailed satisfaction analysis
+- Just type naturally to chat!
+
+### **Identity Evolution**
+The AI can change its name and traits through natural language:
+- "Change your name to [NewName]"
+- "Call yourself [NewName]"
+- "You are now [NewName]"
+- "Become [NewName]"
+- "Your name is [NewName]"
+
+### **Advanced Features**
+- **Responsive Input**: Internal processes pause when you start typing
+- **Smart Filtering**: Repetitive thoughts are automatically filtered from logs
+- **Mood Adaptation**: Response style adapts to your conversation patterns
+- **Context Awareness**: Remembers and learns from all interactions
 
 ```
 node agent.js

@@ -1,0 +1,58 @@
+{
+  "id": "code_review_workflow",
+  "name": "Collaborative Code Review",
+  "description": "Multi-agent workflow for comprehensive code review",
+  "coordination": "sequential",
+  "agents": ["reviewer", "security_analyst", "performance_expert"],
+  "steps": [
+    {
+      "name": "initial_review",
+      "type": "agent_task",
+      "agentId": "reviewer",
+      "task": {
+        "type": "code_analysis",
+        "focus": "general_quality"
+      },
+      "input": {
+        "source": "workflow_params",
+        "key": "code"
+      }
+    },
+    {
+      "name": "security_analysis",
+      "type": "agent_task",
+      "agentId": "security_analyst",
+      "task": {
+        "type": "security_audit",
+        "focus": "vulnerabilities"
+      },
+      "input": {
+        "source": "workflow_params",
+        "key": "code"
+      }
+    },
+    {
+      "name": "performance_review",
+      "type": "agent_task",
+      "agentId": "performance_expert",
+      "task": {
+        "type": "performance_analysis",
+        "focus": "optimization"
+      },
+      "input": {
+        "source": "workflow_params", 
+        "key": "code"
+      }
+    },
+    {
+      "name": "consensus_review",
+      "type": "agent_collaboration",
+      "agents": ["reviewer", "security_analyst", "performance_expert"],
+      "collaborationType": "consensus",
+      "task": {
+        "topic": "Final code review recommendations",
+        "maxRounds": 2
+      }
+    }
+  ]
+}

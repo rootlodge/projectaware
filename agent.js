@@ -18,6 +18,10 @@ const {
 } = require('./brain');
 
 const { saveMessage, getRecentMessages, getConversationHistory, getUserResponsePatterns } = require('./memory');
+const MultiAgentManager = require('./MultiAgentManager');
+
+// Initialize multi-agent manager
+const multiAgentManager = new MultiAgentManager();
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 let inputBuffer = '';
@@ -167,6 +171,180 @@ async function runThoughtLoop() {
         
         logThought(`[State Query] User requested system state information`);
         currentStatus = 'state reported';
+        continue;
+      }
+
+      // Multi-Agent Workflow Commands
+      if (userInput.toLowerCase().startsWith('agents')) {
+        const agents = multiAgentManager.getAgents();
+        console.log(chalk.cyan.bold('\n🤖 ACTIVE AGENTS:'));
+        if (agents.length === 0) {
+          console.log(chalk.gray('No agents currently active.'));
+        } else {
+          agents.forEach(agent => {
+            console.log(chalk.white(`• ${agent.name} (${agent.id})`));
+            console.log(chalk.gray(`  Role: ${agent.role} | Status: ${agent.status}`));
+            if (agent.currentTask) {
+              console.log(chalk.yellow(`  Current Task: ${agent.currentTask.type}`));
+            }
+          });
+        }
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('create agent')) {
+        const params = userInput.substring(12).trim().split(' ');
+        if (params.length < 2) {
+          console.log(chalk.red('Usage: create agent <id> <role> [capabilities...]'));
+          continue;
+        }
+        
+        const [agentId, role, ...capabilities] = params;
+        try {
+          const agent = await multiAgentManager.createAgent(agentId, {
+            name: agentId,
+            role: role,
+            capabilities: capabilities,
+            identity: {
+              name: agentId,
+              mission: `Serve as ${role} in multi-agent workflows`,
+              traits: ['collaborative', 'focused', 'analytical', 'responsive']
+            }
+          });
+          
+          console.log(chalk.green(`✅ Agent '${agentId}' created with role '${role}'`));
+          logThought(`[Multi-Agent] Created agent '${agentId}' with role '${role}'`);
+        } catch (error) {
+          console.log(chalk.red(`❌ Failed to create agent: ${error.message}`));
+        }
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('workflows')) {
+        const workflows = multiAgentManager.getWorkflows();
+        console.log(chalk.magenta.bold('\n📋 AVAILABLE WORKFLOWS:'));
+        if (workflows.length === 0) {
+          console.log(chalk.gray('No workflows available.'));
+        } else {
+          workflows.forEach(workflow => {
+            console.log(chalk.white(`• ${workflow.name} (${workflow.id})`));
+            console.log(chalk.gray(`  Description: ${workflow.description}`));
+            console.log(chalk.gray(`  Coordination: ${workflow.coordination} | Steps: ${workflow.steps.length}`));
+          });
+        }
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('run workflow')) {
+        const workflowId = userInput.substring(12).trim();
+        if (!workflowId) {
+          console.log(chalk.red('Usage: run workflow <workflow_id> [param:value ...]'));
+          continue;
+        }
+
+        try {
+          // Parse parameters if provided
+          const parts = workflowId.split(' ');
+          const actualWorkflowId = parts[0];
+          const params = {};
+          
+          for (let i = 1; i < parts.length; i++) {
+            const param = parts[i];
+            if (param.includes(':')) {
+              const [key, value] = param.split(':');
+              params[key] = value;
+            }
+          }
+
+          console.log(chalk.yellow(`🚀 Starting workflow: ${actualWorkflowId}`));
+          logThought(`[Multi-Agent] Starting workflow: ${actualWorkflowId}`);
+          
+          const result = await multiAgentManager.executeWorkflow(actualWorkflowId, params);
+          
+          console.log(chalk.green('✅ Workflow completed successfully!'));
+          console.log(chalk.white('Results:'));
+          console.log(chalk.gray(JSON.stringify(result, null, 2)));
+          
+          logThought(`[Multi-Agent] Workflow '${actualWorkflowId}' completed: ${result.stepsCompleted} steps in ${result.executionTime}ms`);
+        } catch (error) {
+          console.log(chalk.red(`❌ Workflow failed: ${error.message}`));
+          logThought(`[Multi-Agent] Workflow '${workflowId}' failed: ${error.message}`);
+        }
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('active executions')) {
+        const executions = multiAgentManager.getActiveExecutions();
+        console.log(chalk.blue.bold('\n⚡ ACTIVE EXECUTIONS:'));
+        if (executions.length === 0) {
+          console.log(chalk.gray('No workflows currently running.'));
+        } else {
+          executions.forEach(exec => {
+            console.log(chalk.white(`• ${exec.workflowId} (${exec.id})`));
+            console.log(chalk.gray(`  Status: ${exec.status} | Step: ${exec.currentStep + 1}/${exec.stepResults.length}`));
+            console.log(chalk.gray(`  Started: ${new Date(exec.startTime).toLocaleTimeString()}`));
+          });
+        }
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('setup demo agents')) {
+        console.log(chalk.yellow('🔧 Setting up demo agents for testing...'));
+        
+        try {
+          // Create demo agents
+          await multiAgentManager.createAgent('reviewer', {
+            name: 'Code Reviewer',
+            role: 'reviewer',
+            capabilities: ['code_analysis', 'quality_assessment'],
+            identity: {
+              name: 'Code Reviewer',
+              mission: 'Analyze code quality and provide constructive feedback',
+              traits: ['analytical', 'detail-oriented', 'constructive', 'thorough']
+            }
+          });
+
+          await multiAgentManager.createAgent('security_analyst', {
+            name: 'Security Analyst',
+            role: 'security_analyst',
+            capabilities: ['security_audit', 'vulnerability_detection'],
+            identity: {
+              name: 'Security Analyst',
+              mission: 'Identify security vulnerabilities and recommend fixes',
+              traits: ['security-focused', 'methodical', 'cautious', 'expert']
+            }
+          });
+
+          await multiAgentManager.createAgent('performance_expert', {
+            name: 'Performance Expert',
+            role: 'performance_expert',
+            capabilities: ['performance_analysis', 'optimization'],
+            identity: {
+              name: 'Performance Expert',
+              mission: 'Optimize code performance and resource usage',
+              traits: ['performance-focused', 'efficient', 'innovative', 'precise']
+            }
+          });
+
+          await multiAgentManager.createAgent('researcher', {
+            name: 'Research Specialist',
+            role: 'researcher',
+            capabilities: ['research', 'data_gathering'],
+            identity: {
+              name: 'Research Specialist',
+              mission: 'Conduct thorough research and gather relevant information',
+              traits: ['curious', 'thorough', 'analytical', 'systematic']
+            }
+          });
+
+          console.log(chalk.green('✅ Demo agents created successfully!'));
+          console.log(chalk.white('Available agents: reviewer, security_analyst, performance_expert, researcher'));
+          console.log(chalk.gray('Try: "run workflow code_review_workflow" or "agents" to see them'));
+          
+          logThought('[Multi-Agent] Demo agents created successfully');
+        } catch (error) {
+          console.log(chalk.red(`❌ Failed to setup demo agents: ${error.message}`));
+        }
         continue;
       }
 

@@ -1,0 +1,58 @@
+{
+  "id": "problem_solving_workflow",
+  "name": "Multi-Perspective Problem Solving",
+  "description": "Workflow that approaches problems from multiple angles",
+  "coordination": "conditional",
+  "agents": ["analyst", "creative_thinker", "critic"],
+  "steps": [
+    {
+      "name": "problem_analysis",
+      "type": "agent_task",
+      "agentId": "analyst",
+      "task": {
+        "type": "problem_breakdown",
+        "focus": "systematic_analysis"
+      },
+      "input": {
+        "source": "workflow_params",
+        "key": "problem"
+      }
+    },
+    {
+      "name": "creative_solutions",
+      "type": "agent_task",
+      "agentId": "creative_thinker",
+      "task": {
+        "type": "brainstorming",
+        "focus": "innovative_solutions"
+      },
+      "input": {
+        "source": "previous_step",
+        "step": "problem_analysis"
+      }
+    },
+    {
+      "name": "solution_critique",
+      "type": "agent_task",
+      "agentId": "critic",
+      "task": {
+        "type": "critical_evaluation",
+        "focus": "feasibility_assessment"
+      },
+      "input": {
+        "source": "previous_step",
+        "step": "creative_solutions"
+      }
+    },
+    {
+      "name": "solution_refinement",
+      "type": "agent_collaboration",
+      "agents": ["analyst", "creative_thinker", "critic"],
+      "collaborationType": "review",
+      "task": {
+        "topic": "Refine and finalize solution",
+        "maxRounds": 3
+      }
+    }
+  ]
+}

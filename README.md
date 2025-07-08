@@ -47,6 +47,15 @@ Neversleep is a sophisticated CLI-based JavaScript AI agent featuring:
 - AI self-generates contextual goals based on reflection and conversation
 - Goal tracking influences thought patterns and behavior
 
+### 🤖 **Multi-Agent Workflow System**
+- **Collaborative AI**: Multiple specialized agents working together
+- **Workflow orchestration**: Sequential, parallel, and conditional execution
+- **Agent specialization**: Code reviewers, analysts, security experts, researchers
+- **Structured collaboration**: Discussions, reviews, consensus building
+- **Predefined workflows**: Code review, research, problem-solving patterns
+- **Custom agent creation**: Define roles, capabilities, and personalities
+- **Real-time monitoring**: Track workflow execution and agent performance
+
 ### 🎭 **Mood & Emotion Tracking**
 - Every thought tagged with current mood
 - Dynamic emotional state tracking in `dynamic.json`
@@ -88,6 +97,8 @@ neversleep.ai/
 ├── brain.js           # Core LLM logic, identity evolution, anti-hallucination
 ├── memory.js          # SQLite interface and conversation analysis
 ├── logger.js          # Advanced logging and debugging system
+├── StateManager.js    # Comprehensive state management system
+├── MultiAgentManager.js # Multi-agent workflow orchestration
 ├── config.json        # Hallucination detection, LLM settings, memory config
 ├── core.json          # Unchangeable identity core (locked traits, mission)
 ├── identity.json      # Dynamic identity (name, mission, evolving traits)
@@ -95,6 +106,9 @@ neversleep.ai/
 ├── goals.json         # Goal management (manual + AI-generated)
 ├── rewards.json       # Meaningful reward history and validation
 ├── SATISFACTION.md    # User satisfaction analysis documentation
+├── MULTI_AGENT_GUIDE.md # Multi-agent workflow system guide
+├── agents/            # Agent configurations and data
+├── workflows/         # Workflow definitions and templates
 ├── logs/
 │   ├── thoughts.log   # Filtered stream of consciousness
 │   ├── info.log       # General information logs
@@ -131,11 +145,26 @@ node agent.js
 
 ## 💬 **Commands & Interaction**
 
-### **Basic Commands**
-- `goal: [objective]` - Assign a manual goal
+### **Available Commands**
+
+#### **Basic Commands**
+- `help` - Show available commands
+- `sleep` - Put the AI to sleep (stop thought generation)
+- `wake` - Wake the AI up (resume thought generation)
+- `bye` - Exit the program
+- `state` - Show detailed system state and metrics
+- `goal: [objective]` - Set a new goal for the AI
 - `reward: [reason]` - Give a meaningful reward
 - `analyze` or `satisfaction` - Get detailed satisfaction analysis
 - Just type naturally to chat!
+
+#### **Multi-Agent Commands**
+- `agents` - List all active agents
+- `workflows` - List available workflows
+- `create agent <id> <role> [capabilities...]` - Create a new agent
+- `run workflow <workflow_id> [param:value ...]` - Execute a workflow
+- `active executions` - Show running workflows
+- `setup demo agents` - Create demo agents for testing
 
 ### **Identity Evolution**
 The AI can change its name and traits through natural language:
@@ -290,4 +319,4 @@ This is an experimental self-improving autonomous agent. It is designed to mimic
 
 ## 🧠 License
 
-Please do not steal or sell without my consent. 
+Please do not steal or sell without my consent.

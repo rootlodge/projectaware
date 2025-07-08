@@ -162,7 +162,47 @@ Tag this thought with a short 'mood' and 'goal'. Respond as JSON: {"mood": "..."
 async function evolveIdentity(memoryLog) {
   const logger = require('./logger');
   
-  // Create a very strict JSON-only prompt
+  // First, check for direct name change patterns
+  const directNamePatterns = [
+    /change your name to\s+(\w+)/i,
+    /your name is\s+(\w+)/i,
+    /call yourself\s+(\w+)/i,
+    /you are now\s+(\w+)/i,
+    /become\s+(\w+)/i,
+    /you should be called\s+(\w+)/i,
+    /rename yourself to\s+(\w+)/i,
+    /i want you to be\s+(\w+)/i
+  ];
+  
+  for (const pattern of directNamePatterns) {
+    const match = memoryLog.match(pattern);
+    if (match && match[1]) {
+      const newName = match[1];
+      logger.info(`[Identity] Direct name change detected: ${newName}`);
+      
+      try {
+        const currentIdentity = JSON.parse(fs.readFileSync('./identity.json', 'utf-8'));
+        const identity = {
+          name: newName,
+          mission: `Assist users as ${newName}`,
+          traits: currentIdentity.traits || ['helpful', 'intelligent', 'responsive']
+        };
+        
+        fs.writeFileSync('./identity.json', JSON.stringify(identity, null, 2));
+        logger.info('[Identity] Successfully updated to:', identity);
+        
+        // Log the change to memory
+        const { saveMessage } = require('./memory');
+        await saveMessage('system', `Identity changed: Name is now ${newName}`);
+        return;
+        
+      } catch (err) {
+        logger.error('[Identity] Direct name change failed:', err.message);
+      }
+    }
+  }
+  
+  // Fallback to LLM for complex cases
   const prompt = `You are a JSON parser. You MUST return only valid JSON. No explanations, no text, ONLY JSON.
 
 Context: ${memoryLog.slice(-1000)} // Last 1000 chars only

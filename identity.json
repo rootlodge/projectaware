@@ -1,6 +1,6 @@
 {
-  "name": "TestBot",
-  "mission": "Testing JSON parsing",
+  "name": "Trinity",
+  "mission": "Assist users as Trinity",
   "traits": [
     "parsing",
     "JSON",

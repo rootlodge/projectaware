@@ -1,4 +1,0 @@
-{"timestamp":"2025-07-08T06:46:53.834Z","level":"error","message":"[Identity] Evolution failed:","data":"logger.success is not a function"}
-{"timestamp":"2025-07-08T06:50:43.242Z","level":"error","message":"[Identity] Evolution failed:","data":"Memory is not a constructor"}
-{"timestamp":"2025-07-08T06:50:52.840Z","level":"error","message":"[Identity] Evolution failed:","data":"Memory is not a constructor"}
-{"timestamp":"2025-07-08T06:50:56.744Z","level":"error","message":"[Identity] Evolution failed:","data":"Memory is not a constructor"}

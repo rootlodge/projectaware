@@ -145,16 +145,22 @@ async function runThoughtLoop() {
       saveMessage('user', userInput);
       
       // Check if user is requesting a name change
-      if (/call me|my name is|name yourself|rename|i am reborn as|your new name|be called|change your name|your name is|call yourself|you are now|become|you should be called/i.test(userInput.toLowerCase())) {
-        const nameChangePrompt = `User wants to change my name or identity. User said: "${userInput}"
-        
-If they want me to have a specific name, respond with: {"name": "NewName", "mission": "updated mission", "traits": ["trait1", "trait2"]}
-If they just want me to pick a new name, respond with: {"name": "YourChosenName", "mission": "updated mission", "traits": ["trait1", "trait2"]}
-
-Extract or choose a name and respond in JSON format only.`;
-        
-        const nameResult = await askLLM(nameChangePrompt);
-        await evolveIdentity(nameResult);
+      const nameChangePatterns = [
+        /change your name to\s+(\w+)/i,
+        /your name is\s+(\w+)/i,
+        /call yourself\s+(\w+)/i,
+        /you are now\s+(\w+)/i,
+        /become\s+(\w+)/i,
+        /you should be called\s+(\w+)/i,
+        /rename yourself to\s+(\w+)/i,
+        /i want you to be\s+(\w+)/i,
+        /call me|my name is|name yourself|rename|i am reborn as|your new name|be called/i
+      ];
+      
+      const isNameChange = nameChangePatterns.some(pattern => pattern.test(userInput.toLowerCase()));
+      
+      if (isNameChange) {
+        await evolveIdentity(userInput);
         logThought(`[!] Name change requested by user: ${userInput}`);
         
         // Reload identity after change to use new name in response

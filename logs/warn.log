@@ -1,1 +1,4 @@
 {"timestamp":"2025-07-08T16:16:00.031Z","level":"warn","message":"Failed to load existing agents:","data":"ENOENT: no such file or directory, scandir 'C:\\Users\\broim\\Documents\\GitHub\\neversleep.ai\\agents'"}
+{"timestamp":"2025-07-08T17:03:19.446Z","level":"warn","message":"[CentralBrain] Unknown specialist: agent_name1","data":null}
+{"timestamp":"2025-07-08T17:04:37.765Z","level":"warn","message":"[CentralBrain] Unknown specialist: empathy_agent","data":null}
+{"timestamp":"2025-07-08T17:06:08.923Z","level":"warn","message":"[CentralBrain] EMERGENCY OVERRIDE: emotional_reset","data":null}

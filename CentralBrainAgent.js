@@ -634,7 +634,11 @@ Learning insights:`;
     
     // Reset emotional state if needed
     if (action === 'emotional_reset') {
-      this.emotionEngine.resetEmotion();
+      if (this.emotionEngine.resetEmotion) {
+        this.emotionEngine.resetEmotion();
+      } else {
+        logger.warn('[CentralBrain] resetEmotion method not available');
+      }
     }
     
     // Clear cache if needed

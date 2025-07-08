@@ -3,13 +3,53 @@ const fs = require('fs');
 
 const OLLAMA_URL = 'http://localhost:11434';
 
+function validateResponse(response, maxLength = 200) {
+  // Remove common hallucination phrases
+  const cleaned = response
+    .replace(/I (think|believe|assume|imagine) Dylan/gi, 'Dylan')
+    .replace(/It (seems|appears) that/gi, '')
+    .replace(/probably|likely|presumably|apparently/gi, '')
+    .trim();
+
+  // Check length
+  if (cleaned.length > maxLength) {
+    return "Response too long. No new information to process.";
+  }
+
+  // Check for fabrication patterns
+  const fabricationPatterns = [
+    /project.*meteor/i,
+    /working on.*\w+(?:js|py|html)/i,
+    /building.*application/i,
+    /developing.*system/i
+  ];
+
+  if (fabricationPatterns.some(pattern => pattern.test(cleaned))) {
+    return "No factual information available.";
+  }
+
+  return cleaned;
+}
+
 async function askLLM(prompt, model = 'gemma3:latest') {
-  const res = await axios.post(`${OLLAMA_URL}/api/generate`, {
-    model,
-    prompt,
-    stream: false
-  });
-  return res.data.response.trim();
+  try {
+    const res = await axios.post(`${OLLAMA_URL}/api/generate`, {
+      model,
+      prompt,
+      stream: false,
+      options: {
+        temperature: 0.3, // Lower temperature for more factual responses
+        top_p: 0.8,
+        repeat_penalty: 1.1
+      }
+    });
+    
+    const response = res.data.response.trim();
+    return validateResponse(response);
+  } catch (error) {
+    console.error('LLM request failed:', error.message);
+    return "Unable to process request.";
+  }
 }
 
 function loadIdentity() {
@@ -28,25 +68,34 @@ function loadIdentity() {
 async function think(identityContext, recentLogs) {
   const prompt = `${identityContext}
 
-You have access to the following recent factual logs from Dylan's interactions:
-
+STRICT FACTUAL ANALYSIS ONLY:
+Recent conversation logs:
 ${recentLogs}
 
-Based ONLY on these exact logs, provide a clear, concise internal thought or summary.
+Rules:
+1. ONLY reference information explicitly stated in the logs above
+2. Do NOT invent any projects, dates, events, or user activities
+3. Do NOT assume what the user is thinking, feeling, or doing
+4. If logs are empty or contain no new info, respond: "No new information to process."
+5. Maximum 2 sentences
 
-Important rules:
-- Do NOT invent or speculate about projects, dates, or events.
-- If there is no new information, say: "No new information to add."
-- Include your current mood and goal if relevant.
-- You may decide whether to continue processing, wait for user input, sleep (pause), or shut down.
-
-Respond ONLY with a factual internal thought or decision.`;
+Your factual observation:`;
 
   let thought = await askLLM(prompt);
 
-  // Basic hallucination catch — block common fabrication keywords
-  if (/project|initiative|experiment|meteor|simulation|unconfirmed|unknown|hypothetical/i.test(thought.toLowerCase())) {
-    thought = "No new information to add.";
+  // Enhanced hallucination detection
+  const hallucinationPatterns = [
+    /project|initiative|experiment|simulation|unconfirmed|unknown|hypothetical/i,
+    /he(?:'s| is) (thinking|drinking|feeling|struggling|working on)/i,
+    /dylan.*(?:probably|might|seems to|appears to|likely)/i,
+    /i (?:believe|think|assume|imagine) dylan/i,
+    /it sounds like|it seems|presumably|apparently/i
+  ];
+
+  const isHallucination = hallucinationPatterns.some(pattern => pattern.test(thought));
+  
+  if (isHallucination || thought.length > 200) {
+    thought = "No new information to process.";
   }
   return thought;
 }

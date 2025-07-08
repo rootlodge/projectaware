@@ -10,6 +10,10 @@
     "loop": "node loop.js",
     "setup": "npm install && echo \"Setup complete! Make sure Ollama is running with gemma3 and dolphin3 models before running 'npm start'\"",
     "check": "node -c agent.js && node -c brain.js && node -c memory.js && echo \"All files syntax OK!\"",
+    "clean-logs": "Remove-Item ./logs/*.log -ErrorAction SilentlyContinue; echo \"Logs cleaned\"",
+    "clean-memory": "Remove-Item ./memory.db -ErrorAction SilentlyContinue; echo \"Memory database reset\"",
+    "reset": "npm run clean-logs && npm run clean-memory && echo \"Full reset complete\"",
+    "debug": "node --inspect agent.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

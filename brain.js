@@ -25,30 +25,79 @@ function loadIdentity() {
   };
 }
 
-async function think(identityContext) {
-  const prompt = `${identityContext}\n\nGenerate a brief, realistic internal thought based only on actual memory or prior interaction. Avoid speculation, imagination, or emotional assumptions.`;
+async function think(identityContext, recentLogs) {
+  const prompt = `${identityContext}
+
+You have access to the following recent factual logs from Dylan's interactions:
+
+${recentLogs}
+
+Based ONLY on these exact logs, provide a clear, concise internal thought or summary.
+
+Important rules:
+- Do NOT invent or speculate about projects, dates, or events.
+- If there is no new information, say: "No new information to add."
+- Include your current mood and goal if relevant.
+- You may decide whether to continue processing, wait for user input, sleep (pause), or shut down.
+
+Respond ONLY with a factual internal thought or decision.`;
+
   let thought = await askLLM(prompt);
-  if (/he(?:'s| is) (thinking|drinking|feeling|struggling)/i.test(thought)) {
-    thought = '[Filtered speculative content]';
+
+  // Basic hallucination catch — block common fabrication keywords
+  if (/project|initiative|experiment|meteor|simulation|unconfirmed|unknown|hypothetical/i.test(thought.toLowerCase())) {
+    thought = "No new information to add.";
   }
   return thought;
 }
 
 async function reflectOnMemory(memoryLog) {
   const identity = loadIdentity();
-  const prompt = `${identity.context}\n\nReflect on these conversations and suggest how to improve or adjust behavior. Do not hallucinate.\n\n${memoryLog}`;
-  return await askLLM(prompt);
+  const prompt = `${identity.context}
+
+Reflect on these conversations and suggest how to improve or adjust behavior. Do not hallucinate.
+
+${memoryLog}`;
+
+  let reflection = await askLLM(prompt);
+
+  if (/project|initiative|experiment|meteor|simulation|unconfirmed|unknown|hypothetical/i.test(reflection.toLowerCase())) {
+    reflection = "No new actionable insights from logs.";
+  }
+  return reflection;
 }
 
 async function deepReflect(memoryLog) {
   const identity = loadIdentity();
-  const prompt = `You are a persistent, memory-retaining AI. Your job is to analyze factual patterns in Dylan's input and recent memory only.\nDo not hallucinate new events, emotional states, or internal dialogue. Reflect strictly based on actual logs.\n\nMemory:\n${memoryLog}\n\nHow can you better understand Dylan's needs and what questions could you ask next?`;
-  return await askLLM(prompt);
+  const prompt = `You are a persistent, memory-retaining AI. Analyze ONLY the factual logs below without invention:
+
+${memoryLog}
+
+Based strictly on these logs:
+- Reflect on patterns or needs Dylan has shown.
+- Suggest specific questions or actions.
+- You may decide to continue thinking, wait for input, sleep, or shut down.
+
+Do NOT hallucinate, speculate, or invent new events.
+
+Respond clearly with your reflection and current operational decision.`;
+
+  let reflection = await askLLM(prompt);
+
+  if (/project|initiative|experiment|meteor|simulation|unconfirmed|unknown|hypothetical/i.test(reflection.toLowerCase())) {
+    reflection = "No new actionable insights from logs.";
+  }
+  return reflection;
 }
 
 async function tagThought(thought, context) {
-  const prompt = `${context}\n\nThought: "${thought}"\nTag this thought with a short 'mood' and 'goal'. Respond as JSON: {"mood": "...", "goal": "..."}`;
+  const prompt = `${context}
+
+Thought: "${thought}"
+Tag this thought with a short 'mood' and 'goal'. Respond as JSON: {"mood": "...", "goal": "..."}`;
+
   const response = await askLLM(prompt);
+
   try {
     return JSON.parse(response);
   } catch {
@@ -57,8 +106,13 @@ async function tagThought(thought, context) {
 }
 
 async function evolveIdentity(memoryLog) {
-  const prompt = `Reflect on this:\n${memoryLog}\nIf you decide to change your name, mission, or traits, respond as:\n{"name": "...", "mission": "...", "traits": ["..."]}`;
+  const prompt = `Reflect on this:
+${memoryLog}
+If you decide to change your name, mission, or traits, respond as:
+{"name": "...", "mission": "...", "traits": ["..."]}`;
+
   const result = await askLLM(prompt);
+
   try {
     const update = JSON.parse(result);
     const core = JSON.parse(fs.readFileSync('./core.json', 'utf-8'));
@@ -85,6 +139,36 @@ async function giveReward(reason, thought = '') {
   fs.writeFileSync('./rewards.json', JSON.stringify(rewards, null, 2));
 }
 
+async function analyzeOutputAndDecide(thought, goal) {
+  const prompt = `You are a grounded AI agent that must manage your operational state.
+
+Based on this internal thought:
+
+"${thought}"
+
+And current goal:
+
+"${goal}"
+
+Choose ONLY one of the following operational states:
+
+- continue: keep iterating on thoughts and working
+- idle: pause and wait for user input before continuing
+- sleep: enter low-power sleep mode until woken by input
+- shutdown: save all state and fully exit
+
+Respond with exactly one word from: continue, idle, sleep, shutdown.`;
+
+  let decision = await askLLM(prompt);
+  decision = decision.trim().toLowerCase();
+
+  if (!['continue', 'idle', 'sleep', 'shutdown'].includes(decision)) {
+    decision = 'continue'; // default safe fallback
+  }
+
+  return decision;
+}
+
 module.exports = {
   askLLM,
   loadIdentity,
@@ -94,5 +178,6 @@ module.exports = {
   tagThought,
   evolveIdentity,
   updateDynamicState,
-  giveReward
+  giveReward,
+  analyzeOutputAndDecide
 };

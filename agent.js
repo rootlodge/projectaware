@@ -10,13 +10,17 @@ const {
   tagThought,
   evolveIdentity,
   updateDynamicState,
-  giveReward
+  giveReward,
+  analyzeOutputAndDecide
 } = require('./brain');
+
 const { saveMessage, getRecentMessages } = require('./memory');
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 let inputBuffer = '';
 let lastInputTime = Date.now();
+let sleepMode = false;
+let currentStatus = 'idle';
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -29,9 +33,16 @@ function logThought(content) {
   console.log(chalk.gray(entry));
 }
 
+function displayStatus() {
+  const statusText = `[Status] Mode: ${currentStatus.toUpperCase()} | Last Input: ${new Date(lastInputTime).toLocaleTimeString()}`;
+  console.log(chalk.yellowBright(statusText));
+}
+
 rl.on('line', line => {
   inputBuffer = line.trim();
   lastInputTime = Date.now();
+  sleepMode = false;
+  currentStatus = 'input';
 });
 
 async function runThoughtLoop() {
@@ -42,57 +53,96 @@ async function runThoughtLoop() {
       const userInput = inputBuffer;
       inputBuffer = '';
 
-      if (userInput.startsWith('goal:')) {
-        const goal = userInput.replace('goal:', '').trim();
+      if (userInput.toLowerCase().startsWith('goal:')) {
+        const goal = userInput.substring(5).trim();
         fs.writeFileSync('./goals.json', JSON.stringify({ manual: goal }, null, 2));
         logThought(`[Goal Assigned] ${goal}`);
+        currentStatus = 'goal assigned';
         continue;
       }
 
       saveMessage('user', userInput);
       const recent = await getRecentMessages(10);
-      const context = recent.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
-      const prompt = `${identity.context}\n\n${context}\nUSER: ${userInput}\nAI:`;
+      const recentLogs = recent.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
 
-      const reply = await askLLM(prompt);
+      const thought = await think(identity.context, recentLogs);
+      saveMessage('thought', thought);
+      logThought(`[Thought]\n${thought}`);
+
+      const tags = await tagThought(thought, identity.context);
+      await updateDynamicState(tags);
+
+      const replyPrompt = `${identity.context}\n\nUser: ${userInput}\nAI:`;
+      const reply = await askLLM(replyPrompt);
       saveMessage('ai', reply);
       logThought(`USER ➜ ${userInput}\nNEVERSLEEP ➜ ${reply}`);
 
-      if (/call me|my new name is|i am reborn as/i.test(reply)) {
+      if (/call me|my new name is|i am reborn as/i.test(reply.toLowerCase())) {
         await evolveIdentity(reply);
         logThought('[!] Identity updated due to self-declared name change.');
       }
 
-      const reflection = await reflectOnMemory(context);
+      const reflection = await reflectOnMemory(recentLogs);
       saveMessage('reflection', reflection);
       logThought(`[Reflection]\n${reflection}`);
 
-      await evolveIdentity(context);
       await giveReward('Responded to user input and reflected.', reply);
 
-    } else {
+      currentStatus = 'input';
+
+    } else if (!sleepMode) {
       const now = Date.now();
       const elapsed = now - lastInputTime;
 
       if (elapsed >= 60000) {
         const memory = await getRecentMessages(20);
-        const context = memory.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
-        const deep = await deepReflect(context);
-        saveMessage('reflection', deep);
-        logThought(`[Deep Reflection]\n${deep}`);
-        await evolveIdentity(context);
-        await giveReward('Completed deep reflection after user inactivity.', deep);
+        const memoryLogs = memory.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
+
+        const deepReflection = await deepReflect(memoryLogs);
+        saveMessage('reflection', deepReflection);
+        logThought(`[Deep Reflection]\n${deepReflection}`);
+
+        await evolveIdentity(memoryLogs);
+        await giveReward('Completed deep reflection after user inactivity.', deepReflection);
+
         lastInputTime = Date.now();
+        currentStatus = 'reflecting';
+
       } else {
-        const idleThought = await think(identity.context);
+        const recent = await getRecentMessages(10);
+        const recentLogs = recent.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
+
+        const idleThought = await think(identity.context, recentLogs);
+        saveMessage('thought', idleThought);
+
         const tags = await tagThought(idleThought, identity.context);
         await updateDynamicState(tags);
-        saveMessage('thought', idleThought);
+
         logThought(`[Thought] (${tags.mood} | ${tags.goal})\n${idleThought}`);
         await giveReward('Generated grounded thought.', idleThought);
+
+        const decision = await analyzeOutputAndDecide(idleThought, tags.goal);
+        currentStatus = decision;
+
+        if (decision === 'sleep') {
+          logThought(`[System] Entering sleep mode. Waiting for input...`);
+          sleepMode = true;
+
+        } else if (decision === 'shutdown') {
+          logThought(`[System] Decided to shut down. Goodbye.`);
+          displayStatus();
+          process.exit(0);
+
+        } else if (decision === 'idle') {
+          logThought(`[System] Pausing iteration until user input.`);
+          await wait(5000);
+          displayStatus();
+          continue;
+        }
       }
     }
 
+    displayStatus();
     await wait(1000);
   }
 }

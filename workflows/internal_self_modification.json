@@ -1,0 +1,61 @@
+{
+  "id": "internal_self_modification",
+  "name": "Internal Self-Modification Workflow",
+  "description": "Workflow for the AI to self-modify its identity and behavior through internal agents",
+  "coordination": "sequential",
+  "agents": ["thinker", "identity_designer", "trait_curator", "reviewer"],
+  "steps": [
+    {
+      "name": "self_reflection",
+      "type": "agent_task",
+      "agentId": "thinker",
+      "task": {
+        "type": "self_analysis",
+        "focus": "identity_assessment"
+      },
+      "input": {
+        "source": "workflow_params",
+        "key": "context"
+      }
+    },
+    {
+      "name": "identity_evolution_proposal",
+      "type": "agent_task",
+      "agentId": "identity_designer",
+      "task": {
+        "type": "identity_design",
+        "focus": "self_modification"
+      },
+      "input": {
+        "source": "previous_step",
+        "step": "self_reflection"
+      }
+    },
+    {
+      "name": "trait_optimization",
+      "type": "agent_task",
+      "agentId": "trait_curator",
+      "task": {
+        "type": "trait_curation",
+        "focus": "personality_optimization"
+      },
+      "input": {
+        "source": "previous_step",
+        "step": "identity_evolution_proposal"
+      }
+    },
+    {
+      "name": "change_approval",
+      "type": "agent_task",
+      "agentId": "reviewer",
+      "task": {
+        "type": "change_validation",
+        "focus": "self_modification_approval"
+      },
+      "input": {
+        "source": "previous_step",
+        "step": "trait_optimization"
+      }
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "id": "conversation_processing",
+  "name": "Natural Conversation Processing",
+  "description": "Main workflow for processing user conversations through specialized internal agents",
+  "coordination": "sequential",
+  "agents": ["thinker", "mode_controller", "responder", "data_manager"],
+  "steps": [
+    {
+      "name": "initial_analysis",
+      "type": "agent_task",
+      "agentId": "thinker",
+      "task": {
+        "type": "thought_processing",
+        "focus": "conversation_analysis"
+      },
+      "input": {
+        "source": "workflow_params",
+        "key": "context"
+      }
+    },
+    {
+      "name": "mode_assessment",
+      "type": "agent_task",
+      "agentId": "mode_controller",
+      "task": {
+        "type": "mode_evaluation",
+        "focus": "behavioral_adjustment"
+      },
+      "input": {
+        "source": "workflow_params",
+        "key": "context"
+      }
+    },
+    {
+      "name": "response_generation",
+      "type": "agent_task",
+      "agentId": "responder",
+      "task": {
+        "type": "response_creation",
+        "focus": "user_communication"
+      },
+      "input": {
+        "source": "workflow_params",
+        "key": "context"
+      }
+    },
+    {
+      "name": "data_management",
+      "type": "agent_task",
+      "agentId": "data_manager",
+      "task": {
+        "type": "data_processing",
+        "focus": "information_storage"
+      },
+      "input": {
+        "source": "workflow_params",
+        "key": "context"
+      }
+    },
+    {
+      "name": "self_modification_check",
+      "type": "decision_point",
+      "criteria": {
+        "trigger": "self_modification_needed",
+        "conditions": ["identity_change_suggested", "trait_update_proposed", "mode_change_required"]
+      }
+    }
+  ]
+}

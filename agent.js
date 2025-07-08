@@ -19,9 +19,11 @@ const {
 
 const { saveMessage, getRecentMessages, getConversationHistory, getUserResponsePatterns } = require('./memory');
 const MultiAgentManager = require('./MultiAgentManager');
+const InternalAgentSystem = require('./InternalAgentSystem');
 
-// Initialize multi-agent manager
+// Initialize multi-agent manager and internal agent system
 const multiAgentManager = new MultiAgentManager();
+const internalAgentSystem = new InternalAgentSystem();
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 let inputBuffer = '';
@@ -344,6 +346,82 @@ async function runThoughtLoop() {
           logThought('[Multi-Agent] Demo agents created successfully');
         } catch (error) {
           console.log(chalk.red(`❌ Failed to setup demo agents: ${error.message}`));
+        }
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('internal agents')) {
+        const status = internalAgentSystem.getStatus();
+        console.log(chalk.blue.bold('\n🧠 INTERNAL AGENT SYSTEM:'));
+        console.log(chalk.gray(`Initialized: ${status.initialized}`));
+        console.log(chalk.gray(`Internal Agents: ${status.agents}`));
+        console.log(chalk.gray(`System Functions: ${status.systemFunctions.join(', ')}`));
+        
+        if (status.initialized) {
+          const internalAgents = internalAgentSystem.multiAgentManager.getAgents();
+          console.log(chalk.white('\nActive Internal Agents:'));
+          internalAgents.forEach(agent => {
+            console.log(chalk.white(`• ${agent.name} (${agent.role})`));
+            console.log(chalk.gray(`  Mission: ${agent.identity.mission}`));
+            console.log(chalk.gray(`  Traits: ${agent.identity.traits.join(', ')}`));
+          });
+        }
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('init internal system')) {
+        console.log(chalk.yellow('🔧 Initializing internal agent system...'));
+        
+        try {
+          await internalAgentSystem.initialize();
+          console.log(chalk.green('✅ Internal agent system initialized successfully!'));
+          console.log(chalk.white('The AI now has specialized internal agents for different functions.'));
+          console.log(chalk.gray('Try: "internal agents" to see the active internal agents'));
+          
+          logThought('[Internal System] Internal agent system initialized');
+        } catch (error) {
+          console.log(chalk.red(`❌ Failed to initialize internal system: ${error.message}`));
+        }
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('process with internal')) {
+        if (!internalAgentSystem.getStatus().initialized) {
+          console.log(chalk.yellow('🔧 Initializing internal agent system first...'));
+          await internalAgentSystem.initialize();
+        }
+
+        const testInput = userInput.substring(20).trim() || 'Hello, how are you?';
+        
+        try {
+          console.log(chalk.blue('🧠 Processing with internal agent system...'));
+          
+          const recent = await getRecentMessages(5);
+          const context = {
+            userInput: testInput,
+            recentMessages: recent,
+            currentIdentity: internalAgentSystem.getCurrentIdentity()
+          };
+          
+          const result = await internalAgentSystem.processInput(testInput, context);
+          
+          console.log(chalk.green('✅ Internal processing completed!'));
+          console.log(chalk.white('Results:'));
+          
+          if (result.results) {
+            result.results.forEach((stepResult, index) => {
+              console.log(chalk.cyan(`\n${index + 1}. ${stepResult.stepName} (${stepResult.stepType}):`));
+              if (stepResult.success) {
+                console.log(chalk.white(stepResult.result.response || JSON.stringify(stepResult.result, null, 2)));
+              } else {
+                console.log(chalk.red(`Error: ${stepResult.error}`));
+              }
+            });
+          }
+          
+          logThought(`[Internal Processing] Processed input through internal agent system`);
+        } catch (error) {
+          console.log(chalk.red(`❌ Internal processing failed: ${error.message}`));
         }
         continue;
       }

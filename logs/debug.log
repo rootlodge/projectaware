@@ -233,3 +233,17 @@
 {"timestamp":"2025-07-08T16:18:31.935Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
 {"timestamp":"2025-07-08T16:18:31.960Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
 {"timestamp":"2025-07-08T16:18:31.979Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:46.804Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:46.862Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:46.887Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:46.910Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:46.935Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:46.960Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:46.985Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:47.005Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:47.028Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:47.057Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:47.079Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:56.949Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}
+{"timestamp":"2025-07-08T16:29:57.814Z","level":"debug","message":"[State] Updated state:","data":{"session":{"totalInteractions":8},"social":{"lastUserSatisfaction":"pending","conversationTone":"conversational"}}}
+{"timestamp":"2025-07-08T16:30:08.535Z","level":"debug","message":"[State] Updated state:","data":{"cognitive":{"currentMood":"neutral","currentGoal":"continue thinking"}}}

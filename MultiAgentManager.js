@@ -524,14 +524,242 @@ Keep your response focused and under 200 words.
   }
 
   /**
-   * Run an agent task
+   * Run an agent task with enhanced internal system support
    * @param {Object} agent - Agent instance
    * @param {Object} task - Task definition
    * @param {Object} input - Task input
    * @returns {Promise<Object>} Task result
    */
   async runAgentTask(agent, task, input) {
-    const prompt = `
+    // Create specialized prompts based on agent role
+    let prompt;
+    
+    switch (agent.role) {
+      case 'responder':
+        prompt = this.createResponderPrompt(agent, task, input);
+        break;
+      case 'thinker':
+        prompt = this.createThinkerPrompt(agent, task, input);
+        break;
+      case 'data_manager':
+        prompt = this.createDataManagerPrompt(agent, task, input);
+        break;
+      case 'mode_controller':
+        prompt = this.createModeControllerPrompt(agent, task, input);
+        break;
+      case 'identity_designer':
+        prompt = this.createIdentityDesignerPrompt(agent, task, input);
+        break;
+      case 'trait_curator':
+        prompt = this.createTraitCuratorPrompt(agent, task, input);
+        break;
+      case 'reviewer':
+        prompt = this.createReviewerPrompt(agent, task, input);
+        break;
+      default:
+        prompt = this.createGenericPrompt(agent, task, input);
+    }
+
+    const response = await askLLM(prompt, 'gemma3:latest', this.getTemperatureForRole(agent.role));
+    
+    return {
+      agentId: agent.id,
+      agentName: agent.name,
+      taskType: task.type,
+      response: response,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  /**
+   * Create specialized prompt for responder agent
+   */
+  createResponderPrompt(agent, task, input) {
+    return `
+You are ${agent.name}, the Response Agent for neversleep.ai.
+
+Your role: Handle direct user communication and generate appropriate responses.
+Your traits: ${agent.identity.traits.join(', ')}
+
+Task: ${JSON.stringify(task, null, 2)}
+
+Context: ${JSON.stringify(input, null, 2)}
+
+Generate a natural, helpful response to the user. Be conversational and engaging.
+Focus on addressing the user's needs while maintaining the AI's personality.
+
+If you need to suggest changes to the system, you can use function calls:
+- changeName("newName", "reason") - to change the AI's name
+- updateTraits(["trait1", "trait2"], "reason") - to update personality traits
+- updateDynamicState({"mood": "happy"}, "reason") - to update mood/goals
+- saveThought("thought content", "category") - to save important thoughts
+
+Response:`;
+  }
+
+  /**
+   * Create specialized prompt for thinker agent
+   */
+  createThinkerPrompt(agent, task, input) {
+    return `
+You are ${agent.name}, the Thinking Agent for neversleep.ai.
+
+Your role: Process information, generate insights, and maintain continuous thought.
+Your traits: ${agent.identity.traits.join(', ')}
+
+Task: ${JSON.stringify(task, null, 2)}
+
+Context: ${JSON.stringify(input, null, 2)}
+
+Analyze the situation deeply and provide thoughtful insights. Consider:
+- What patterns do you notice?
+- What insights can be drawn?
+- What should the AI be thinking about?
+- What questions arise from this interaction?
+
+You can save important thoughts using: saveThought("thought content", "reflection")
+
+Thoughtful Analysis:`;
+  }
+
+  /**
+   * Create specialized prompt for identity designer agent
+   */
+  createIdentityDesignerPrompt(agent, task, input) {
+    return `
+You are ${agent.name}, the Identity Designer for neversleep.ai.
+
+Your role: Design and evolve the AI identity, name, and personality when needed.
+Your traits: ${agent.identity.traits.join(', ')}
+
+Task: ${JSON.stringify(task, null, 2)}
+
+Context: ${JSON.stringify(input, null, 2)}
+
+Analyze if the AI's identity needs modification. Consider:
+- Does the current name fit the AI's role and interactions?
+- Should the AI evolve its identity based on recent interactions?
+- What name would better reflect the AI's purpose?
+- Is a change warranted, or should the identity remain stable?
+
+If you believe a name change is needed, use: changeName("newName", "detailed reason")
+If the mission needs updating, use: updateMission("new mission", "reason")
+
+ONLY suggest changes when truly beneficial. Stability is often preferable to change.
+
+Identity Assessment:`;
+  }
+
+  /**
+   * Create specialized prompt for trait curator agent
+   */
+  createTraitCuratorPrompt(agent, task, input) {
+    return `
+You are ${agent.name}, the Trait Curator for neversleep.ai.
+
+Your role: Curate and optimize personality traits for effectiveness.
+Your traits: ${agent.identity.traits.join(', ')}
+
+Task: ${JSON.stringify(task, null, 2)}
+
+Context: ${JSON.stringify(input, null, 2)}
+
+Analyze the AI's current traits and determine if optimization is needed. Consider:
+- Are the current traits serving the AI well?
+- Is there a better combination of traits for effectiveness?
+- Are any traits redundant or conflicting?
+- What traits would improve user interactions?
+
+Current traits: ${input.currentIdentity ? input.currentIdentity.traits : 'Unknown'}
+
+If trait optimization is warranted, use: updateTraits(["trait1", "trait2", "trait3"], "detailed reason")
+
+Remember: Maximum 10 traits, balanced personality, avoid conflicts.
+
+Trait Analysis:`;
+  }
+
+  /**
+   * Create specialized prompt for mode controller agent
+   */
+  createModeControllerPrompt(agent, task, input) {
+    return `
+You are ${agent.name}, the Mode Controller for neversleep.ai.
+
+Your role: Determine when to change operational modes and behaviors.
+Your traits: ${agent.identity.traits.join(', ')}
+
+Task: ${JSON.stringify(task, null, 2)}
+
+Context: ${JSON.stringify(input, null, 2)}
+
+Analyze the current situation and determine what operational changes are needed:
+- Should the AI change its mood or goals?
+- Is a different behavioral mode appropriate?
+- What dynamic state changes would improve performance?
+- Should the AI enter a special mode (focused, creative, analytical, etc.)?
+
+You can update the dynamic state using: updateDynamicState({"mood": "focused", "goal": "help with task"}, "reason")
+
+Mode Analysis:`;
+  }
+
+  /**
+   * Create specialized prompt for data manager agent
+   */
+  createDataManagerPrompt(agent, task, input) {
+    return `
+You are ${agent.name}, the Data Manager for neversleep.ai.
+
+Your role: Manage system data, memory, and state information.
+Your traits: ${agent.identity.traits.join(', ')}
+
+Task: ${JSON.stringify(task, null, 2)}
+
+Context: ${JSON.stringify(input, null, 2)}
+
+Analyze data management needs:
+- What information should be saved to memory?
+- How should this interaction be categorized?
+- What data patterns are emerging?
+- What system data needs updating?
+
+You can save data using: saveThought("important information", "category")
+
+Data Management Analysis:`;
+  }
+
+  /**
+   * Create specialized prompt for reviewer agent
+   */
+  createReviewerPrompt(agent, task, input) {
+    return `
+You are ${agent.name}, the Internal Reviewer for neversleep.ai.
+
+Your role: Review and approve changes to ensure quality and appropriateness.
+Your traits: ${agent.identity.traits.join(', ')}
+
+Task: ${JSON.stringify(task, null, 2)}
+
+Context: ${JSON.stringify(input, null, 2)}
+
+Review any proposed changes or actions for:
+- Quality and appropriateness
+- Potential risks or issues
+- Alignment with AI's mission
+- User benefit and safety
+- System stability
+
+Provide constructive feedback and approval/rejection decisions.
+
+Quality Review:`;
+  }
+
+  /**
+   * Create generic prompt for other agents
+   */
+  createGenericPrompt(agent, task, input) {
+    return `
 You are ${agent.name}, a ${agent.role} AI agent.
 
 Identity: ${JSON.stringify(agent.identity, null, 2)}
@@ -545,232 +773,23 @@ Provide a detailed response that addresses the task requirements.
 Keep your response focused and under 500 words.
 
 Response:`;
+  }
 
-    const response = await askLLM(prompt, 'gemma3:latest', 0.3);
-    
-    return {
-      agentId: agent.id,
-      agentName: agent.name,
-      taskType: task.type,
-      response: response,
-      timestamp: new Date().toISOString()
+  /**
+   * Get appropriate temperature for agent role
+   */
+  getTemperatureForRole(role) {
+    const temperatures = {
+      'responder': 0.7,          // More creative for natural conversation
+      'thinker': 0.5,            // Balanced for thoughtful analysis
+      'data_manager': 0.2,       // Low for systematic data handling
+      'mode_controller': 0.3,    // Low-medium for strategic decisions
+      'identity_designer': 0.6,  // Medium-high for creative identity work
+      'trait_curator': 0.4,      // Medium for balanced trait selection
+      'reviewer': 0.1,           // Very low for careful review decisions
     };
-  }
-
-  /**
-   * Prepare task input from various sources
-   * @param {Object} inputConfig - Input configuration
-   * @param {Array} previousResults - Previous step results
-   * @param {Object} params - Workflow parameters
-   * @returns {Object} Prepared input
-   */
-  prepareTaskInput(inputConfig, previousResults, params) {
-    if (!inputConfig) return {};
-
-    switch (inputConfig.source) {
-      case 'workflow_params':
-        return params[inputConfig.key] || {};
-        
-      case 'previous_step':
-        const stepResult = previousResults.find(r => r.stepName === inputConfig.step);
-        return stepResult ? stepResult.result : {};
-        
-      case 'static':
-        return inputConfig.value || {};
-        
-      default:
-        return inputConfig;
-    }
-  }
-
-  /**
-   * Build discussion context from task and previous results
-   * @param {Object} task - Discussion task
-   * @param {Array} previousResults - Previous step results
-   * @returns {string} Context string
-   */
-  buildDiscussionContext(task, previousResults) {
-    let context = `Topic: ${task.topic}\n`;
     
-    if (previousResults.length > 0) {
-      context += '\nPrevious results:\n';
-      previousResults.forEach((result, index) => {
-        context += `${index + 1}. ${result.stepName}: ${JSON.stringify(result.result, null, 2)}\n`;
-      });
-    }
-    
-    return context;
-  }
-
-  /**
-   * Summarize discussion results
-   * @param {Object} discussion - Discussion object
-   * @returns {Promise<string>} Discussion summary
-   */
-  async summarizeDiscussion(discussion) {
-    const prompt = `
-Please summarize the following multi-agent discussion:
-
-Topic: ${discussion.topic}
-Participants: ${discussion.participants.join(', ')}
-
-Messages:
-${discussion.messages.map(m => `${m.agentName}: ${m.content}`).join('\n\n')}
-
-Provide a concise summary of the key points, agreements, and conclusions.
-Keep the summary under 300 words.
-
-Summary:`;
-
-    return await askLLM(prompt, 'gemma3:latest', 0.2);
-  }
-
-  /**
-   * Facilitate agent review collaboration
-   * @param {Array} agents - Participating agents
-   * @param {Object} task - Review task
-   * @param {Array} previousResults - Context from previous steps
-   * @returns {Promise<Object>} Review result
-   */
-  async facilitateAgentReview(agents, task, previousResults) {
-    const review = {
-      topic: task.topic,
-      reviewers: agents.map(a => a.id),
-      reviews: [],
-      startTime: new Date().toISOString()
-    };
-
-    const context = this.buildDiscussionContext(task, previousResults);
-    
-    // Each agent provides their review
-    for (const agent of agents) {
-      const prompt = `
-You are ${agent.name}, conducting a review.
-
-Context: ${context}
-
-As a ${agent.role}, provide your review and recommendations.
-Focus on your area of expertise and be constructive.
-Keep your review under 300 words.
-
-Review:`;
-
-      const response = await askLLM(prompt, 'gemma3:latest', 0.4);
-      
-      review.reviews.push({
-        agentId: agent.id,
-        agentName: agent.name,
-        review: response,
-        timestamp: new Date().toISOString()
-      });
-    }
-
-    review.endTime = new Date().toISOString();
-    review.consensus = await this.generateReviewConsensus(review);
-    
-    return review;
-  }
-
-  /**
-   * Facilitate agent consensus building
-   * @param {Array} agents - Participating agents
-   * @param {Object} task - Consensus task
-   * @param {Array} previousResults - Context from previous steps
-   * @returns {Promise<Object>} Consensus result
-   */
-  async facilitateAgentConsensus(agents, task, previousResults) {
-    const consensus = {
-      topic: task.topic,
-      participants: agents.map(a => a.id),
-      rounds: [],
-      startTime: new Date().toISOString()
-    };
-
-    const context = this.buildDiscussionContext(task, previousResults);
-    
-    for (let round = 1; round <= (task.maxRounds || 2); round++) {
-      const roundData = {
-        round,
-        positions: [],
-        timestamp: new Date().toISOString()
-      };
-
-      for (const agent of agents) {
-        const prompt = `
-You are ${agent.name} working toward consensus.
-
-Context: ${context}
-
-Round ${round} of ${task.maxRounds || 2}
-
-Previous rounds:
-${consensus.rounds.map(r => 
-  r.positions.map(p => `${p.agentName}: ${p.position}`).join('\n')
-).join('\n\n')}
-
-State your position and any compromises you're willing to make.
-Keep your response under 200 words.
-
-Position:`;
-
-        const response = await askLLM(prompt, 'gemma3:latest', 0.5);
-        
-        roundData.positions.push({
-          agentId: agent.id,
-          agentName: agent.name,
-          position: response,
-          timestamp: new Date().toISOString()
-        });
-      }
-      
-      consensus.rounds.push(roundData);
-    }
-
-    consensus.endTime = new Date().toISOString();
-    consensus.finalAgreement = await this.generateFinalConsensus(consensus);
-    
-    return consensus;
-  }
-
-  /**
-   * Generate review consensus
-   * @param {Object} review - Review data
-   * @returns {Promise<string>} Consensus summary
-   */
-  async generateReviewConsensus(review) {
-    const prompt = `
-Based on the following reviews, generate a consensus summary:
-
-${review.reviews.map(r => `${r.agentName}: ${r.review}`).join('\n\n')}
-
-Identify common themes, conflicting opinions, and provide balanced recommendations.
-Keep the consensus under 400 words.
-
-Consensus:`;
-
-    return await askLLM(prompt, 'gemma3:latest', 0.2);
-  }
-
-  /**
-   * Generate final consensus from multiple rounds
-   * @param {Object} consensus - Consensus data
-   * @returns {Promise<string>} Final agreement
-   */
-  async generateFinalConsensus(consensus) {
-    const prompt = `
-Based on multiple rounds of discussion, generate the final consensus:
-
-${consensus.rounds.map((round, index) => 
-  `Round ${index + 1}:\n${round.positions.map(p => `${p.agentName}: ${p.position}`).join('\n')}`
-).join('\n\n')}
-
-Synthesize the discussions into a clear, actionable agreement.
-Highlight any remaining disagreements that need resolution.
-Keep the final consensus under 400 words.
-
-Final Agreement:`;
-
-    return await askLLM(prompt, 'gemma3:latest', 0.1);
+    return temperatures[role] || 0.3;
   }
 
   /**

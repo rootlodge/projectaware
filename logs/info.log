@@ -56,3 +56,19 @@
 {"timestamp":"2025-07-08T16:18:31.994Z","level":"info","message":"Starting workflow execution: collaboration_test (exec_1751991511994_cr95bdnh0)","data":null}
 {"timestamp":"2025-07-08T16:18:31.995Z","level":"info","message":"Executing step 1/4: brainstorming","data":null}
 {"timestamp":"2025-07-08T16:19:07.361Z","level":"info","message":"Executing step 2/4: analysis","data":null}
+{"timestamp":"2025-07-08T16:29:46.820Z","level":"info","message":"MultiAgentManager initialized","data":null}
+{"timestamp":"2025-07-08T16:29:46.821Z","level":"info","message":"MultiAgentManager initialized","data":null}
+{"timestamp":"2025-07-08T16:29:46.895Z","level":"info","message":"Agent 'creative_thinker' created with role 'creative_thinker'","data":null}
+{"timestamp":"2025-07-08T16:29:46.896Z","level":"info","message":"Agent 'creative_thinker' created with role 'creative_thinker'","data":null}
+{"timestamp":"2025-07-08T16:29:46.939Z","level":"info","message":"Loaded 7 workflows","data":null}
+{"timestamp":"2025-07-08T16:29:46.940Z","level":"info","message":"Loaded 7 workflows","data":null}
+{"timestamp":"2025-07-08T16:29:46.942Z","level":"info","message":"Agent 'logical_analyst' created with role 'analyst'","data":null}
+{"timestamp":"2025-07-08T16:29:46.944Z","level":"info","message":"Agent 'logical_analyst' created with role 'analyst'","data":null}
+{"timestamp":"2025-07-08T16:29:46.987Z","level":"info","message":"Agent 'practical_implementer' created with role 'implementer'","data":null}
+{"timestamp":"2025-07-08T16:29:46.989Z","level":"info","message":"Agent 'practical_implementer' created with role 'implementer'","data":null}
+{"timestamp":"2025-07-08T16:29:47.030Z","level":"info","message":"Agent 'test_analyst' created with role 'analyst'","data":null}
+{"timestamp":"2025-07-08T16:29:47.033Z","level":"info","message":"Agent 'test_analyst' created with role 'analyst'","data":null}
+{"timestamp":"2025-07-08T16:29:47.082Z","level":"info","message":"Agent 'test_reviewer' created with role 'reviewer'","data":null}
+{"timestamp":"2025-07-08T16:29:47.084Z","level":"info","message":"Loaded 5 agents","data":null}
+{"timestamp":"2025-07-08T16:29:47.086Z","level":"info","message":"Agent 'test_reviewer' created with role 'reviewer'","data":null}
+{"timestamp":"2025-07-08T16:29:47.088Z","level":"info","message":"Loaded 5 agents","data":null}

@@ -56,6 +56,14 @@ Neversleep is a sophisticated CLI-based JavaScript AI agent featuring:
 - **Custom agent creation**: Define roles, capabilities, and personalities
 - **Real-time monitoring**: Track workflow execution and agent performance
 
+### 🧠 **Internal Agent System**
+- **Specialized internal agents**: Dedicated agents for different AI functions
+- **Self-modification capabilities**: AI can evolve its own identity and traits
+- **Function call system**: Agents can call system functions for changes
+- **Review and approval**: Internal reviewer ensures quality of self-modifications
+- **Natural workflow**: Seamless integration of thinking, responding, and self-improvement
+- **Autonomous evolution**: AI adapts its personality based on interactions and needs
+
 ### 🎭 **Mood & Emotion Tracking**
 - Every thought tagged with current mood
 - Dynamic emotional state tracking in `dynamic.json`
@@ -165,6 +173,11 @@ node agent.js
 - `run workflow <workflow_id> [param:value ...]` - Execute a workflow
 - `active executions` - Show running workflows
 - `setup demo agents` - Create demo agents for testing
+
+#### **Internal Agent System**
+- `internal agents` - Show internal agent system status
+- `init internal system` - Initialize the internal agent system
+- `process with internal [input]` - Process input through internal agents
 
 ### **Identity Evolution**
 The AI can change its name and traits through natural language:

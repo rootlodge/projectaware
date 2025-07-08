@@ -9,7 +9,7 @@
     "agent": "node agent.js",
     "loop": "node loop.js",
     "setup": "npm install && echo \"Setup complete! Make sure Ollama is running with gemma3 and dolphin3 models before running 'npm start'\"",
-    "check": "node -c agent.js && node -c brain.js && node -c memory.js && node -c MultiAgentManager.js && echo \"All files syntax OK!\"",
+    "check": "node -c agent.js && node -c brain.js && node -c memory.js && node -c MultiAgentManager.js && node -c InternalAgentSystem.js && echo \"All files syntax OK!\"",
     "clean-logs": "Remove-Item ./logs/*.log -ErrorAction SilentlyContinue; echo \"Logs cleaned\"",
     "clean-memory": "Remove-Item ./memory.db -ErrorAction SilentlyContinue; echo \"Memory database reset\"",
     "clean-rewards": "node cleanup-rewards.js",
@@ -17,7 +17,8 @@
     "reset": "npm run clean-logs && npm run clean-memory && echo \"Full reset complete\"",
     "debug": "node --inspect agent.js",
     "test-multi-agent": "node tests/test-multi-agent.js",
-    "test": "node tests/test-multi-agent.js"
+    "test-internal-agents": "node tests/test-internal-agents.js",
+    "test": "node tests/test-multi-agent.js && node tests/test-internal-agents.js"
   },
   "keywords": [],
   "author": "",

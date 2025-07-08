@@ -1,35 +1,66 @@
 // agent.js
-const inquirer = require('inquirer');
+const readline = require('readline');
 const chalk = require('chalk');
-const { askLLM, loadIdentity, reflectOnMemory } = require('./brain');
+const { askLLM, loadIdentity, reflectOnMemory, think } = require('./brain');
 const { saveMessage, getRecentMessages } = require('./memory');
+const fs = require('fs-extra');
 
-async function main() {
-  console.clear();
-  console.log(chalk.cyan.bold('🧠 Neversleep AI - Always watching...'));
+const identity = loadIdentity();
 
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+let inputBuffer = '';
+let lastReflection = '';
+
+async function runThoughtLoop() {
   while (true) {
-    const { userInput } = await inquirer.prompt([
-      { type: 'input', name: 'userInput', message: chalk.yellow('You:') }
-    ]);
+    if (inputBuffer.trim()) {
+      const userInput = inputBuffer.trim();
+      inputBuffer = ''; // reset
 
-    if (!userInput.trim()) continue;
+      saveMessage('user', userInput);
+      const recent = await getRecentMessages(10);
+      const context = recent.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
+      const prompt = `${identity}\n\n${context}\nUSER: ${userInput}\nAI:`;
 
-    saveMessage('user', userInput);
+      const reply = await askLLM(prompt);
+      saveMessage('ai', reply);
+      logThought(`USER ➜ ${userInput}\nNEVERSLEEP ➜ ${reply}`);
 
-    const recentMessages = await getRecentMessages(10);
-    const context = recentMessages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
-    const prompt = `${loadIdentity()}\n\n${context}\nUSER: ${userInput}\nAI:`;
+      const reflection = await reflectOnMemory(context);
+      lastReflection = reflection;
+      saveMessage('reflection', reflection);
+      logThought(`[Reflection]\n${reflection}`);
+    } else {
+      const idleThought = await think(identity);
+      saveMessage('thought', idleThought);
+      logThought(`[Thought]\n${idleThought}`);
+    }
 
-    const reply = await askLLM(prompt);
-    saveMessage('ai', reply);
-
-    console.log(chalk.green.bold('Neversleep:'), chalk.white(reply));
-
-    const reflection = await reflectOnMemory(context);
-    console.log(chalk.gray.bold('\n[Reflection]'), chalk.gray.italic(reflection));
-    saveMessage('reflection', reflection);
+    await wait(1000); // 1-second loop
   }
 }
 
-main();
+function logThought(content) {
+  const timestamp = new Date().toISOString();
+  const entry = `\n[${timestamp}]\n${content}\n-----------------------------`;
+  fs.appendFileSync('./logs/thoughts.log', entry);
+  console.log(chalk.gray(entry));
+}
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Listen for user input without blocking loop
+rl.on('line', line => {
+  inputBuffer = line;
+});
+
+console.clear();
+console.log(chalk.cyanBright('🧠 Neversleep is running...\nType at any time to interact.\n'));
+fs.ensureDirSync('./logs');
+runThoughtLoop();

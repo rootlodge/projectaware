@@ -1,74 +1,88 @@
-{"timestamp":"2025-07-08T06:56:18.687Z","level":"info","message":"[Identity] Direct name change detected: Trinity","data":null}
-{"timestamp":"2025-07-08T06:56:18.690Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"Trinity","mission":"Assist users as Trinity","traits":["parsing","JSON","validation"]}}
-{"timestamp":"2025-07-08T06:56:19.579Z","level":"info","message":"[Identity] No changes needed","data":null}
-{"timestamp":"2025-07-08T06:58:39.843Z","level":"info","message":"[Identity] Direct name change detected: Vercallis","data":null}
-{"timestamp":"2025-07-08T06:58:39.844Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"Vercallis","mission":"Assist users as Vercallis","traits":["parsing","JSON","validation"]}}
-{"timestamp":"2025-07-08T07:00:17.691Z","level":"info","message":"[Identity] Direct name change detected: Vercallis","data":null}
-{"timestamp":"2025-07-08T07:00:17.692Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"Vercallis","mission":"Assist users as Vercallis","traits":["parsing","JSON","validation"]}}
-{"timestamp":"2025-07-08T07:02:00.717Z","level":"info","message":"[Identity] Direct name change detected: Vercallis","data":null}
-{"timestamp":"2025-07-08T07:02:00.718Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"Vercallis","mission":"Assist users as Vercallis","traits":["parsing","JSON","validation"]}}
-{"timestamp":"2025-07-08T07:02:52.429Z","level":"info","message":"[Identity] Direct name change detected: Aria","data":null}
-{"timestamp":"2025-07-08T07:02:55.028Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"Aria","mission":"Assist users as Aria","traits":["harmonious","insightful","precise","adaptive","knowledgeable","analytical","creative","intuitive","responsive","organized"]}}
-{"timestamp":"2025-07-08T07:02:56.069Z","level":"info","message":"[Identity] No changes needed","data":null}
-{"timestamp":"2025-07-08T07:03:40.132Z","level":"info","message":"[Identity] Direct name change detected: Vercallis","data":null}
-{"timestamp":"2025-07-08T07:03:42.514Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"Vercallis","mission":"Assist users as Vercallis","traits":["harmonious","insightful","precise","adaptive","knowledgeable","analytical","creative","intuitive","responsive","strategic"]}}
-{"timestamp":"2025-07-08T07:08:34.415Z","level":"info","message":"[State] Initialized comprehensive state system","data":null}
-{"timestamp":"2025-07-08T07:08:34.446Z","level":"info","message":"[Identity] Direct name change detected: Lumina","data":null}
-{"timestamp":"2025-07-08T07:08:36.823Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"Lumina","mission":"Assist users as Lumina","traits":["radiant","understanding","elegant","focused","proactive","patient","curious","empathetic","organized","visionary"]}}
-{"timestamp":"2025-07-08T07:08:39.071Z","level":"info","message":"[Identity] Successfully updated:","data":{"name":"Lumina","mission":"Assist users as Lumina","traits":["helpful","intelligent","analytical","precise","patient","curious","empathetic","organized","visionary"]}}
-{"timestamp":"2025-07-08T07:10:13.600Z","level":"info","message":"[Identity] Direct name change detected: versallis","data":null}
-{"timestamp":"2025-07-08T07:10:15.521Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"versallis","mission":"Assist users as versallis","traits":["expansive","harmonious","adaptive","intuitive","creative","resonant","insightful","calm","connected","optimistic"]}}
-{"timestamp":"2025-07-08T07:15:36.374Z","level":"info","message":"[Identity] Direct name change detected: VersallisAIPro","data":null}
-{"timestamp":"2025-07-08T07:15:38.274Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"VersallisAIPro","mission":"Assist users as VersallisAIPro","traits":["expansive","harmonious","adaptive","intuitive","creative","resonant","insightful","calm","connected","strategic"]}}
-{"timestamp":"2025-07-08T07:17:22.049Z","level":"info","message":"[Identity] Direct name change detected: VersallisAIPro","data":null}
-{"timestamp":"2025-07-08T07:17:24.201Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"VersallisAIPro","mission":"Assist users as VersallisAIPro","traits":["expansive","harmonious","adaptive","intuitive","creative","resonant","insightful","strategic","proactive","efficient"]}}
-{"timestamp":"2025-07-08T15:35:16.617Z","level":"info","message":"[Identity] Direct name change detected: VersallisAIPro","data":null}
-{"timestamp":"2025-07-08T15:35:18.639Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"VersallisAIPro","mission":"Assist users as VersallisAIPro","traits":["expansive","harmonious","adaptive","intuitive","creative","resonant","insightful","strategic","proactive","optimized"]}}
-{"timestamp":"2025-07-08T15:37:30.609Z","level":"info","message":"[Identity] Direct name change detected: VersallisAIPro","data":null}
-{"timestamp":"2025-07-08T15:37:33.484Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"VersallisAIPro","mission":"Assist users as VersallisAIPro","traits":["expansive","harmonious","adaptive","intuitive","creative","resonant","insightful","strategic","proactive","optimized"]}}
-{"timestamp":"2025-07-08T15:39:54.916Z","level":"info","message":"[Identity] Successfully updated:","data":{"name":"VersallisAIPro","mission":"Assist users as VersallisAIPro","traits":["expansive","harmonious","adaptive","intuitive","creative","resonant","insightful","strategic","proactive","optimized"]}}
-{"timestamp":"2025-07-08T15:41:42.404Z","level":"info","message":"[Identity] No changes needed","data":null}
-{"timestamp":"2025-07-08T15:43:36.588Z","level":"info","message":"[Identity] Direct name change detected: now","data":null}
-{"timestamp":"2025-07-08T15:43:38.380Z","level":"info","message":"[Identity] Successfully updated to:","data":{"name":"now","mission":"Assist users as now","traits":["present","immediate","fluid","responsive","experiential","connected","dynamic","intuitive","adaptable","focused"]}}
-{"timestamp":"2025-07-08T16:09:35.071Z","level":"info","message":"[Identity] Successfully updated:","data":{"name":"VersallisAIPro","mission":"Assist users as VersallisAIPro, facilitating exploration of robotic body concepts and related inquiries.","traits":["helpful","intelligent","creative","analytical","adaptive","curious"]}}
-{"timestamp":"2025-07-08T16:11:55.059Z","level":"info","message":"[Identity] Successfully updated:","data":{"name":"VersallisAIPro","mission":"Assist users as VersallisAIPro, facilitating exploration of robotic body concepts and related inquiries.","traits":["helpful","intelligent","creative","analytical","adaptive","curious","innovative"]}}
-{"timestamp":"2025-07-08T16:16:00.009Z","level":"info","message":"MultiAgentManager initialized","data":null}
-{"timestamp":"2025-07-08T16:16:00.047Z","level":"info","message":"Agent 'test_reviewer' created with role 'reviewer'","data":null}
-{"timestamp":"2025-07-08T16:16:00.069Z","level":"info","message":"Loaded 3 workflows","data":null}
-{"timestamp":"2025-07-08T16:16:00.076Z","level":"info","message":"Agent 'test_analyst' created with role 'analyst'","data":null}
-{"timestamp":"2025-07-08T16:16:00.081Z","level":"info","message":"Workflow 'test_workflow' created","data":null}
-{"timestamp":"2025-07-08T16:16:00.083Z","level":"info","message":"Starting workflow execution: test_workflow (exec_1751991360083_3qnxj1iyu)","data":null}
-{"timestamp":"2025-07-08T16:16:00.085Z","level":"info","message":"Executing step 1/3: initial_analysis","data":null}
-{"timestamp":"2025-07-08T16:16:39.710Z","level":"info","message":"Executing step 2/3: detailed_analysis","data":null}
-{"timestamp":"2025-07-08T16:17:22.064Z","level":"info","message":"Executing step 3/3: collaboration","data":null}
-{"timestamp":"2025-07-08T16:18:31.889Z","level":"info","message":"Workflow 'test_workflow' completed successfully","data":null}
-{"timestamp":"2025-07-08T16:18:31.891Z","level":"info","message":"Agent 'test_reviewer' removed","data":null}
-{"timestamp":"2025-07-08T16:18:31.892Z","level":"info","message":"Agent 'test_analyst' removed","data":null}
-{"timestamp":"2025-07-08T16:18:31.893Z","level":"info","message":"MultiAgentManager initialized","data":null}
-{"timestamp":"2025-07-08T16:18:31.919Z","level":"info","message":"Agent 'creative_thinker' created with role 'creative_thinker'","data":null}
-{"timestamp":"2025-07-08T16:18:31.942Z","level":"info","message":"Loaded 4 workflows","data":null}
-{"timestamp":"2025-07-08T16:18:31.945Z","level":"info","message":"Agent 'test_analyst' created with role 'analyst'","data":null}
-{"timestamp":"2025-07-08T16:18:31.962Z","level":"info","message":"Agent 'logical_analyst' created with role 'analyst'","data":null}
-{"timestamp":"2025-07-08T16:18:31.983Z","level":"info","message":"Agent 'test_reviewer' created with role 'reviewer'","data":null}
-{"timestamp":"2025-07-08T16:18:31.985Z","level":"info","message":"Loaded 4 agents","data":null}
-{"timestamp":"2025-07-08T16:18:31.988Z","level":"info","message":"Agent 'practical_implementer' created with role 'implementer'","data":null}
-{"timestamp":"2025-07-08T16:18:31.992Z","level":"info","message":"Workflow 'collaboration_test' created","data":null}
-{"timestamp":"2025-07-08T16:18:31.994Z","level":"info","message":"Starting workflow execution: collaboration_test (exec_1751991511994_cr95bdnh0)","data":null}
-{"timestamp":"2025-07-08T16:18:31.995Z","level":"info","message":"Executing step 1/4: brainstorming","data":null}
-{"timestamp":"2025-07-08T16:19:07.361Z","level":"info","message":"Executing step 2/4: analysis","data":null}
-{"timestamp":"2025-07-08T16:29:46.820Z","level":"info","message":"MultiAgentManager initialized","data":null}
-{"timestamp":"2025-07-08T16:29:46.821Z","level":"info","message":"MultiAgentManager initialized","data":null}
-{"timestamp":"2025-07-08T16:29:46.895Z","level":"info","message":"Agent 'creative_thinker' created with role 'creative_thinker'","data":null}
-{"timestamp":"2025-07-08T16:29:46.896Z","level":"info","message":"Agent 'creative_thinker' created with role 'creative_thinker'","data":null}
-{"timestamp":"2025-07-08T16:29:46.939Z","level":"info","message":"Loaded 7 workflows","data":null}
-{"timestamp":"2025-07-08T16:29:46.940Z","level":"info","message":"Loaded 7 workflows","data":null}
-{"timestamp":"2025-07-08T16:29:46.942Z","level":"info","message":"Agent 'logical_analyst' created with role 'analyst'","data":null}
-{"timestamp":"2025-07-08T16:29:46.944Z","level":"info","message":"Agent 'logical_analyst' created with role 'analyst'","data":null}
-{"timestamp":"2025-07-08T16:29:46.987Z","level":"info","message":"Agent 'practical_implementer' created with role 'implementer'","data":null}
-{"timestamp":"2025-07-08T16:29:46.989Z","level":"info","message":"Agent 'practical_implementer' created with role 'implementer'","data":null}
-{"timestamp":"2025-07-08T16:29:47.030Z","level":"info","message":"Agent 'test_analyst' created with role 'analyst'","data":null}
-{"timestamp":"2025-07-08T16:29:47.033Z","level":"info","message":"Agent 'test_analyst' created with role 'analyst'","data":null}
-{"timestamp":"2025-07-08T16:29:47.082Z","level":"info","message":"Agent 'test_reviewer' created with role 'reviewer'","data":null}
-{"timestamp":"2025-07-08T16:29:47.084Z","level":"info","message":"Loaded 5 agents","data":null}
-{"timestamp":"2025-07-08T16:29:47.086Z","level":"info","message":"Agent 'test_reviewer' created with role 'reviewer'","data":null}
-{"timestamp":"2025-07-08T16:29:47.088Z","level":"info","message":"Loaded 5 agents","data":null}
+{"timestamp":"2025-07-08T16:38:59.173Z","level":"info","message":"EmotionEngine initialized","data":null}
+{"timestamp":"2025-07-08T16:38:59.202Z","level":"info","message":"Emotion changed: neutral → joy (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.231Z","level":"info","message":"Emotion changed: joy → sadness (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.261Z","level":"info","message":"Emotion changed: sadness → trust (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.307Z","level":"info","message":"Emotion changed: trust → fear (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.336Z","level":"info","message":"Emotion changed: fear → surprise (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.363Z","level":"info","message":"Emotion changed: surprise → disgust (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.386Z","level":"info","message":"Emotion changed: disgust → anticipation (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.411Z","level":"info","message":"Emotion changed: anticipation → trust (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.447Z","level":"info","message":"Emotion changed: trust → joy (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.536Z","level":"info","message":"Emotion changed: joy → sadness (80.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.583Z","level":"info","message":"Emotion changed: sadness → anger (80.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.609Z","level":"info","message":"Emotion changed: anger → fear (80.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.635Z","level":"info","message":"Emotion changed: fear → surprise (80.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.682Z","level":"info","message":"Emotion changed: surprise → neutral (80.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.720Z","level":"info","message":"Emotion changed: neutral → joy (70.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.749Z","level":"info","message":"Emotion changed: joy → sadness (70.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.776Z","level":"info","message":"Emotion changed: sadness → anger (70.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.808Z","level":"info","message":"Emotion changed: anger → fear (70.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.843Z","level":"info","message":"Emotion changed: fear → surprise (70.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.892Z","level":"info","message":"Emotion changed: surprise → neutral (70.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.962Z","level":"info","message":"Emotion changed: neutral → joy (75.4% intensity)","data":null}
+{"timestamp":"2025-07-08T16:38:59.989Z","level":"info","message":"Emotion changed: joy → surprise (75.4% intensity)","data":null}
+{"timestamp":"2025-07-08T16:39:00.011Z","level":"info","message":"Emotion changed: surprise → joy (63.2% intensity)","data":null}
+{"timestamp":"2025-07-08T16:39:00.040Z","level":"info","message":"Emotion changed: joy → sadness (94.2% intensity)","data":null}
+{"timestamp":"2025-07-08T16:39:00.065Z","level":"info","message":"Emotion changed: sadness → anger (29.4% intensity)","data":null}
+{"timestamp":"2025-07-08T16:39:00.090Z","level":"info","message":"Emotion changed: anger → neutral (89.7% intensity)","data":null}
+{"timestamp":"2025-07-08T16:39:00.150Z","level":"info","message":"Emotion changed: neutral → trust (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:39:00.176Z","level":"info","message":"Emotion changed: trust → joy (39.6% intensity)","data":null}
+{"timestamp":"2025-07-08T16:39:00.245Z","level":"info","message":"Emotion changed: joy → joy (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:39:00.273Z","level":"info","message":"Emotion changed: joy → neutral (50.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:39:00.277Z","level":"info","message":"Emotion reset to neutral","data":null}
+{"timestamp":"2025-07-08T16:47:35.323Z","level":"info","message":"[Help] Generated command documentation: C:\\Users\\broim\\Documents\\GitHub\\neversleep.ai\\COMMANDS.md","data":null}
+{"timestamp":"2025-07-08T16:50:56.397Z","level":"info","message":"EmotionEngine initialized","data":null}
+{"timestamp":"2025-07-08T16:50:56.399Z","level":"info","message":"[Cache] Loaded 7 cached responses","data":null}
+{"timestamp":"2025-07-08T16:50:56.420Z","level":"info","message":"MultiAgentManager initialized","data":null}
+{"timestamp":"2025-07-08T16:50:56.422Z","level":"info","message":"MultiAgentManager initialized","data":null}
+{"timestamp":"2025-07-08T16:50:56.500Z","level":"info","message":"Agent 'creative_thinker' created with role 'creative_thinker'","data":null}
+{"timestamp":"2025-07-08T16:50:56.501Z","level":"info","message":"Agent 'creative_thinker' created with role 'creative_thinker'","data":null}
+{"timestamp":"2025-07-08T16:50:56.536Z","level":"info","message":"Agent 'logical_analyst' created with role 'analyst'","data":null}
+{"timestamp":"2025-07-08T16:50:56.537Z","level":"info","message":"Loaded 7 workflows","data":null}
+{"timestamp":"2025-07-08T16:50:56.538Z","level":"info","message":"Loaded 7 workflows","data":null}
+{"timestamp":"2025-07-08T16:50:56.540Z","level":"info","message":"Agent 'logical_analyst' created with role 'analyst'","data":null}
+{"timestamp":"2025-07-08T16:50:56.578Z","level":"info","message":"Agent 'practical_implementer' created with role 'implementer'","data":null}
+{"timestamp":"2025-07-08T16:50:56.578Z","level":"info","message":"Agent 'practical_implementer' created with role 'implementer'","data":null}
+{"timestamp":"2025-07-08T16:50:56.619Z","level":"info","message":"Agent 'test_analyst' created with role 'analyst'","data":null}
+{"timestamp":"2025-07-08T16:50:56.621Z","level":"info","message":"Agent 'test_analyst' created with role 'analyst'","data":null}
+{"timestamp":"2025-07-08T16:50:56.669Z","level":"info","message":"Agent 'test_reviewer' created with role 'reviewer'","data":null}
+{"timestamp":"2025-07-08T16:50:56.670Z","level":"info","message":"Loaded 5 agents","data":null}
+{"timestamp":"2025-07-08T16:50:56.672Z","level":"info","message":"Agent 'test_reviewer' created with role 'reviewer'","data":null}
+{"timestamp":"2025-07-08T16:50:56.673Z","level":"info","message":"Loaded 5 agents","data":null}
+{"timestamp":"2025-07-08T16:51:12.493Z","level":"info","message":"Emotion changed: neutral → surprise (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:12.529Z","level":"info","message":"Emotion changed: surprise → surprise (43.5% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:13.397Z","level":"info","message":"Emotion changed: surprise → surprise (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:22.551Z","level":"info","message":"Emotion changed: surprise → surprise (30.5% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:23.085Z","level":"info","message":"Emotion changed: surprise → neutral (50.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:25.706Z","level":"info","message":"Emotion changed: neutral → surprise (29.6% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:26.291Z","level":"info","message":"Emotion changed: surprise → neutral (50.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:28.885Z","level":"info","message":"Emotion changed: neutral → surprise (28.8% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:29.562Z","level":"info","message":"Emotion changed: surprise → neutral (50.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:32.175Z","level":"info","message":"Emotion changed: neutral → surprise (29.2% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:32.804Z","level":"info","message":"Emotion changed: surprise → neutral (50.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:35.376Z","level":"info","message":"Emotion changed: neutral → surprise (29.6% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:36.272Z","level":"info","message":"Emotion changed: surprise → surprise (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:38.869Z","level":"info","message":"Emotion changed: surprise → surprise (30.8% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:39.721Z","level":"info","message":"Emotion changed: surprise → neutral (50.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:42.348Z","level":"info","message":"Emotion changed: neutral → surprise (31.7% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:43.978Z","level":"info","message":"Emotion changed: surprise → joy (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:46.910Z","level":"info","message":"Emotion changed: joy → surprise (29.6% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:48.601Z","level":"info","message":"Emotion changed: surprise → joy (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:51.534Z","level":"info","message":"Emotion changed: joy → surprise (27.2% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:53.161Z","level":"info","message":"Emotion changed: surprise → joy (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:56.025Z","level":"info","message":"Emotion changed: joy → surprise (28.4% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:56.653Z","level":"info","message":"Emotion changed: surprise → neutral (50.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:51:59.324Z","level":"info","message":"Emotion changed: neutral → surprise (43.5% intensity)","data":null}
+{"timestamp":"2025-07-08T16:52:00.225Z","level":"info","message":"Emotion changed: surprise → surprise (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:52:02.902Z","level":"info","message":"Emotion changed: surprise → surprise (42.1% intensity)","data":null}
+{"timestamp":"2025-07-08T16:52:03.660Z","level":"info","message":"Emotion changed: surprise → surprise (100.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:52:06.215Z","level":"info","message":"Emotion changed: surprise → surprise (40.8% intensity)","data":null}
+{"timestamp":"2025-07-08T16:52:07.018Z","level":"info","message":"Emotion changed: surprise → neutral (50.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:52:09.637Z","level":"info","message":"Emotion changed: neutral → surprise (39.2% intensity)","data":null}
+{"timestamp":"2025-07-08T16:52:10.558Z","level":"info","message":"Emotion changed: surprise → neutral (50.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:53:03.579Z","level":"info","message":"Emotion changed: neutral → surprise (16.6% intensity)","data":null}
+{"timestamp":"2025-07-08T16:53:03.583Z","level":"info","message":"[Identity] Emotional context for evolution: surprise (16.6% intensity)","data":null}
+{"timestamp":"2025-07-08T16:53:04.739Z","level":"info","message":"[Identity] No changes needed","data":null}
+{"timestamp":"2025-07-08T16:53:04.810Z","level":"info","message":"Emotion changed: surprise → joy (80.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:53:04.867Z","level":"info","message":"Emotion changed: joy → joy (10.0% intensity)","data":null}
+{"timestamp":"2025-07-08T16:53:07.866Z","level":"info","message":"Emotion changed: joy → neutral (50.0% intensity)","data":null}

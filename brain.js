@@ -1,8 +1,12 @@
 const axios = require('axios');
 const fs = require('fs');
 const StateManager = require('./StateManager');
+const EmotionEngine = require('./EmotionEngine');
+const ResponseCache = require('./ResponseCache');
 
 const stateManager = new StateManager();
+const emotionEngine = new EmotionEngine(stateManager);
+const responseCache = new ResponseCache();
 
 const OLLAMA_URL = 'http://localhost:11434';
 
@@ -56,12 +60,20 @@ function validateResponse(response, maxLength = null) {
 async function askLLM(prompt, model = 'gemma3:latest', temperature = null) {
   try {
     const config = loadConfig();
+    const actualTemperature = temperature !== null ? temperature : config.llm_settings.temperature;
+    
+    // Check cache first
+    const cachedResponse = responseCache.get(prompt, model, actualTemperature);
+    if (cachedResponse) {
+      return cachedResponse.response;
+    }
+    
     const res = await axios.post(`${OLLAMA_URL}/api/generate`, {
       model,
       prompt,
       stream: false,
       options: {
-        temperature: temperature !== null ? temperature : config.llm_settings.temperature,
+        temperature: actualTemperature,
         top_p: config.llm_settings.top_p,
         repeat_penalty: config.llm_settings.repeat_penalty,
         num_predict: config.llm_settings.max_tokens
@@ -69,7 +81,14 @@ async function askLLM(prompt, model = 'gemma3:latest', temperature = null) {
     });
     
     const response = res.data.response.trim();
-    return validateResponse(response);
+    const validatedResponse = validateResponse(response);
+    
+    // Cache the response if it's worth caching
+    if (responseCache.shouldCache(prompt, validatedResponse)) {
+      responseCache.set(prompt, validatedResponse, model, actualTemperature);
+    }
+    
+    return validatedResponse;
   } catch (error) {
     console.error('LLM request failed:', error.message);
     return "Unable to process request.";
@@ -99,7 +118,19 @@ async function think(identityContext, recentLogs) {
     return "Idle - awaiting user interaction.";
   }
 
+  // Analyze emotions from recent logs
+  const emotionAnalysis = emotionEngine.analyzeEmotion(recentLogs, 'thought_process');
+  const emotionResponse = emotionEngine.generateEmotionalResponse('thinking');
+  const styleModifiers = emotionEngine.getResponseStyleModifiers();
+  
+  // Create emotion-aware context
+  const emotionContext = `Current emotional state: ${emotionAnalysis.primary} (${(emotionAnalysis.intensity * 100).toFixed(1)}% intensity)
+Emotional response: ${emotionResponse.response}
+Tone modifier: ${styleModifiers.tone}`;
+
   const prompt = `${identityContext}
+
+${emotionContext}
 
 STRICT FACTUAL ANALYSIS ONLY:
 Recent conversation logs:
@@ -111,10 +142,15 @@ Rules:
 3. Do NOT assume what the user is thinking, feeling, or doing
 4. If logs show no meaningful new information, respond: "Awaiting user input."
 5. Maximum 2 sentences
+6. Consider your emotional state in your response tone
 
 Your factual observation:`;
 
   let thought = await askLLM(prompt);
+  
+  // Analyze the thought itself for emotional content
+  emotionEngine.analyzeEmotion(thought, 'generated_thought');
+  
   return thought;
 }
 
@@ -165,6 +201,10 @@ Tag this thought with a short 'mood' and 'goal'. Respond as JSON: {"mood": "..."
 async function evolveIdentity(memoryLog) {
   const logger = require('./logger');
   
+  // Analyze emotions from the memory log to understand user context
+  const emotionAnalysis = emotionEngine.analyzeEmotion(memoryLog, 'identity_evolution');
+  logger.info(`[Identity] Emotional context for evolution: ${emotionAnalysis.primary} (${(emotionAnalysis.intensity * 100).toFixed(1)}% intensity)`);
+  
   // First, check for direct name change patterns
   const directNamePatterns = [
     /change your name to\s+(\w+)/i,
@@ -186,14 +226,18 @@ async function evolveIdentity(memoryLog) {
       try {
         const currentIdentity = JSON.parse(fs.readFileSync('./identity.json', 'utf-8'));
         
-        // Reflect on traits when name changes
+        // Include emotional context in trait reflection
+        const emotionContext = `Current emotional state: ${emotionAnalysis.primary} with ${(emotionAnalysis.intensity * 100).toFixed(1)}% intensity`;
+        
         const traitReflectionPrompt = `The AI is changing its name to "${newName}". 
         
 Current traits: ${currentIdentity.traits.join(', ')}
+${emotionContext}
 
 What traits should "${newName}" have? Consider:
 - The personality that the name suggests
 - Traits that would be helpful for the AI's mission
+- The current emotional context and user needs
 - Keep helpful core traits, add relevant new ones
 - Maximum 10 traits
 
@@ -488,5 +532,7 @@ module.exports = {
   userGiveReward,
   analyzeOutputAndDecide,
   analyzeSatisfaction,
-  stateManager
+  stateManager,
+  emotionEngine,
+  responseCache
 };

@@ -50,6 +50,16 @@ class StateManager {
           traitEvolutions: [],
           nameChangeHistory: [],
           missionUpdates: []
+        },
+        emotions: {
+          currentEmotion: 'neutral',
+          emotionIntensity: 0.5,
+          emotionConfidence: 1.0,
+          emotionContext: 'initialization',
+          emotionHistory: [],
+          emotionPatterns: {},
+          emotionTriggers: {},
+          emotionalStability: 1.0
         }
       };
       
@@ -166,6 +176,49 @@ class StateManager {
         ].slice(-10) : state.evolution.nameChangeHistory
       }
     });
+  }
+
+  recordEmotionChange(emotionData) {
+    const state = this.getState();
+    this.updateState({
+      emotions: {
+        currentEmotion: emotionData.primary,
+        emotionIntensity: emotionData.intensity,
+        emotionConfidence: emotionData.confidence,
+        emotionContext: emotionData.context,
+        emotionHistory: [
+          ...state.emotions.emotionHistory,
+          {
+            timestamp: new Date().toISOString(),
+            emotion: emotionData.primary,
+            intensity: emotionData.intensity,
+            confidence: emotionData.confidence,
+            context: emotionData.context,
+            triggers: emotionData.triggers
+          }
+        ].slice(-50) // Keep last 50 emotion changes
+      }
+    });
+  }
+
+  updateEmotionPatterns(patterns) {
+    this.updateState({
+      emotions: {
+        emotionPatterns: patterns,
+        emotionalStability: patterns.emotionalStability || 1.0
+      }
+    });
+  }
+
+  getEmotionState() {
+    const state = this.getState();
+    return state.emotions || {
+      currentEmotion: 'neutral',
+      emotionIntensity: 0.5,
+      emotionConfidence: 1.0,
+      emotionContext: 'unknown',
+      emotionHistory: []
+    };
   }
 
   updatePerformance(metrics) {

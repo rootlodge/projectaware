@@ -2,15 +2,15 @@
   "session": {
     "startTime": "2025-07-08T07:08:34.413Z",
     "sessionId": "session_1751958514414_rgo3yeus2",
-    "totalInteractions": 8,
-    "lastActivity": "2025-07-08T16:30:08.535Z"
+    "totalInteractions": 13,
+    "lastActivity": "2025-07-08T16:53:15.636Z"
   },
   "cognitive": {
-    "currentMood": "neutral",
-    "currentGoal": "continue thinking",
     "focusLevel": 0.7,
     "energyLevel": 1,
-    "confidenceLevel": 0.8
+    "confidenceLevel": 0.8,
+    "currentMood": "neutral",
+    "currentGoal": "continue thinking"
   },
   "social": {
     "userEngagement": "moderate",

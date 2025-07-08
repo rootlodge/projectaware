@@ -18,7 +18,9 @@
     "debug": "node --inspect agent.js",
     "test-multi-agent": "node tests/test-multi-agent.js",
     "test-internal-agents": "node tests/test-internal-agents.js",
-    "test": "node tests/test-multi-agent.js && node tests/test-internal-agents.js"
+    "test-emotion-engine": "node tests/test-emotion-engine.js",
+    "test-cache-help": "node tests/test-cache-help.js",
+    "test": "node tests/test-multi-agent.js && node tests/test-internal-agents.js && node tests/test-emotion-engine.js && node tests/test-cache-help.js"
   },
   "keywords": [],
   "author": "",

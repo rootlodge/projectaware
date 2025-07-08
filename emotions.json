@@ -1,0 +1,1216 @@
+{
+  "currentEmotion": {
+    "primary": "neutral",
+    "secondary": null,
+    "intensity": 0.5,
+    "confidence": 0.7,
+    "timestamp": "2025-07-08T16:53:07.865Z",
+    "triggers": [],
+    "context": "generated_thought",
+    "previous": "joy"
+  },
+  "history": [
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:51:05.744Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:51:06.994Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:51:09.579Z",
+      "triggers": [],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:51:10.826Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "surprise",
+      "secondary": null,
+      "intensity": 1,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T16:51:12.491Z",
+      "triggers": [
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "user_input",
+      "previous": "neutral",
+      "transition": "neutral → surprise"
+    },
+    {
+      "primary": "surprise",
+      "secondary": null,
+      "intensity": 0.4347826086956522,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T16:51:12.514Z",
+      "triggers": [
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "surprise",
+      "transition": "surprise → surprise"
+    },
+    {
+      "primary": "surprise",
+      "secondary": null,
+      "intensity": 1,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T16:51:13.395Z",
+      "triggers": [
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        }
+      ],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → surprise"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.3053435114503817,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:22.549Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "surprise",
+      "transition": "surprise → surprise"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:51:23.084Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → neutral"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.2962962962962963,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:25.703Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → surprise"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:51:26.289Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → neutral"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.28776978417266186,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:28.883Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → surprise"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:51:29.559Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → neutral"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.29197080291970806,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:32.173Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → surprise"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:51:32.801Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → neutral"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.2962962962962963,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:35.374Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → surprise"
+    },
+    {
+      "primary": "surprise",
+      "secondary": null,
+      "intensity": 1,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T16:51:36.270Z",
+      "triggers": [
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        }
+      ],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → surprise"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.3076923076923077,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:38.867Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "surprise",
+      "transition": "surprise → surprise"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:51:39.719Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → neutral"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.31746031746031744,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:42.347Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → surprise"
+    },
+    {
+      "primary": "joy",
+      "secondary": "surprise",
+      "intensity": 1,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T16:51:43.976Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → joy"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.2962962962962963,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:46.908Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "joy",
+      "transition": "joy → surprise"
+    },
+    {
+      "primary": "joy",
+      "secondary": "surprise",
+      "intensity": 1,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T16:51:48.598Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → joy"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.272108843537415,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:51.531Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "joy",
+      "transition": "joy → surprise"
+    },
+    {
+      "primary": "joy",
+      "secondary": "surprise",
+      "intensity": 1,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T16:51:53.160Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → joy"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.28368794326241137,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:56.022Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "joy",
+      "transition": "joy → surprise"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:51:56.652Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → neutral"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.4347826086956522,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:51:59.322Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → surprise"
+    },
+    {
+      "primary": "surprise",
+      "secondary": null,
+      "intensity": 1,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T16:52:00.222Z",
+      "triggers": [
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        }
+      ],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → surprise"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.42105263157894735,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:52:02.898Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "surprise",
+      "transition": "surprise → surprise"
+    },
+    {
+      "primary": "surprise",
+      "secondary": null,
+      "intensity": 1,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T16:52:03.658Z",
+      "triggers": [
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "unexpected",
+            "unexpected"
+          ]
+        }
+      ],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → surprise"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.4081632653061224,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:52:06.214Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "surprise",
+      "transition": "surprise → surprise"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:52:07.015Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → neutral"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.3921568627450981,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:52:09.630Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "neutral",
+      "transition": "neutral → surprise"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:52:10.556Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "surprise",
+      "transition": "surprise → neutral"
+    },
+    {
+      "primary": "surprise",
+      "secondary": "joy",
+      "intensity": 0.16597510373443983,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:53:03.576Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        }
+      ],
+      "context": "identity_evolution",
+      "previous": "neutral",
+      "transition": "neutral → surprise"
+    },
+    {
+      "primary": "joy",
+      "secondary": "anticipation",
+      "intensity": 0.8,
+      "confidence": 0.4,
+      "timestamp": "2025-07-08T16:53:04.805Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(happy|joy|excited|great|awesome|wonderful|fantastic|amazing|love|enjoy|delighted|thrilled|pleased)\\b/i",
+          "matches": [
+            "love",
+            "love"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(excited|anticipate|expect|hope|look forward|can't wait|soon|tomorrow)\\b/i",
+          "matches": [
+            "can't wait",
+            "can't wait"
+          ]
+        },
+        {
+          "emotion": "trust",
+          "pattern": "/\\b(friend|ally|support|help|care|love|respect)\\b/i",
+          "matches": [
+            "love",
+            "love"
+          ]
+        }
+      ],
+      "context": "user_input",
+      "previous": "surprise",
+      "transition": "surprise → joy"
+    },
+    {
+      "primary": "joy",
+      "secondary": "surprise",
+      "intensity": 0.1,
+      "confidence": 0.8,
+      "timestamp": "2025-07-08T16:53:04.850Z",
+      "triggers": [
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(happy|joy|excited|great|awesome|wonderful|fantastic|amazing|love|enjoy|delighted|thrilled|pleased)\\b/i",
+          "matches": [
+            "love",
+            "love"
+          ]
+        },
+        {
+          "emotion": "joy",
+          "pattern": "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i",
+          "matches": [
+            "good",
+            "good"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i",
+          "matches": [
+            "amazed",
+            "amazed"
+          ]
+        },
+        {
+          "emotion": "surprise",
+          "pattern": "/\\b(omg|wtf|what|how)\\b/i",
+          "matches": [
+            "How",
+            "How"
+          ]
+        },
+        {
+          "emotion": "anticipation",
+          "pattern": "/\\b(excited|anticipate|expect|hope|look forward|can't wait|soon|tomorrow)\\b/i",
+          "matches": [
+            "can't wait",
+            "can't wait"
+          ]
+        },
+        {
+          "emotion": "trust",
+          "pattern": "/\\b(friend|ally|support|help|care|love|respect)\\b/i",
+          "matches": [
+            "love",
+            "love"
+          ]
+        }
+      ],
+      "context": "thought_process",
+      "previous": "joy",
+      "transition": "joy → joy"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-08T16:53:07.865Z",
+      "triggers": [],
+      "context": "generated_thought",
+      "previous": "joy",
+      "transition": "joy → neutral"
+    }
+  ],
+  "patterns": {
+    "emotionFrequency": {
+      "neutral": {
+        "count": 13,
+        "totalIntensity": 6.5,
+        "contexts": {
+          "thought_process": 2,
+          "generated_thought": 11
+        },
+        "averageIntensity": 0.5
+      },
+      "surprise": {
+        "count": 21,
+        "totalIntensity": 10.211835480140005,
+        "contexts": {
+          "user_input": 1,
+          "thought_process": 15,
+          "generated_thought": 4,
+          "identity_evolution": 1
+        },
+        "averageIntensity": 0.4862778800066669
+      },
+      "joy": {
+        "count": 5,
+        "totalIntensity": 3.9,
+        "contexts": {
+          "generated_thought": 3,
+          "user_input": 1,
+          "thought_process": 1
+        },
+        "averageIntensity": 0.78
+      }
+    },
+    "transitions": {
+      "neutral → neutral": 4,
+      "neutral → surprise": 9,
+      "surprise → surprise": 9,
+      "surprise → neutral": 8,
+      "surprise → joy": 4,
+      "joy → surprise": 3,
+      "joy → joy": 1,
+      "joy → neutral": 1
+    },
+    "dominantEmotion": "surprise",
+    "emotionalStability": 0.30000000000000004
+  },
+  "triggers": {
+    "surprise": {
+      "/\\b(omg|wtf|what|how)\\b/i": {
+        "count": 21,
+        "examples": [
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How",
+          "How"
+        ]
+      },
+      "/\\b(surprise|shocked|amazed|astonished|wow|whoa|incredible|unbelievable|unexpected)\\b/i": {
+        "count": 20,
+        "examples": [
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "unexpected",
+          "unexpected",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed",
+          "amazed"
+        ]
+      }
+    },
+    "joy": {
+      "/\\b(good|nice|perfect|excellent|brilliant|marvelous|superb|outstanding)\\b/i": {
+        "count": 19,
+        "examples": [
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good",
+          "good"
+        ]
+      },
+      "/\\b(happy|joy|excited|great|awesome|wonderful|fantastic|amazing|love|enjoy|delighted|thrilled|pleased)\\b/i": {
+        "count": 2,
+        "examples": [
+          "love",
+          "love",
+          "love",
+          "love"
+        ]
+      }
+    },
+    "anticipation": {
+      "/\\b(excited|anticipate|expect|hope|look forward|can't wait|soon|tomorrow)\\b/i": {
+        "count": 2,
+        "examples": [
+          "can't wait",
+          "can't wait",
+          "can't wait",
+          "can't wait"
+        ]
+      }
+    },
+    "trust": {
+      "/\\b(friend|ally|support|help|care|love|respect)\\b/i": {
+        "count": 2,
+        "examples": [
+          "love",
+          "love",
+          "love",
+          "love"
+        ]
+      }
+    }
+  },
+  "timestamp": "2025-07-08T16:53:07.867Z"
+}

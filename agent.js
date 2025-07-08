@@ -14,16 +14,31 @@ const {
   userGiveReward,
   analyzeSatisfaction,
   analyzeOutputAndDecide,
-  stateManager
+  stateManager,
+  emotionEngine,
+  responseCache
 } = require('./brain');
 
 const { saveMessage, getRecentMessages, getConversationHistory, getUserResponsePatterns } = require('./memory');
 const MultiAgentManager = require('./MultiAgentManager');
 const InternalAgentSystem = require('./InternalAgentSystem');
+const HelpSystem = require('./HelpSystem');
+const CentralBrainAgent = require('./CentralBrainAgent');
 
-// Initialize multi-agent manager and internal agent system
+// Initialize all systems
 const multiAgentManager = new MultiAgentManager();
 const internalAgentSystem = new InternalAgentSystem();
+const helpSystem = new HelpSystem();
+
+// Initialize Central Brain Agent with all systems
+const centralBrain = new CentralBrainAgent(
+  stateManager,
+  emotionEngine,
+  responseCache,
+  multiAgentManager,
+  internalAgentSystem,
+  helpSystem
+);
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 let inputBuffer = '';
@@ -128,6 +143,14 @@ async function runThoughtLoop() {
         continue;
       }
 
+      if (userInput.toLowerCase().startsWith('help')) {
+        helpSystem.processHelpCommand(userInput);
+        
+        logThought(`[Help] User requested help: ${userInput}`);
+        currentStatus = 'help provided';
+        continue;
+      }
+
       if (userInput.toLowerCase().startsWith('analyze') || userInput.toLowerCase().startsWith('satisfaction')) {
         const conversationHistory = await getConversationHistory(20);
         const satisfactionAnalysis = await analyzeSatisfaction(conversationHistory);
@@ -173,6 +196,83 @@ async function runThoughtLoop() {
         
         logThought(`[State Query] User requested system state information`);
         currentStatus = 'state reported';
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('brain') || userInput.toLowerCase().startsWith('central brain')) {
+        const brainStatus = centralBrain.getStatus();
+        
+        console.log(chalk.magenta.bold('\n🧠 CENTRAL BRAIN (CEREBRUM) STATUS:'));
+        console.log(chalk.white(`Name: ${brainStatus.identity.name}`));
+        console.log(chalk.white(`Role: ${brainStatus.identity.role}`));
+        console.log(chalk.gray(`Mission: ${brainStatus.identity.mission}`));
+        console.log(chalk.gray(`Traits: ${brainStatus.identity.traits.join(', ')}`));
+        
+        console.log(chalk.cyan.bold('\n🎯 SPECIALIZED SUB-AGENTS:'));
+        brainStatus.sub_agents.forEach(agent => {
+          console.log(chalk.white(`• ${agent.name} (${agent.key})`));
+          console.log(chalk.gray(`  Role: ${agent.role}`));
+          console.log(chalk.gray(`  Specialization: ${agent.specialization}`));
+          console.log(chalk.gray(`  Capabilities: ${agent.capabilities.join(', ')}`));
+        });
+        
+        console.log(chalk.yellow.bold('\n⚖️ DECISION THRESHOLDS:'));
+        for (const [key, value] of Object.entries(brainStatus.decision_thresholds)) {
+          console.log(chalk.gray(`  ${key}: ${(value * 100).toFixed(0)}%`));
+        }
+        
+        console.log(chalk.green.bold('\n📊 BRAIN SYSTEM STATE:'));
+        console.log(chalk.gray(`Focus Level: ${brainStatus.system_state.cognitive.focusLevel}`));
+        console.log(chalk.gray(`Energy Level: ${brainStatus.system_state.cognitive.energyLevel}`));
+        console.log(chalk.gray(`Current Emotion: ${brainStatus.system_state.emotions.primary}`));
+        console.log(chalk.gray(`Emotional Intensity: ${(brainStatus.system_state.emotions.intensity * 100).toFixed(1)}%`));
+        
+        logThought(`[Central Brain] User requested central brain status`);
+        currentStatus = 'brain status reported';
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('process through brain')) {
+        const input = userInput.substring(21).trim();
+        if (!input) {
+          console.log(chalk.red('Usage: process through brain <your input>'));
+          continue;
+        }
+        
+        console.log(chalk.yellow('🧠 Processing through Central Brain...'));
+        
+        try {
+          const result = await centralBrain.process(input, 'direct_brain_request');
+          
+          console.log(chalk.blue.bold('\n🎯 CENTRAL BRAIN RESPONSE:'));
+          console.log(chalk.white(result.response));
+          
+          if (result.actions && result.actions.length > 0) {
+            console.log(chalk.cyan.bold('\n⚡ ACTIONS TAKEN:'));
+            result.actions.forEach(action => {
+              console.log(chalk.gray(`• ${action}`));
+            });
+          }
+          
+          if (result.new_agents && result.new_agents.length > 0) {
+            console.log(chalk.green.bold('\n🤖 NEW AGENTS CREATED:'));
+            result.new_agents.forEach(agent => {
+              console.log(chalk.gray(`• ${agent.role}: ${agent.mission}`));
+            });
+          }
+          
+          console.log(chalk.magenta.bold(`\n📈 PROCESSING STATS:`));
+          console.log(chalk.gray(`Delegations: ${result.delegations}`));
+          console.log(chalk.gray(`Synthesis: ${result.synthesis_success ? 'Success' : 'Failed'}`));
+          console.log(chalk.gray(`Emotional Context: ${result.emotional_context.emotion}`));
+          
+          logThought(`[Central Brain] Processed: ${input} -> ${result.response.substring(0, 100)}...`);
+          currentStatus = 'brain processing complete';
+          
+        } catch (error) {
+          console.log(chalk.red(`❌ Central Brain processing failed: ${error.message}`));
+          logThought(`[Central Brain] Processing failed: ${error.message}`);
+        }
         continue;
       }
 
@@ -350,6 +450,61 @@ async function runThoughtLoop() {
         continue;
       }
 
+      // Emotion Commands
+      if (userInput.toLowerCase().startsWith('emotions') || userInput.toLowerCase().startsWith('emotion')) {
+        const currentEmotion = emotionEngine.getCurrentEmotion();
+        const emotionHistory = emotionEngine.getEmotionHistory(10);
+        const emotionStats = emotionEngine.getEmotionStats();
+        
+        console.log(chalk.magenta.bold('\n😊 EMOTION SYSTEM:'));
+        console.log(chalk.white(`Current Emotion: ${currentEmotion.primary} (${(currentEmotion.intensity * 100).toFixed(1)}% intensity)`));
+        console.log(chalk.gray(`Confidence: ${(currentEmotion.confidence * 100).toFixed(1)}%`));
+        console.log(chalk.gray(`Context: ${currentEmotion.context}`));
+        
+        if (currentEmotion.secondary) {
+          console.log(chalk.gray(`Secondary Emotion: ${currentEmotion.secondary}`));
+        }
+        
+        console.log(chalk.cyan.bold('\n📊 EMOTION STATS:'));
+        console.log(chalk.gray(`Dominant Emotion: ${emotionStats.dominant}`));
+        console.log(chalk.gray(`Emotional Stability: ${(emotionStats.stability * 100).toFixed(1)}%`));
+        console.log(chalk.gray(`Total Emotion Changes: ${emotionStats.history.total}`));
+        
+        console.log(chalk.yellow.bold('\n📈 RECENT EMOTION HISTORY:'));
+        emotionHistory.forEach((emotion, index) => {
+          const timeAgo = new Date(emotion.timestamp).toLocaleTimeString();
+          console.log(chalk.gray(`${index + 1}. ${emotion.primary} (${(emotion.intensity * 100).toFixed(1)}%) - ${timeAgo}`));
+        });
+        
+        logThought(`[Emotion Query] User requested emotion system information`);
+        currentStatus = 'emotion reported';
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('emotion reset')) {
+        emotionEngine.resetEmotion();
+        console.log(chalk.green('✅ Emotion system reset to neutral'));
+        logThought(`[Emotion Reset] Emotion system manually reset to neutral`);
+        currentStatus = 'emotion reset';
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('emotion response')) {
+        const emotionResponse = emotionEngine.generateEmotionalResponse('user_request');
+        const styleModifiers = emotionEngine.getResponseStyleModifiers();
+        
+        console.log(chalk.blue.bold('\n💬 EMOTIONAL RESPONSE:'));
+        console.log(chalk.white(`Response: ${emotionResponse.response}`));
+        console.log(chalk.gray(`Tone: ${styleModifiers.tone}`));
+        console.log(chalk.gray(`Enthusiasm: ${(styleModifiers.enthusiasm * 100).toFixed(1)}%`));
+        console.log(chalk.gray(`Empathy: ${(styleModifiers.empathy * 100).toFixed(1)}%`));
+        console.log(chalk.gray(`Formality: ${(styleModifiers.formality * 100).toFixed(1)}%`));
+        
+        logThought(`[Emotion Response] Generated emotional response: ${emotionResponse.response}`);
+        currentStatus = 'emotion response generated';
+        continue;
+      }
+
       if (userInput.toLowerCase().startsWith('internal agents')) {
         const status = internalAgentSystem.getStatus();
         console.log(chalk.blue.bold('\n🧠 INTERNAL AGENT SYSTEM:'));
@@ -426,7 +581,75 @@ async function runThoughtLoop() {
         continue;
       }
 
+      // Response Cache Commands
+      if (userInput.toLowerCase().startsWith('cache') || userInput.toLowerCase().startsWith('cache stats')) {
+        const stats = responseCache.getStats();
+        
+        console.log(chalk.green.bold('\n💾 RESPONSE CACHE STATISTICS:'));
+        console.log(chalk.white(`Cache Size: ${stats.size}/${stats.maxSize}`));
+        console.log(chalk.white(`Hit Rate: ${stats.hitRate} (${stats.hits} hits, ${stats.misses} misses)`));
+        console.log(chalk.gray(`Total Requests: ${stats.totalRequests}`));
+        console.log(chalk.gray(`Total Hits: ${stats.totalHits}`));
+        console.log(chalk.gray(`Total Misses: ${stats.totalMisses}`));
+        console.log(chalk.gray(`Created: ${stats.created}`));
+        console.log(chalk.gray(`Last Cleanup: ${stats.lastCleanup}`));
+        
+        const topEntries = responseCache.getEntries('hits', 5);
+        if (topEntries.length > 0) {
+          console.log(chalk.cyan.bold('\n🔝 TOP CACHED RESPONSES:'));
+          topEntries.forEach((entry, index) => {
+            console.log(chalk.white(`${index + 1}. ${entry.prompt} (${entry.hitCount} hits)`));
+            console.log(chalk.gray(`   Model: ${entry.model} | Temperature: ${entry.temperature}`));
+          });
+        }
+        
+        logThought(`[Cache] User requested cache statistics - Hit rate: ${stats.hitRate}`);
+        currentStatus = 'cache stats reported';
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('cache clear')) {
+        responseCache.clear();
+        console.log(chalk.green('✅ Response cache cleared successfully'));
+        logThought(`[Cache] Response cache manually cleared`);
+        currentStatus = 'cache cleared';
+        continue;
+      }
+
+      if (userInput.toLowerCase().startsWith('cache entries')) {
+        const entries = responseCache.getEntries('recent', 10);
+        
+        console.log(chalk.blue.bold('\n📄 RECENT CACHE ENTRIES:'));
+        if (entries.length === 0) {
+          console.log(chalk.gray('No cached entries found.'));
+        } else {
+          entries.forEach((entry, index) => {
+            console.log(chalk.white(`${index + 1}. ${entry.prompt}`));
+            console.log(chalk.gray(`   Response: ${entry.response}`));
+            console.log(chalk.gray(`   Model: ${entry.model} | Temperature: ${entry.temperature} | Hits: ${entry.hitCount}`));
+            console.log(chalk.gray(`   Last Accessed: ${entry.lastAccessed}`));
+            console.log();
+          });
+        }
+        
+        logThought(`[Cache] User requested recent cache entries - ${entries.length} entries shown`);
+        currentStatus = 'cache entries shown';
+        continue;
+      }
+
       saveMessage('user', userInput);
+      
+      // Analyze user emotion from input
+      const userEmotion = emotionEngine.analyzeEmotion(userInput, 'user_input');
+      logThought(`[Emotion] User emotion detected: ${userEmotion.primary} (${(userEmotion.intensity * 100).toFixed(1)}% intensity)`);
+      
+      // Record user interaction with emotional context
+      stateManager.recordInteraction('user_message', {
+        satisfaction: 'pending',
+        tone: 'conversational',
+        emotion: userEmotion.primary,
+        emotionIntensity: userEmotion.intensity
+      });
       
       // Check if user is requesting a name change
       const nameChangePatterns = [

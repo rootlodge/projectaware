@@ -2,8 +2,8 @@
   "session": {
     "startTime": "2025-07-08T07:08:34.413Z",
     "sessionId": "session_1751958514414_rgo3yeus2",
-    "totalInteractions": 2,
-    "lastActivity": "2025-07-08T07:10:57.213Z"
+    "totalInteractions": 3,
+    "lastActivity": "2025-07-08T07:18:16.583Z"
   },
   "cognitive": {
     "currentMood": "neutral",
@@ -39,7 +39,7 @@
     "correctionsReceived": 0
   },
   "evolution": {
-    "identityChanges": 3,
+    "identityChanges": 5,
     "traitEvolutions": [
       {
         "timestamp": "2025-07-08T07:08:36.824Z",
@@ -87,6 +87,38 @@
           "optimistic"
         ],
         "reason": "Direct user name change request"
+      },
+      {
+        "timestamp": "2025-07-08T07:15:38.275Z",
+        "newTraits": [
+          "expansive",
+          "harmonious",
+          "adaptive",
+          "intuitive",
+          "creative",
+          "resonant",
+          "insightful",
+          "calm",
+          "connected",
+          "strategic"
+        ],
+        "reason": "Direct user name change request"
+      },
+      {
+        "timestamp": "2025-07-08T07:17:24.201Z",
+        "newTraits": [
+          "expansive",
+          "harmonious",
+          "adaptive",
+          "intuitive",
+          "creative",
+          "resonant",
+          "insightful",
+          "strategic",
+          "proactive",
+          "efficient"
+        ],
+        "reason": "Direct user name change request"
       }
     ],
     "nameChangeHistory": [
@@ -106,6 +138,18 @@
         "timestamp": "2025-07-08T07:10:15.522Z",
         "oldName": "Lumina",
         "newName": "versallis",
+        "reason": "Direct user name change request"
+      },
+      {
+        "timestamp": "2025-07-08T07:15:38.275Z",
+        "oldName": "versallis",
+        "newName": "VersallisAIPro",
+        "reason": "Direct user name change request"
+      },
+      {
+        "timestamp": "2025-07-08T07:17:24.201Z",
+        "oldName": "VersallisAIPro",
+        "newName": "VersallisAIPro",
         "reason": "Direct user name change request"
       }
     ],

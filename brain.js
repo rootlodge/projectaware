@@ -50,7 +50,7 @@ function validateResponse(response, maxLength = null) {
   return cleaned;
 }
 
-async function askLLM(prompt, model = 'gemma3:latest') {
+async function askLLM(prompt, model = 'gemma3:latest', temperature = null) {
   try {
     const config = loadConfig();
     const res = await axios.post(`${OLLAMA_URL}/api/generate`, {
@@ -58,7 +58,7 @@ async function askLLM(prompt, model = 'gemma3:latest') {
       prompt,
       stream: false,
       options: {
-        temperature: config.llm_settings.temperature,
+        temperature: temperature !== null ? temperature : config.llm_settings.temperature,
         top_p: config.llm_settings.top_p,
         repeat_penalty: config.llm_settings.repeat_penalty,
         num_predict: config.llm_settings.max_tokens
@@ -160,33 +160,86 @@ Tag this thought with a short 'mood' and 'goal'. Respond as JSON: {"mood": "..."
 }
 
 async function evolveIdentity(memoryLog) {
-  const prompt = `Reflect on this:
-${memoryLog}
-If you decide to change your name, mission, or traits, respond as:
-{"name": "...", "mission": "...", "traits": ["..."]}
-Otherwise, respond with: {"no_change": true}`;
+  const logger = require('./logger');
+  
+  // Create a very strict JSON-only prompt
+  const prompt = `You are a JSON parser. You MUST return only valid JSON. No explanations, no text, ONLY JSON.
 
-  const result = await askLLM(prompt);
+Context: ${memoryLog.slice(-1000)} // Last 1000 chars only
+
+Output ONE of these JSON formats EXACTLY:
+
+For changes: {"name": "NewName", "mission": "description", "traits": ["trait1", "trait2"]}
+For no changes: {"no_change": true}
+
+JSON:`;
 
   try {
-    const update = JSON.parse(result);
+    logger.debug('[Identity] Asking LLM for identity evolution...');
+    const result = await askLLM(prompt, 'gemma3:latest', 0.1); // Very low temperature for consistency
+    
+    logger.debug('[Identity] Raw LLM response:', result);
+    
+    // Try to extract JSON from response if it contains other text
+    let jsonMatch = result.match(/\{.*\}/s);
+    if (!jsonMatch) {
+      logger.warn('[Identity] No JSON found in response, assuming no change needed');
+      return;
+    }
+    
+    const cleanJson = jsonMatch[0];
+    logger.debug('[Identity] Extracted JSON:', cleanJson);
+    
+    const update = JSON.parse(cleanJson);
     
     if (update.no_change) {
-      console.log('[Identity] No changes needed');
+      logger.info('[Identity] No changes needed');
+      return;
+    }
+    
+    if (!update.name && !update.mission && !update.traits) {
+      logger.warn('[Identity] Invalid update format, ignoring');
       return;
     }
     
     const core = JSON.parse(fs.readFileSync('./core.json', 'utf-8'));
+    const currentIdentity = JSON.parse(fs.readFileSync('./identity.json', 'utf-8'));
+    
     const identity = {
-      name: update.name || 'Neversleep',
-      mission: update.mission || core.mission,
-      traits: (update.traits || []).filter(t => !core.locked_traits.includes(t))
+      name: update.name || currentIdentity.name,
+      mission: update.mission || currentIdentity.mission,
+      traits: update.traits ? update.traits.filter(t => 
+        !core.locked_traits.includes(t.toLowerCase())
+      ) : currentIdentity.traits
     };
+    
     fs.writeFileSync('./identity.json', JSON.stringify(identity, null, 2));
-    console.log('[Identity] Updated:', identity);
+    logger.success('[Identity] Successfully updated:', identity);
+    
+    // Log the change to memory for context
+    const Memory = require('./memory');
+    const memory = new Memory();
+    await memory.logMessage('system', `Identity evolved: ${JSON.stringify(identity)}`);
+    
   } catch (err) {
-    console.error('[!] Identity evolution failed:', err.message);
-    console.error('[!] Raw result:', result);
+    logger.error('[Identity] Evolution failed:', err.message);
+    logger.debug('[Identity] Error details:', err);
+    
+    // Fallback: ensure identity.json exists with core values
+    try {
+      const core = JSON.parse(fs.readFileSync('./core.json', 'utf-8'));
+      if (!fs.existsSync('./identity.json')) {
+        const fallbackIdentity = {
+          name: core.name,
+          mission: core.mission,
+          traits: [...core.locked_traits]
+        };
+        fs.writeFileSync('./identity.json', JSON.stringify(fallbackIdentity, null, 2));
+        logger.info('[Identity] Created fallback identity');
+      }
+    } catch (fallbackErr) {
+      logger.error('[Identity] Could not create fallback identity:', fallbackErr.message);
+    }
   }
 }
 

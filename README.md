@@ -151,9 +151,95 @@ The AI can change its name and traits through natural language:
 - **Mood Adaptation**: Response style adapts to your conversation patterns
 - **Context Awareness**: Remembers and learns from all interactions
 
+---
+
+## 🧠 **Technical Architecture**
+
+### **Core Components**
+- **agent.js**: Main event loop, user input handling, responsive processing
+- **brain.js**: LLM interactions, identity evolution, anti-hallucination, decision making  
+- **memory.js**: SQLite persistence, conversation analysis, pattern recognition
+- **logger.js**: Multi-level logging system with file and console output
+
+### **Intelligence Features**
+- **Continuous Learning**: Adapts behavior based on conversation patterns
+- **Identity Evolution**: Dynamic personality and trait adaptation
+- **Anti-Hallucination**: Pattern detection and response validation
+- **Satisfaction Tracking**: User experience optimization
+- **Context Preservation**: Long-term memory and relationship building
+
+### **Configuration**
+- **config.json**: Fine-tune hallucination detection, LLM parameters, memory settings
+- **core.json**: Define unchangeable core personality traits and mission
+- **Flexible Identity**: Name, mission, and traits can evolve based on user needs
+
+---
+
+## 🔧 **Configuration & Customization**
+
+### **config.json** - Core Settings
+```json
+{
+  "hallucination_detection": {
+    "enabled": true,
+    "sensitivity": 0.7,
+    "patterns": ["he's thinking", "user is drinking", etc.]
+  },
+  "llm": {
+    "model": "gemma3:latest",
+    "temperature": 0.7,
+    "max_tokens": 500
+  },
+  "memory": {
+    "max_recent_messages": 50,
+    "analysis_lookback": 30
+  }
+}
 ```
-node agent.js
+
+### **core.json** - Unchangeable Identity Core
+```json
+{
+  "name": "Neversleep",
+  "mission": "Be a helpful, learning AI assistant",
+  "locked_traits": ["helpful", "learning"]
+}
 ```
+
+---
+
+## 📈 **What's New**
+
+### Recent Improvements
+✅ **Enhanced Identity Evolution** - Intelligent trait reflection with up to 10 traits  
+✅ **Anti-Hallucination System** - Pattern detection and response validation  
+✅ **User Satisfaction Analysis** - Tracks and learns from user interaction patterns  
+✅ **Responsive User Interaction** - Pauses processing when user types  
+✅ **Smart Log Filtering** - Reduces repetitive thoughts in logs  
+✅ **Reward System Overhaul** - Eliminated spam, focuses on meaningful actions  
+✅ **Advanced Memory System** - Conversation history and pattern analysis  
+✅ **Comprehensive Documentation** - Updated guides and technical details  
+
+---
+
+## 🤝 **Contributing**
+
+Neversleep is designed to be extensible and customizable. Key areas for enhancement:
+- Additional LLM model support
+- Enhanced conversation analysis
+- Custom trait and behavior systems
+- Integration with external APIs
+- Advanced goal planning systems
+
+---
+
+## 📄 **License**
+
+Open source - feel free to modify and adapt for your needs.
+
+---
+
+*"An AI that never sleeps, always learns, and continuously evolves with you."*
 
 ### Interact
 

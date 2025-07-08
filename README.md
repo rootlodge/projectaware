@@ -20,7 +20,8 @@ Neversleep is a fully autonomous CLI-based JavaScript AI agent built with:
 
 * Generates a thought every second
 * Records thoughts with mood + goal tags
-* Waits for user input without pausing internal processes
+* **Responsive interruption**: Pauses internal processes when you type
+* Waits for user input without interfering with your interaction
 
 ### 🧘 Deep Self-Reflection
 
@@ -48,8 +49,16 @@ Neversleep is a fully autonomous CLI-based JavaScript AI agent built with:
 
 ### 🏆 Reward System
 
-* Every deep reflection or goal-oriented action can trigger a reward
-* Rewards are tracked in `rewards.json` as timestamped events
+* Meaningful rewards only (no more self-reward spam)
+* User-controlled via `reward: [reason]` command
+* Tracks genuinely valuable interactions
+
+### 📊 Satisfaction Analysis
+
+* Analyzes your response patterns and satisfaction levels
+* Learns from your feedback to improve future interactions
+* Use `analyze` command for detailed satisfaction reports
+* Automatically adjusts response style based on your preferences
 
 ---
 
@@ -60,11 +69,14 @@ neversleep/
 ├── agent.js           # Main CLI interface and control loop
 ├── brain.js           # Core LLM logic and state handling
 ├── memory.js          # SQLite interface
+├── logger.js          # Logging and debugging system
+├── config.json        # Configuration for hallucination detection & LLM settings
 ├── core.json          # Unchangeable identity traits
 ├── identity.json      # Mutable name, mission, traits
 ├── dynamic.json       # Tracks current mood and goal
 ├── goals.json         # Goal data (manual + self-generated)
 ├── rewards.json       # Reward history log
+├── SATISFACTION.md    # Documentation for satisfaction analysis
 ├── logs/
 │   └── thoughts.log   # Stream of consciousness log
 └── memory.db          # Persistent SQLite memory
@@ -90,6 +102,9 @@ node agent.js
 
 * Type anything: Neversleep will respond with context and memory
 * Assign a goal: `goal: build a startup with me`
+* Give rewards: `reward: excellent explanation of the concept`
+* Analyze satisfaction: `analyze` - see how well it's serving you
+* **Responsive**: Internal thoughts pause when you start typing
 
 ### Observe
 

@@ -23,12 +23,16 @@ let inputBuffer = '';
 let lastInputTime = Date.now();
 let sleepMode = false;
 let currentStatus = 'idle';
+let processingInput = false;
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function logThought(content) {
+  // Don't log thoughts when processing user input
+  if (processingInput) return;
+  
   const timestamp = new Date().toISOString();
   const entry = `\n[${timestamp}]\n${content}\n-----------------------------`;
   fs.appendFileSync('./logs/thoughts.log', entry);
@@ -36,6 +40,8 @@ function logThought(content) {
 }
 
 function displayStatus() {
+  if (processingInput) return;
+  
   const statusText = `[Status] Mode: ${currentStatus.toUpperCase()} | Last Input: ${new Date(lastInputTime).toLocaleTimeString()}`;
   console.log(chalk.yellowBright(statusText));
 }
@@ -44,7 +50,8 @@ rl.on('line', line => {
   inputBuffer = line.trim();
   lastInputTime = Date.now();
   sleepMode = false;
-  currentStatus = 'input';
+  processingInput = true; // Set flag to interrupt other processes
+  currentStatus = 'processing input';
 });
 
 async function runThoughtLoop() {
@@ -127,9 +134,12 @@ AI:`;
 
       // Removed automatic self-reward - only reward for truly meaningful actions
 
-      currentStatus = 'input';
+      // Reset processing flag and show clean response
+      processingInput = false;
+      currentStatus = 'ready';
+      console.log(chalk.green.bold('\nNeversleep:'), chalk.white(reply));
 
-    } else if (!sleepMode) {
+    } else if (!sleepMode && !processingInput) {
       const now = Date.now();
       const elapsed = now - lastInputTime;
 
@@ -158,10 +168,22 @@ AI:`;
         currentStatus = 'analyzing satisfaction';
 
       } else {
+        // Skip idle thoughts if user is providing input
+        if (processingInput || inputBuffer) {
+          await wait(100);
+          continue;
+        }
+
         const recent = await getRecentMessages(10);
         const recentLogs = recent.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
 
         const idleThought = await think(identity.context, recentLogs);
+        
+        // Check again if user started typing
+        if (processingInput || inputBuffer) {
+          continue;
+        }
+        
         saveMessage('thought', idleThought);
 
         const tags = await tagThought(idleThought, identity.context);
@@ -192,7 +214,9 @@ AI:`;
     }
 
     displayStatus();
-    await wait(1000);
+    
+    // Shorter wait time for better responsiveness to user input
+    await wait(processingInput ? 50 : 1000);
   }
 }
 
@@ -203,6 +227,7 @@ console.log(chalk.gray('• goal: [your goal] - Assign a new goal'));
 console.log(chalk.gray('• reward: [reason] - Give a meaningful reward'));
 console.log(chalk.gray('• analyze - Analyze user satisfaction patterns'));
 console.log(chalk.gray('• Type normally to chat'));
-console.log(chalk.cyan('\nReady for input...'));
+console.log(chalk.cyan('\n✨ Responsive mode: Internal processes pause when you type'));
+console.log(chalk.cyan('Ready for input...'));
 fs.ensureDirSync('./logs');
 runThoughtLoop();

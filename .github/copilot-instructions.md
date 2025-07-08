@@ -415,6 +415,7 @@ logger.debug('LLM response:', response);
 5. Validate all JSON parsing operations
 6. Implement responsive user interaction patterns
 7. Test both success and error conditions
+8. Always update and add to the TODO.md file for new features
 
 ### Common Gotchas to Avoid
 - Don't parse JSON without try-catch

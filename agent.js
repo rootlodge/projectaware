@@ -39,25 +39,36 @@ function logThought(content) {
   const now = Date.now();
   const contentToCheck = content.replace(/\[.*?\]/g, '').trim(); // Remove timestamps and brackets for comparison
   
+  // Special handling for idle/awaiting messages - be very restrictive
+  const isIdleMessage = 
+    contentToCheck.includes('Awaiting user input') ||
+    contentToCheck.includes('Idle - awaiting') ||
+    contentToCheck.includes('No new information to process');
+  
+  if (isIdleMessage) {
+    const timeSinceLastLog = now - lastLoggedTime;
+    // Only log idle messages if:
+    // 1. It's been more than 2 minutes since last log, OR
+    // 2. This is the first idle message after meaningful content
+    if (timeSinceLastLog < 120000 && contentToCheck === lastLoggedThought) {
+      return; // Skip this idle message
+    }
+  }
+  
   // Check if this is a repetitive thought
   const isRepetitive = contentToCheck === lastLoggedThought;
   const timeSinceLastLog = now - lastLoggedTime;
   
-  // Filter criteria:
-  // 1. Don't log if it's the same thought within 30 seconds
-  // 2. Allow first occurrence of any thought
-  // 3. Allow repetitive thoughts only after meaningful events (user input, reflections)
-  // 4. Limit consecutive repetitive thoughts to 3
-  
-  if (isRepetitive && timeSinceLastLog < 30000) {
+  // Filter criteria for non-idle thoughts:
+  if (isRepetitive && timeSinceLastLog < 30000 && !isIdleMessage) {
     thoughtsSinceLastMeaningful++;
-    if (thoughtsSinceLastMeaningful > 3) {
+    if (thoughtsSinceLastMeaningful > 2) {
       return; // Skip logging this repetitive thought
     }
   }
   
   // Reset counter for meaningful content
-  if (!isRepetitive || content.includes('[Deep Reflection]') || content.includes('[Satisfaction Analysis]') || content.includes('USER ➜')) {
+  if (!isRepetitive || content.includes('[Deep Reflection]') || content.includes('[Satisfaction Analysis]') || content.includes('USER ➜') || content.includes('[!]')) {
     thoughtsSinceLastMeaningful = 0;
   }
   
@@ -132,6 +143,21 @@ async function runThoughtLoop() {
       }
 
       saveMessage('user', userInput);
+      
+      // Check if user is requesting a name change
+      if (/call me|my name is|name yourself|rename|i am reborn as|your new name|be called/i.test(userInput.toLowerCase())) {
+        const nameChangePrompt = `User wants to change my name or identity. User said: "${userInput}"
+        
+If they want me to have a specific name, respond with: {"name": "NewName", "mission": "updated mission", "traits": ["trait1", "trait2"]}
+If they just want me to pick a new name, respond with: {"name": "YourChosenName", "mission": "updated mission", "traits": ["trait1", "trait2"]}
+
+Extract or choose a name and respond in JSON format only.`;
+        
+        const nameResult = await askLLM(nameChangePrompt);
+        await evolveIdentity(nameResult);
+        logThought(`[!] Name change requested by user: ${userInput}`);
+      }
+      
       const recent = await getRecentMessages(10);
       const recentLogs = recent.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
 

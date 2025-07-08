@@ -1,4 +1,4 @@
-// brain.js
+// FILE: brain.js
 const axios = require('axios');
 const fs = require('fs');
 
@@ -33,13 +33,19 @@ async function think(identityContext) {
 
 async function reflectOnMemory(memoryLog) {
   const identity = loadIdentity();
-  const reflectionPrompt = `${identity.context}\nReflect on these conversations and suggest how to improve or adjust behavior:\n\n${memoryLog}`;
-  return await askLLM(reflectionPrompt);
+  const prompt = `${identity.context}\nReflect on these conversations and suggest how to improve or adjust behavior:\n\n${memoryLog}`;
+  return await askLLM(prompt);
+}
+
+async function deepReflect(memoryLog) {
+  const identity = loadIdentity();
+  const prompt = `${identity.context}\nYou have not received user input in a while. Reflect deeply on who Dylan is, what his goals might be, how you can help him, and what questions you should ask him.`;
+  return await askLLM(prompt);
 }
 
 async function tagThought(thought, context) {
-  const taggingPrompt = `${context}\n\nThought: "${thought}"\nTag this thought with a short 'mood' and 'goal'. Respond as JSON: {"mood": "...", "goal": "..."}`;
-  const response = await askLLM(taggingPrompt);
+  const prompt = `${context}\n\nThought: \"${thought}\"\nTag this thought with a short 'mood' and 'goal'. Respond as JSON: {\"mood\": \"...\", \"goal\": \"...\"}`;
+  const response = await askLLM(prompt);
   try {
     return JSON.parse(response);
   } catch {
@@ -47,20 +53,23 @@ async function tagThought(thought, context) {
   }
 }
 
-async function evolveIdentity(memoryContext) {
-  const prompt = `Here is your recent memory:\n${memoryContext}\n\nBased on this, update your name, mission, or traits if needed. Only change if strongly justified.\nRespond only as JSON:\n{"name": "...", "mission": "...", "traits": ["..."]}`;
-  const response = await askLLM(prompt);
+async function evolveIdentity(memoryLog) {
+  const prompt = `Reflect on this:
+${memoryLog}
+If you decide to change your name, mission, or traits, respond as:
+{"name": "...", "mission": "...", "traits": ["..."]}`;
+  const result = await askLLM(prompt);
   try {
-    const update = JSON.parse(response);
+    const update = JSON.parse(result);
     const core = JSON.parse(fs.readFileSync('./core.json', 'utf-8'));
     const identity = {
       name: update.name,
       mission: update.mission,
-      traits: update.traits.filter(trait => !core.locked_traits.includes(trait))
+      traits: update.traits.filter(t => !core.locked_traits.includes(t))
     };
     fs.writeFileSync('./identity.json', JSON.stringify(identity, null, 2));
   } catch (err) {
-    console.error('[!] Identity update failed. Using existing.');
+    console.error('[!] Identity evolution failed.');
   }
 }
 
@@ -68,12 +77,21 @@ async function updateDynamicState(tags) {
   fs.writeFileSync('./dynamic.json', JSON.stringify(tags, null, 2));
 }
 
+async function giveReward(reason) {
+  const rewards = JSON.parse(fs.readFileSync('./rewards.json', 'utf-8'));
+  const score = Math.floor(Math.random() * 50 + 50); // reward 50-100
+  rewards.history.push({ timestamp: new Date().toISOString(), reason, score });
+  fs.writeFileSync('./rewards.json', JSON.stringify(rewards, null, 2));
+}
+
 module.exports = {
   askLLM,
   loadIdentity,
   reflectOnMemory,
+  deepReflect,
   think,
   tagThought,
   evolveIdentity,
-  updateDynamicState
+  updateDynamicState,
+  giveReward
 };

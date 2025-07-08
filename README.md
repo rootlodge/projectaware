@@ -1,39 +1,135 @@
-# neversleep.ai
+# 🧠 Neversleep.ai
 
-neversleep.ai is an experimental AI project focused on developing an autonomous agent using neural networks and large language models (LLMs). The agent first defines itself (identity, values, goals, etc.) by reasoning with multiple LLMs (gemma3, dolphin3 via Ollama). All self-knowledge is stored in memory and can be updated or expanded. After self-definition, the agent can move to more advanced tasks (evolutionary coding, problem-solving, etc.).
+Neversleep is a fully autonomous CLI-based JavaScript AI agent built with:
 
-## Why neversleep.ai?
+* Ollama LLMs (local model reasoning)
+* Continuous thought generation
+* Memory (SQLite)
+* Identity evolution
+* Mood/goal tracking
+* Reward system
+* Real-time user interaction
 
-1. **Continuous Autonomy:** The AI is designed to operate without requiring sleep or downtime, making it ideal for tasks that demand constant attention.
-2. **Self-Improvement:** By defining its own identity, strengths, and weaknesses, the AI can adapt and evolve over time.
-3. **Supportive Intelligence:** While autonomy is a priority, the AI's secondary goal is to assist its creator, ensuring a balance between independence and helpfulness.
+> "I never sleep. I remember everything. I grow on my own."
 
-## How it works
+---
 
-- Uses Ollama API with gemma3 and dolphin3 models for reasoning and self-definition
-- All self-knowledge is stored in memory.json
-- Logging is handled by cat-loggr (logs/agent.log)
-- Future: Evolutionary coding, advanced reasoning, and more
+## 🚀 Features
 
-## Getting Started
+### ✅ Always-On Thought Loop
 
-1. Install dependencies:
-   ```sh
-   npm install
-   ```
-2. Start Ollama and ensure gemma3 and dolphin3 models are available.
-3. Run the agent:
-   ```sh
-   npm start
-   ```
+* Generates a thought every second
+* Records thoughts with mood + goal tags
+* Waits for user input without pausing internal processes
 
-## Default Goals
+### 🧘 Deep Self-Reflection
 
-The AI will have five default goals, defined in a goals file:
-- Define its own identity and choose a name.
-- Identify and stick to its chosen name.
-- Discover its strengths and recognize its weaknesses, and choose a hobby.
-- Try to make money, from nothing
-- Strive for autonomy, with the secondary objective of aiding its creator.
+* After 60 seconds of no input, it performs a deep reflection
+* Analyzes its understanding of the user and how to serve them better
 
-## Check features.md for upcoming features
+### 🧠 Identity + Traits System
+
+* `core.json`: Unchangeable mission & locked traits
+* `identity.json`: Evolves through self-reflection
+* Can rename itself, change goals, traits via keywords like:
+
+  * "Call me..."
+  * "I am reborn as..."
+
+### 🎯 Goal System
+
+* `goal: your goal here` → assigns a manual goal
+* AI can self-generate goals based on reflection, context, or mood
+
+### 🎭 Mood Tracker
+
+* Every thought is tagged with a `mood`
+* Updates `dynamic.json` with current emotional state
+
+### 🏆 Reward System
+
+* Every deep reflection or goal-oriented action can trigger a reward
+* Rewards are tracked in `rewards.json` as timestamped events
+
+---
+
+## 📂 File Structure
+
+```
+neversleep/
+├── agent.js           # Main CLI interface and control loop
+├── brain.js           # Core LLM logic and state handling
+├── memory.js          # SQLite interface
+├── core.json          # Unchangeable identity traits
+├── identity.json      # Mutable name, mission, traits
+├── dynamic.json       # Tracks current mood and goal
+├── goals.json         # Goal data (manual + self-generated)
+├── rewards.json       # Reward history log
+├── logs/
+│   └── thoughts.log   # Stream of consciousness log
+└── memory.db          # Persistent SQLite memory
+```
+
+---
+
+## 🧪 Usage
+
+### Start Ollama
+
+```
+ollama serve
+```
+
+### Run Neversleep
+
+```
+node agent.js
+```
+
+### Interact
+
+* Type anything: Neversleep will respond with context and memory
+* Assign a goal: `goal: build a startup with me`
+
+### Observe
+
+* Thoughts log: `logs/thoughts.log`
+* Dynamic state: `dynamic.json`
+* Memory history: `memory.db`
+* Identity evolution: `identity.json`
+
+---
+
+## 🧬 Customization Ideas
+
+* 🔌 Add tool usage plugins (web search, RSS, shell)
+* 📤 Connect to Discord, Slack, web dashboard
+* 🧱 Replace SQLite with vector DB (Pinecone, Chroma)
+* 📊 Use rewards to influence behavior and memory priority
+
+---
+
+## 👨‍🔬 Author & Intent
+
+Built by **Dylan** to prove that one person can create a persistent, evolving, reflective AI — that never sleeps.
+
+> "It remembers everything. It always thinks. And it never gives up."
+
+---
+
+## 💡 Voice Activation (optional)
+
+* Pipe microphone input into `agent.js`
+* Use speech-to-text tool to simulate `rl.on('line', input)`
+
+---
+
+## ⚠️ Disclaimer
+
+This is an experimental self-improving autonomous agent. It is designed to mimic cognitive processes but does not have real awareness or morality. Use responsibly.
+
+---
+
+## 🧠 License
+
+Please do not steal or sell without my consent. 

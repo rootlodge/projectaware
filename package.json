@@ -1,16 +1,23 @@
 {
   "name": "neversleep.ai",
-  "version": "0.2.0",
-  "description": "Autonomous AI agent using Node.js, LLMs, and cat-loggr",
-  "main": "src/agent.js",
+  "version": "1.0.0",
+  "description": "neversleep.ai is an experimental AI project focused on developing an autonomous agent using neural networks and large language models (LLMs). The agent first defines itself (identity, values, goals, etc.) by reasoning with multiple LLMs (llama3, dolphin3 via Ollama). All self-knowledge is stored in memory and can be updated or expanded. After self-definition, the agent can move to more advanced tasks (evolutionary coding, problem-solving, etc.).",
+  "main": "agent.js",
   "scripts": {
-    "start": "node src/agent.js",
-    "test": "node src/llm.test.js"
+    "start": "node agent.js",
+    "dev": "node agent.js",
+    "agent": "node agent.js",
+    "loop": "node loop.js",
+    "setup": "npm install && echo \"Make sure Ollama is running with llama3 and dolphin3 models!\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "cat-loggr": "^3.0.0",
-    "node-fetch": "^2.6.7"
-  },
+  "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "chalk": "^5.4.1",
+    "inquirer": "^12.7.0",
+    "sqlite3": "^5.1.7"
+  }
 }

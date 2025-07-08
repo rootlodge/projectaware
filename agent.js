@@ -1,5 +1,3 @@
-
-// FILE: agent.js
 const readline = require('readline');
 const chalk = require('chalk');
 const fs = require('fs-extra');
@@ -68,8 +66,9 @@ async function runThoughtLoop() {
       const reflection = await reflectOnMemory(context);
       saveMessage('reflection', reflection);
       logThought(`[Reflection]\n${reflection}`);
+
       await evolveIdentity(context);
-      await giveReward('Responded to user input and reflected.');
+      await giveReward('Responded to user input and reflected.', reply);
 
     } else {
       const now = Date.now();
@@ -82,7 +81,7 @@ async function runThoughtLoop() {
         saveMessage('reflection', deep);
         logThought(`[Deep Reflection]\n${deep}`);
         await evolveIdentity(context);
-        await giveReward('Completed deep reflection after user inactivity.');
+        await giveReward('Completed deep reflection after user inactivity.', deep);
         lastInputTime = Date.now();
       } else {
         const idleThought = await think(identity.context);
@@ -90,6 +89,7 @@ async function runThoughtLoop() {
         await updateDynamicState(tags);
         saveMessage('thought', idleThought);
         logThought(`[Thought] (${tags.mood} | ${tags.goal})\n${idleThought}`);
+        await giveReward('Generated grounded thought.', idleThought);
       }
     }
 

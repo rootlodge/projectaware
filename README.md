@@ -1,6 +1,6 @@
 # neversleep.ai
 
-neversleep.ai is an experimental AI project focused on developing an autonomous agent using neural networks and large language models (LLMs). The agent first defines itself (identity, values, goals, etc.) by reasoning with multiple LLMs (llama3, dolphin3 via Ollama). All self-knowledge is stored in memory and can be updated or expanded. After self-definition, the agent can move to more advanced tasks (evolutionary coding, problem-solving, etc.).
+neversleep.ai is an experimental AI project focused on developing an autonomous agent using neural networks and large language models (LLMs). The agent first defines itself (identity, values, goals, etc.) by reasoning with multiple LLMs (gemma3, dolphin3 via Ollama). All self-knowledge is stored in memory and can be updated or expanded. After self-definition, the agent can move to more advanced tasks (evolutionary coding, problem-solving, etc.).
 
 ## Why neversleep.ai?
 
@@ -10,7 +10,7 @@ neversleep.ai is an experimental AI project focused on developing an autonomous 
 
 ## How it works
 
-- Uses Ollama API with llama3 and dolphin3 models for reasoning and self-definition
+- Uses Ollama API with gemma3 and dolphin3 models for reasoning and self-definition
 - All self-knowledge is stored in memory.json
 - Logging is handled by cat-loggr (logs/agent.log)
 - Future: Evolutionary coding, advanced reasoning, and more
@@ -21,7 +21,7 @@ neversleep.ai is an experimental AI project focused on developing an autonomous 
    ```sh
    npm install
    ```
-2. Start Ollama and ensure llama3 and dolphin3 models are available.
+2. Start Ollama and ensure gemma3 and dolphin3 models are available.
 3. Run the agent:
    ```sh
    npm start

@@ -251,20 +251,19 @@ async function userGiveReward(reason, score = 90) {
 }
 
 async function analyzeOutputAndDecide(thought, goal) {
+  // If thought is idle/repetitive, default to continue without LLM call
+  if (thought.includes('Idle - awaiting') || thought.includes('Awaiting user input') || thought.includes('No new information')) {
+    return 'continue'; // Keep running but don't spam decisions
+  }
+
   const prompt = `You are a grounded AI agent that must manage your operational state.
 
-Based on this internal thought:
-
-"${thought}"
-
-And current goal:
-
-"${goal}"
+Based on this internal thought: "${thought}"
+And current goal: "${goal}"
 
 Choose ONLY one of the following operational states:
-
 - continue: keep iterating on thoughts and working
-- idle: pause and wait for user input before continuing
+- idle: pause and wait for user input before continuing  
 - sleep: enter low-power sleep mode until woken by input
 - shutdown: save all state and fully exit
 

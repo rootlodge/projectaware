@@ -11,7 +11,6 @@
     "setup": "npm install && echo \"Setup complete! Make sure Ollama is running with gemma3 and dolphin3 models before running 'npm start'\"",
     "check": "node -c agent.js && node -c brain.js && node -c memory.js && echo \"All files syntax OK!\"",
     "clean-logs": "Remove-Item ./logs/*.log -ErrorAction SilentlyContinue; echo \"Logs cleaned\"",
-    "clean-thoughts": "node clean-thoughts.js",
     "clean-memory": "Remove-Item ./memory.db -ErrorAction SilentlyContinue; echo \"Memory database reset\"",
     "clean-rewards": "node cleanup-rewards.js",
     "analyze": "node -e \"const {getConversationHistory, getUserResponsePatterns} = require('./memory'); const {analyzeSatisfaction} = require('./brain'); (async()=>{const h=await getConversationHistory(20); const a=await analyzeSatisfaction(h); const p=await getUserResponsePatterns(30); console.log('SATISFACTION:',a); console.log('PATTERNS:',p);})()\"",

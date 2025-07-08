@@ -87,6 +87,15 @@ function loadIdentity() {
 }
 
 async function think(identityContext, recentLogs) {
+  // Check if there's actually meaningful content to think about
+  const hasUserInput = recentLogs.includes('USER:');
+  const hasRecentActivity = recentLogs.trim().length > 50;
+  
+  if (!hasUserInput && !hasRecentActivity) {
+    // Return a simple idle state instead of generating repetitive thoughts
+    return "Idle - awaiting user interaction.";
+  }
+
   const prompt = `${identityContext}
 
 STRICT FACTUAL ANALYSIS ONLY:
@@ -97,7 +106,7 @@ Rules:
 1. ONLY reference information explicitly stated in the logs above
 2. Do NOT invent any projects, dates, events, or user activities
 3. Do NOT assume what the user is thinking, feeling, or doing
-4. If logs are empty or contain no new info, respond: "No new information to process."
+4. If logs show no meaningful new information, respond: "Awaiting user input."
 5. Maximum 2 sentences
 
 Your factual observation:`;
@@ -154,21 +163,30 @@ async function evolveIdentity(memoryLog) {
   const prompt = `Reflect on this:
 ${memoryLog}
 If you decide to change your name, mission, or traits, respond as:
-{"name": "...", "mission": "...", "traits": ["..."]}`;
+{"name": "...", "mission": "...", "traits": ["..."]}
+Otherwise, respond with: {"no_change": true}`;
 
   const result = await askLLM(prompt);
 
   try {
     const update = JSON.parse(result);
+    
+    if (update.no_change) {
+      console.log('[Identity] No changes needed');
+      return;
+    }
+    
     const core = JSON.parse(fs.readFileSync('./core.json', 'utf-8'));
     const identity = {
-      name: update.name,
-      mission: update.mission,
-      traits: update.traits.filter(t => !core.locked_traits.includes(t))
+      name: update.name || 'Neversleep',
+      mission: update.mission || core.mission,
+      traits: (update.traits || []).filter(t => !core.locked_traits.includes(t))
     };
     fs.writeFileSync('./identity.json', JSON.stringify(identity, null, 2));
+    console.log('[Identity] Updated:', identity);
   } catch (err) {
-    console.error('[!] Identity evolution failed.');
+    console.error('[!] Identity evolution failed:', err.message);
+    console.error('[!] Raw result:', result);
   }
 }
 

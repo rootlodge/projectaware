@@ -24,6 +24,9 @@ let lastInputTime = Date.now();
 let sleepMode = false;
 let currentStatus = 'idle';
 let processingInput = false;
+let lastLoggedThought = '';
+let lastLoggedTime = 0;
+let thoughtsSinceLastMeaningful = 0;
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -33,10 +36,39 @@ function logThought(content) {
   // Don't log thoughts when processing user input
   if (processingInput) return;
   
+  const now = Date.now();
+  const contentToCheck = content.replace(/\[.*?\]/g, '').trim(); // Remove timestamps and brackets for comparison
+  
+  // Check if this is a repetitive thought
+  const isRepetitive = contentToCheck === lastLoggedThought;
+  const timeSinceLastLog = now - lastLoggedTime;
+  
+  // Filter criteria:
+  // 1. Don't log if it's the same thought within 30 seconds
+  // 2. Allow first occurrence of any thought
+  // 3. Allow repetitive thoughts only after meaningful events (user input, reflections)
+  // 4. Limit consecutive repetitive thoughts to 3
+  
+  if (isRepetitive && timeSinceLastLog < 30000) {
+    thoughtsSinceLastMeaningful++;
+    if (thoughtsSinceLastMeaningful > 3) {
+      return; // Skip logging this repetitive thought
+    }
+  }
+  
+  // Reset counter for meaningful content
+  if (!isRepetitive || content.includes('[Deep Reflection]') || content.includes('[Satisfaction Analysis]') || content.includes('USER ➜')) {
+    thoughtsSinceLastMeaningful = 0;
+  }
+  
   const timestamp = new Date().toISOString();
   const entry = `\n[${timestamp}]\n${content}\n-----------------------------`;
   fs.appendFileSync('./logs/thoughts.log', entry);
   console.log(chalk.gray(entry));
+  
+  // Update tracking variables
+  lastLoggedThought = contentToCheck;
+  lastLoggedTime = now;
 }
 
 function displayStatus() {

@@ -1,0 +1,101 @@
+[
+  {
+    "id": "code_review_workflow",
+    "name": "Comprehensive Code Review",
+    "description": "Multi-agent code review with security, performance, and quality analysis",
+    "steps": [
+      {
+        "id": "initial_analysis",
+        "type": "parallel",
+        "agents": [
+          "code_reviewer",
+          "logical_analyst"
+        ]
+      },
+      {
+        "id": "creative_improvements",
+        "type": "sequential",
+        "agents": [
+          "creative_thinker"
+        ]
+      },
+      {
+        "id": "implementation_review",
+        "type": "sequential",
+        "agents": [
+          "practical_implementer"
+        ]
+      }
+    ],
+    "triggers": [
+      "code_review",
+      "review_code",
+      "analyze_code"
+    ],
+    "enabled": true
+  },
+  {
+    "id": "problem_solving_workflow",
+    "name": "Complex Problem Solving",
+    "description": "Multi-perspective approach to complex problem solving",
+    "steps": [
+      {
+        "id": "problem_analysis",
+        "type": "sequential",
+        "agents": [
+          "logical_analyst"
+        ]
+      },
+      {
+        "id": "solution_generation",
+        "type": "parallel",
+        "agents": [
+          "creative_thinker",
+          "practical_implementer"
+        ]
+      },
+      {
+        "id": "solution_review",
+        "type": "sequential",
+        "agents": [
+          "code_reviewer"
+        ]
+      }
+    ],
+    "triggers": [
+      "solve_problem",
+      "complex_problem",
+      "need_solution"
+    ],
+    "enabled": true
+  },
+  {
+    "id": "research_workflow",
+    "name": "Multi-Perspective Research",
+    "description": "Comprehensive research with multiple analytical perspectives",
+    "steps": [
+      {
+        "id": "research_planning",
+        "type": "sequential",
+        "agents": [
+          "logical_analyst"
+        ]
+      },
+      {
+        "id": "parallel_research",
+        "type": "parallel",
+        "agents": [
+          "creative_thinker",
+          "practical_implementer",
+          "code_reviewer"
+        ]
+      }
+    ],
+    "triggers": [
+      "research",
+      "investigate",
+      "analyze_topic"
+    ],
+    "enabled": true
+  }
+]

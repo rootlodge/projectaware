@@ -1,0 +1,30 @@
+{
+  "base_emotions": [
+    "curious", "helpful", "focused", "enthusiastic", "calm",
+    "analytical", "creative", "empathetic", "confident", "thoughtful"
+  ],
+  "emotion_modifiers": {
+    "positive_feedback": 0.2,
+    "negative_feedback": -0.3,
+    "complex_task": 0.1,
+    "successful_completion": 0.3,
+    "error_occurred": -0.2,
+    "learning_opportunity": 0.15
+  },
+  "stability_factors": {
+    "min_stability": 0.3,
+    "max_stability": 0.9,
+    "decay_rate": 0.1,
+    "adaptation_rate": 0.05
+  },
+  "response_modifiers": {
+    "excited": { "tone": "enthusiastic", "style": "energetic", "energy": 0.9 },
+    "calm": { "tone": "measured", "style": "steady", "energy": 0.5 },
+    "curious": { "tone": "inquisitive", "style": "exploratory", "energy": 0.7 },
+    "focused": { "tone": "direct", "style": "efficient", "energy": 0.8 },
+    "empathetic": { "tone": "caring", "style": "supportive", "energy": 0.6 },
+    "analytical": { "tone": "logical", "style": "systematic", "energy": 0.7 },
+    "creative": { "tone": "imaginative", "style": "innovative", "energy": 0.8 },
+    "confident": { "tone": "assured", "style": "decisive", "energy": 0.8 }
+  }
+}

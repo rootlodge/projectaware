@@ -1,103 +1,117 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import Dashboard from '@/components/Dashboard';
+import SystemStatus from '@/components/SystemStatus';
+import BrainInterface from '@/components/BrainInterface';
+import AgentManager from '@/components/AgentManager';
+import EmotionDisplay from '@/components/EmotionDisplay';
+import { Brain, Cpu, Users, Heart, Settings, BarChart3 } from 'lucide-react';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [systemStatus, setSystemStatus] = useState<any>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    // Load initial system status
+    fetchSystemStatus();
+    
+    // Set up polling for real-time updates
+    const interval = setInterval(fetchSystemStatus, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchSystemStatus = async () => {
+    try {
+      const response = await fetch('/api/brain');
+      if (response.ok) {
+        const data = await response.json();
+        setSystemStatus(data.status);
+      }
+    } catch (error) {
+      console.error('Failed to fetch system status:', error);
+    }
+  };
+
+  const tabs = [
+    { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
+    { id: 'brain', name: 'Brain Interface', icon: Brain },
+    { id: 'agents', name: 'Agent Manager', icon: Users },
+    { id: 'emotions', name: 'Emotion Engine', icon: Heart },
+    { id: 'system', name: 'System Status', icon: Cpu },
+    { id: 'settings', name: 'Settings', icon: Settings }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Header */}
+      <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Neversleep.AI</h1>
+                <p className="text-purple-300 text-sm">Advanced AI Dashboard</p>
+              </div>
+            </div>
+            
+            {systemStatus && (
+              <div className="flex items-center space-x-4 text-sm">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-white">System Active</span>
+                </div>
+                <div className="text-purple-300">
+                  {systemStatus.identity?.name || 'Neversleep'}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+      </header>
+
+      {/* Navigation */}
+      <nav className="bg-black/10 backdrop-blur-sm border-b border-white/5">
+        <div className="container mx-auto px-6">
+          <div className="flex space-x-1">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-6 py-3 text-sm font-medium rounded-t-lg transition-colors flex items-center space-x-2 ${
+                    activeTab === tab.id
+                      ? 'bg-white/10 text-white border-b-2 border-purple-400'
+                      : 'text-purple-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{tab.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-6 py-8">
+        {activeTab === 'dashboard' && <Dashboard systemStatus={systemStatus} />}
+        {activeTab === 'brain' && <BrainInterface />}
+        {activeTab === 'agents' && <AgentManager />}
+        {activeTab === 'emotions' && <EmotionDisplay />}
+        {activeTab === 'system' && <SystemStatus systemStatus={systemStatus} />}
+        {activeTab === 'settings' && (
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
+            <h2 className="text-2xl font-bold text-white mb-4">Settings</h2>
+            <p className="text-purple-300">Settings panel coming soon...</p>
+          </div>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

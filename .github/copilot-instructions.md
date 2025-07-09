@@ -19,7 +19,7 @@ Neversleep.ai is an advanced autonomous AI agent with continuous learning, ident
 - Functions are exported/imported using CommonJS modules
 - State is managed centrally through StateManager
 - Logging is consistent across all modules
-
+- Instead of replacing entire file, unless specified by user, todo, or it is absolutely necessary, modify existing functions and code to enhance, add new features, and fix bugs
 #### 2. Async/Await Pattern
 ```javascript
 // Always use async/await for LLM calls and file operations

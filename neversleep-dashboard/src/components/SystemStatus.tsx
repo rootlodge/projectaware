@@ -37,6 +37,17 @@ const SystemStatus: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to fetch system status:', error);
+        // Set some default values on error
+        setMetrics({
+          brain_status: 'idle',
+          memory_entries: 0,
+          agent_count: 4,
+          last_activity: 'Dashboard initialization',
+          ollama_status: 'disconnected',
+          emotion_state: 'neutral',
+          processing_queue: 0,
+          uptime: 0
+        });
       } finally {
         setLoading(false);
       }

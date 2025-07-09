@@ -283,6 +283,45 @@ export class MemorySystem {
     }
   }
 
+  async getStats(): Promise<MemoryStats> {
+    try {
+      if (!this.isConnected) {
+        await this.initialize();
+      }
+
+      const [messagesCount, conversationsCount, learningEventsCount] = await Promise.all([
+        this.getQuery('SELECT COUNT(*) as count FROM messages'),
+        this.getQuery('SELECT COUNT(*) as count FROM conversations'),
+        this.getQuery('SELECT COUNT(*) as count FROM learning_events')
+      ]);
+
+      // Get database file size
+      let dbSize = 0;
+      try {
+        const fs = await import('fs');
+        const stats = fs.statSync(this.dbPath);
+        dbSize = stats.size;
+      } catch (error) {
+        console.warn('Could not get database file size:', error);
+      }
+
+      return {
+        messages: messagesCount?.count || 0,
+        conversations: conversationsCount?.count || 0,
+        learningEvents: learningEventsCount?.count || 0,
+        dbSize
+      };
+    } catch (error) {
+      console.error('Failed to get memory stats:', error);
+      return {
+        messages: 0,
+        conversations: 0,
+        learningEvents: 0,
+        dbSize: 0
+      };
+    }
+  }
+
   private getDatabaseSize(): number {
     try {
       const stats = fs.statSync(this.dbPath);

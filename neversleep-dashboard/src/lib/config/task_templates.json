@@ -1,0 +1,41 @@
+{
+  "research_workflow": {
+    "id": "research_workflow",
+    "name": "Research & Analysis",
+    "description": "Conduct comprehensive research and analysis on a given topic",
+    "steps": [
+      "Define research scope and objectives",
+      "Gather relevant information from multiple sources",
+      "Analyze and synthesize findings",
+      "Generate comprehensive report"
+    ],
+    "estimatedDuration": 1800,
+    "requiredAgents": ["logical_analyst", "creative_thinker"]
+  },
+  "problem_solving": {
+    "id": "problem_solving",
+    "name": "Problem Solving",
+    "description": "Systematic approach to solving complex problems",
+    "steps": [
+      "Problem identification and definition",
+      "Root cause analysis",
+      "Generate potential solutions",
+      "Evaluate and recommend best solution"
+    ],
+    "estimatedDuration": 1200,
+    "requiredAgents": ["logical_analyst", "practical_implementer"]
+  },
+  "creative_brainstorm": {
+    "id": "creative_brainstorm",
+    "name": "Creative Brainstorming",
+    "description": "Generate innovative ideas and creative solutions",
+    "steps": [
+      "Define creative challenge",
+      "Generate diverse ideas",
+      "Develop and refine concepts",
+      "Present final creative solutions"
+    ],
+    "estimatedDuration": 900,
+    "requiredAgents": ["creative_thinker"]
+  }
+}

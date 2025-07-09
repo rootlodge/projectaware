@@ -225,8 +225,8 @@ export class EmotionEngine {
     return modifier || { tone: 'neutral', style: 'balanced', energy: 0.5 };
   }
 
-  getEmotionHistory(limit: number = 10): EmotionHistory[] {
-    return this.emotionHistory.slice(-limit);
+  getEmotionHistory(): EmotionHistory[] {
+    return this.emotionHistory.slice(); // Return a copy of the history
   }
 
   getEmotionStats(): {

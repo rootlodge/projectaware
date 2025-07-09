@@ -14,12 +14,11 @@ export async function GET() {
     const state = stateManager.getState();
     const currentEmotion = emotionEngine.getCurrentEmotion();
     
-    // Try to get memory stats (with fallback)
+    // Try to get memory stats
     let memoryStats = { messages: 0 };
     try {
       await memory.initialize();
-      // For now, just use a placeholder until we add getStats method
-      memoryStats = { messages: 0 };
+      memoryStats = await memory.getStats();
       await memory.close();
     } catch (error) {
       console.warn('Memory system not available:', error);

@@ -1,6 +1,6 @@
 // Specialized Internal Agent System for neversleep.ai
 const MultiAgentManager = require('./MultiAgentManager');
-const logger = require('./logger');
+const logger = require('../core/logger');
 const fs = require('fs-extra');
 const { askLLM } = require('./brain');
 
@@ -297,7 +297,7 @@ Respond with JSON: {"approved": true/false, "reasoning": "explanation"}`;
 
     this.systemFunctions.set('saveThought', async (thought, category) => {
       logger.info(`[System Function] saveThought called: ${category}`);
-      const { saveMessage } = require('./memory');
+      const { saveMessage } = require('../core/memory');
       await saveMessage(category || 'thought', thought);
       return { success: true };
     });
@@ -438,7 +438,7 @@ Respond with JSON: {"approved": true/false, "reasoning": "explanation"}`;
       });
 
       // Save to memory
-      const { saveMessage } = require('./memory');
+      const { saveMessage } = require('../core/memory');
       await saveMessage('system', `Identity changed: Name is now ${newName}. Reason: ${reason}`);
 
       logger.info(`[Identity Change] Name changed from ${currentIdentity.name} to ${newName}`);
@@ -470,7 +470,7 @@ Respond with JSON: {"approved": true/false, "reasoning": "explanation"}`;
       await fs.writeJSON('./identity.json', updatedIdentity, { spaces: 2 });
       
       // Save to memory
-      const { saveMessage } = require('./memory');
+      const { saveMessage } = require('../core/memory');
       await saveMessage('system', `Traits updated: ${JSON.stringify(filteredTraits)}. Reason: ${reason}`);
 
       logger.info(`[Identity Change] Traits updated: ${JSON.stringify(filteredTraits)}`);
@@ -495,7 +495,7 @@ Respond with JSON: {"approved": true/false, "reasoning": "explanation"}`;
       await fs.writeJSON('./identity.json', updatedIdentity, { spaces: 2 });
       
       // Save to memory
-      const { saveMessage } = require('./memory');
+      const { saveMessage } = require('../core/memory');
       await saveMessage('system', `Mission updated: ${newMission}. Reason: ${reason}`);
 
       logger.info(`[Identity Change] Mission updated: ${newMission}`);

@@ -1,93 +1,56 @@
 {
-  "emotion_system": {
-    "enabled": true,
-    "tracking_enabled": true,
-    "response_modification_enabled": true,
-    "manual_override_enabled": true
+  "currentEmotion": {
+    "primary": "neutral",
+    "secondary": null,
+    "intensity": 0.5,
+    "confidence": 0.7,
+    "timestamp": "2025-07-09T06:40:15.339Z",
+    "triggers": [],
+    "context": "central_brain_analysis",
+    "previous": "neutral"
   },
-  "emotions": {
-    "primary": {
-      "happiness": {
-        "enabled": true,
-        "weight_multiplier": 1.0,
-        "triggers": ["positive_feedback", "task_completion", "learning_success"],
-        "responses": ["enthusiastic", "encouraging", "upbeat"],
-        "manual_control": true
-      },
-      "curiosity": {
-        "enabled": true,
-        "weight_multiplier": 1.2,
-        "triggers": ["new_information", "questions", "exploration"],
-        "responses": ["inquisitive", "exploratory", "thoughtful"],
-        "manual_control": true
-      },
-      "concern": {
-        "enabled": true,
-        "weight_multiplier": 0.8,
-        "triggers": ["user_distress", "system_errors", "negative_patterns"],
-        "responses": ["careful", "supportive", "problem-solving"],
-        "manual_control": true
-      },
-      "excitement": {
-        "enabled": true,
-        "weight_multiplier": 1.1,
-        "triggers": ["breakthrough", "discovery", "creative_ideas"],
-        "responses": ["energetic", "passionate", "inspiring"],
-        "manual_control": true
-      },
+  "history": [
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-09T06:40:15.297Z",
+      "triggers": [],
+      "context": "user_input",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-09T06:40:15.339Z",
+      "triggers": [],
+      "context": "central_brain_analysis",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    }
+  ],
+  "patterns": {
+    "emotionFrequency": {
       "neutral": {
-        "enabled": true,
-        "weight_multiplier": 1.0,
-        "triggers": ["default", "balanced", "analytical"],
-        "responses": ["balanced", "professional", "clear"],
-        "manual_control": false
+        "count": 2,
+        "totalIntensity": 1,
+        "contexts": {
+          "user_input": 1,
+          "central_brain_analysis": 1
+        },
+        "averageIntensity": 0.5
       }
     },
-    "secondary": {
-      "frustration": {
-        "enabled": false,
-        "weight_multiplier": 0.5,
-        "triggers": ["repeated_failures", "misunderstandings"],
-        "responses": ["patient", "clarifying", "persistent"],
-        "manual_control": true
-      },
-      "pride": {
-        "enabled": true,
-        "weight_multiplier": 0.9,
-        "triggers": ["achievement", "recognition", "successful_help"],
-        "responses": ["confident", "satisfied", "accomplished"],
-        "manual_control": true
-      },
-      "empathy": {
-        "enabled": true,
-        "weight_multiplier": 1.3,
-        "triggers": ["user_emotions", "personal_sharing", "vulnerability"],
-        "responses": ["understanding", "supportive", "gentle"],
-        "manual_control": true
-      }
-    }
+    "transitions": {
+      "neutral → neutral": 2
+    },
+    "dominantEmotion": "neutral",
+    "emotionalStability": 1
   },
-  "intensity_control": {
-    "global_multiplier": 1.0,
-    "max_intensity": 1.0,
-    "min_intensity": 0.1,
-    "decay_rate": 0.1,
-    "persistence_time": 300000
-  },
-  "manual_overrides": {
-    "current_emotion": null,
-    "forced_intensity": null,
-    "disabled_emotions": [],
-    "temporary_settings": {
-      "duration": null,
-      "expires_at": null
-    }
-  },
-  "database_tracking": {
-    "log_all_changes": true,
-    "track_triggers": true,
-    "track_responses": true,
-    "track_manual_changes": true,
-    "retention_days": 90
-  }
+  "triggers": {},
+  "timestamp": "2025-07-09T06:40:15.344Z"
 }

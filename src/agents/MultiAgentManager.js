@@ -2,7 +2,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const EventEmitter = require('events');
-const logger = require('./logger');
+const logger = require('../core/logger');
 const StateManager = require('./StateManager');
 const { askLLM, loadIdentity } = require('./brain');
 

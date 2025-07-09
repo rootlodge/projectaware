@@ -1,9 +1,9 @@
 const fs = require('fs-extra');
 const path = require('path');
-const logger = require('./logger');
+const logger = require('../core/logger');
 const { askLLM } = require('./brain');
-const IntelligentCleaner = require('./IntelligentCleaner');
-const TaskManager = require('./TaskManager');
+const IntelligentCleaner = require('../systems/IntelligentCleaner');
+const TaskManager = require('../systems/TaskManager');
 
 class CentralBrainAgent {
   constructor(stateManager, emotionEngine, responseCache, multiAgentManager, internalAgentSystem, helpSystem) {
@@ -820,7 +820,7 @@ Your independent thoughts:`;
         this.stateManager.resetToDefaults();
         
         // Clear memory database
-        const { clearAllMemory } = require('./memory');
+        const { clearAllMemory } = require('../core/memory');
         await clearAllMemory();
         
         // Clear log files

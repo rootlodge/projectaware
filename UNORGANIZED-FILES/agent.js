@@ -23,7 +23,7 @@ const { saveMessage, getRecentMessages, getConversationHistory, getUserResponseP
 const MultiAgentManager = require('../MultiAgentManager');
 const InternalAgentSystem = require('../InternalAgentSystem');
 const HelpSystem = require('../HelpSystem');
-const CentralBrainAgent = require('./CentralBrainAgent');
+const CentralBrainAgent = require('../src/agents/CentralBrainAgent');
 
 // Initialize all systems
 const multiAgentManager = new MultiAgentManager();

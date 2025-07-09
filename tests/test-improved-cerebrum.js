@@ -1,4 +1,4 @@
-const CentralBrainAgent = require('../UNORGANIZED-FILES/CentralBrainAgent');
+const CentralBrainAgent = require('../src/agents/CentralBrainAgent');
 
 // Simple test to verify the improved central brain works
 async function testImprovedCerebrum() {

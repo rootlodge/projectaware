@@ -1,4 +1,4 @@
-const CentralBrainAgent = require('../UNORGANIZED-FILES/CentralBrainAgent');
+const CentralBrainAgent = require('../src/agents/CentralBrainAgent');
 const StateManager = require('../UNORGANIZED-FILES/StateManager');
 const fs = require('fs-extra');
 

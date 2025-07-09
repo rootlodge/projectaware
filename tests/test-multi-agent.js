@@ -1,6 +1,6 @@
 // Test script for Multi-Agent Workflow System
-const MultiAgentManager = require('../UNORGANIZED-FILES/MultiAgentManager');
-const logger = require('../UNORGANIZED-FILES/logger');
+const MultiAgentManager = require('../src/agents/MultiAgentManager');
+const logger = require('../src/core/logger');
 
 async function testMultiAgentWorkflow() {
   console.log('🚀 Testing Multi-Agent Workflow System...\n');

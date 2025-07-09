@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-const logger = require('./logger');
+const logger = require('../core/logger');
 const { askLLM } = require('./brain');
 
 class IntelligentCleaner {

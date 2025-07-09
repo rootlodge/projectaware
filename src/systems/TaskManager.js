@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
-const logger = require('./logger');
+const logger = require('../core/logger');
 const { askLLM } = require('./brain');
 
 class TaskManager {

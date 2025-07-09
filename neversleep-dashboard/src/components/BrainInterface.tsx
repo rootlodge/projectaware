@@ -5,10 +5,18 @@ import { Send, Brain, User, Bot, RefreshCw, History, Trash2 } from 'lucide-react
 
 interface Message {
   id: string;
-  type: 'user' | 'brain' | 'system';
+  type: 'user' | 'brain' | 'system' | 'agent' | 'identity_change';
   content: string;
   timestamp: string;
   emotion?: string;
+  agent_name?: string;
+  agent_role?: string;
+  identity_change?: {
+    type: 'name' | 'trait' | 'mood' | 'mission';
+    old_value: string;
+    new_value: string;
+    reason: string;
+  };
 }
 
 interface ConversationHistory {
@@ -80,6 +88,36 @@ const BrainInterface: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.result) {
+          const messagesToAdd: Message[] = [];
+          
+          // Add identity change notifications first
+          if (data.result.identity_changes && data.result.identity_changes.length > 0) {
+            data.result.identity_changes.forEach((change: any) => {
+              messagesToAdd.push({
+                id: `identity_${Date.now()}_${Math.random()}`,
+                type: 'identity_change',
+                content: `🔄 Identity Evolution: ${change.type} changed from "${change.old_value}" to "${change.new_value}" - ${change.reason}`,
+                timestamp: change.timestamp,
+                identity_change: change
+              });
+            });
+          }
+          
+          // Add agent responses if any
+          if (data.result.agent_responses && data.result.agent_responses.length > 0) {
+            data.result.agent_responses.forEach((agentResp: any) => {
+              messagesToAdd.push({
+                id: `agent_${Date.now()}_${Math.random()}`,
+                type: 'agent',
+                content: agentResp.response,
+                timestamp: agentResp.timestamp,
+                agent_name: agentResp.agent_name,
+                agent_role: agentResp.agent_role
+              });
+            });
+          }
+          
+          // Add the main brain response
           const brainMessage: Message = {
             id: (Date.now() + 1).toString(),
             type: 'brain',
@@ -87,8 +125,10 @@ const BrainInterface: React.FC = () => {
             timestamp: new Date().toISOString(),
             emotion: data.result.emotional_state
           };
-
-          setMessages(prev => [...prev, brainMessage]);
+          
+          messagesToAdd.push(brainMessage);
+          
+          setMessages(prev => [...prev, ...messagesToAdd]);
         } else {
           throw new Error(data.message || 'Failed to get response from brain');
         }
@@ -144,6 +184,10 @@ const BrainInterface: React.FC = () => {
         return <User className="w-4 h-4" />;
       case 'brain':
         return <Brain className="w-4 h-4" />;
+      case 'agent':
+        return <Bot className="w-4 h-4" />;
+      case 'identity_change':
+        return <RefreshCw className="w-4 h-4" />;
       default:
         return <Bot className="w-4 h-4" />;
     }
@@ -155,6 +199,10 @@ const BrainInterface: React.FC = () => {
         return 'bg-blue-500 text-white ml-auto';
       case 'brain':
         return 'bg-purple-500 text-white mr-auto';
+      case 'agent':
+        return 'bg-green-500 text-white mr-auto';
+      case 'identity_change':
+        return 'bg-orange-500 text-white mx-auto';
       default:
         return 'bg-gray-500 text-white mx-auto';
     }
@@ -234,7 +282,12 @@ const BrainInterface: React.FC = () => {
                 <div className="flex items-center mb-1">
                   {getMessageIcon(message.type)}
                   <span className="ml-2 text-xs font-medium">
-                    {message.type.charAt(0).toUpperCase() + message.type.slice(1)}
+                    {message.type === 'agent' && message.agent_name 
+                      ? `${message.agent_name} (${message.agent_role})`
+                      : message.type === 'identity_change'
+                      ? 'Identity Evolution'
+                      : message.type.charAt(0).toUpperCase() + message.type.slice(1)
+                    }
                   </span>
                   {message.emotion && (
                     <span className="ml-2 text-xs opacity-75">
@@ -243,6 +296,14 @@ const BrainInterface: React.FC = () => {
                   )}
                 </div>
                 <p className="text-sm">{message.content}</p>
+                {message.identity_change && (
+                  <div className="mt-2 p-2 bg-black bg-opacity-20 rounded text-xs">
+                    <div className="font-medium">Change Type: {message.identity_change.type}</div>
+                    <div>From: "{message.identity_change.old_value}"</div>
+                    <div>To: "{message.identity_change.new_value}"</div>
+                    <div className="italic mt-1">{message.identity_change.reason}</div>
+                  </div>
+                )}
                 <p className="text-xs opacity-75 mt-1">
                   {formatTimestamp(message.timestamp)}
                 </p>

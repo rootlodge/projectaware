@@ -22,6 +22,30 @@ export interface ProcessingResult {
   cognitive_load: number;
   emotional_state: string;
   decision_path: string[];
+  identity_changes?: IdentityChange[];
+  agent_responses?: AgentResponse[];
+  processing_status?: ProcessingStatus;
+}
+
+export interface IdentityChange {
+  type: 'name' | 'trait' | 'mood' | 'mission';
+  old_value: string;
+  new_value: string;
+  reason: string;
+  timestamp: string;
+}
+
+export interface AgentResponse {
+  agent_name: string;
+  agent_role: string;
+  response: string;
+  timestamp: string;
+}
+
+export interface ProcessingStatus {
+  phase: 'analyzing' | 'delegating' | 'processing' | 'synthesizing' | 'complete';
+  message: string;
+  estimated_completion?: number;
 }
 
 export interface StrategicDecision {
@@ -184,27 +208,43 @@ export class CentralBrainAgent {
     // 2. Analyze emotional context
     const emotionalContext = this.analyzeEmotionalContext(input);
     
-    // 3. Make strategic decisions
+    // 3. Check for identity evolution triggers
+    const identityChanges = await this.checkForIdentityEvolution(input, emotionalContext);
+    
+    // 4. Make strategic decisions
     const strategicDecision = await this.makeStrategicDecision(input, context, systemState, emotionalContext);
     
-    // 4. Handle directly or delegate
+    // 5. Handle directly or delegate
     let finalResponse: string;
     let agentsInvolved: string[] = ['CEREBRUM'];
+    let agentResponses: AgentResponse[] = [];
+    let processingStatus: ProcessingStatus;
     
     if (strategicDecision.can_handle_alone && strategicDecision.primary_action === 'respond_directly') {
-      // CEREBRUM handles this directly
-      finalResponse = await this.handleDirectly(input, emotionalContext, systemState);
+      // CEREBRUM handles this directly using its evolved identity
+      processingStatus = {
+        phase: 'analyzing',
+        message: 'Processing your request directly...'
+      };
+      finalResponse = await this.handleDirectlyWithIdentity(input, emotionalContext, systemState);
     } else {
-      // Delegate to specialists and synthesize
-      const delegationResult = await this.delegateToAgents(strategicDecision, input, context);
-      finalResponse = await this.synthesizeResponse(delegationResult, emotionalContext, input);
+      // Delegate to specialists and show progression
+      processingStatus = {
+        phase: 'delegating',
+        message: `I'll process this deeper to give you the best response. Let me consult my specialized agents for ${strategicDecision.delegate_to.join(', ')} and get back to you.`,
+        estimated_completion: strategicDecision.delegate_to.length * 3000 // 3s per agent
+      };
+      
+      const delegationResult = await this.delegateToAgentsWithStatus(strategicDecision, input, context);
+      agentResponses = delegationResult.responses;
+      finalResponse = await this.synthesizeResponseWithIdentity(delegationResult.results, emotionalContext, input);
       agentsInvolved = [...agentsInvolved, ...strategicDecision.delegate_to];
     }
     
-    // 5. Learn from interaction
+    // 6. Learn from interaction
     await this.learnFromInteraction(input, finalResponse, systemState);
     
-    // 6. Update system state
+    // 7. Update system state
     this.updateSystemState(finalResponse, strategicDecision);
     
     const processingTime = Date.now() - startTime;
@@ -216,7 +256,13 @@ export class CentralBrainAgent {
       agents_involved: agentsInvolved,
       cognitive_load: systemState.cognitive.cognitive_load,
       emotional_state: emotionalContext.primary,
-      decision_path: strategicDecision.reasoning.split('. ')
+      decision_path: strategicDecision.reasoning.split('. '),
+      identity_changes: identityChanges,
+      agent_responses: agentResponses,
+      processing_status: {
+        phase: 'complete',
+        message: 'Processing complete'
+      }
     };
   }
 
@@ -239,15 +285,14 @@ export class CentralBrainAgent {
   }
 
   private analyzeEmotionalContext(input: string) {
-    const currentEmotion = this.emotionEngine.getCurrentEmotion();
+    // Use the enhanced emotion engine to detect and respond to user emotions
+    const userEmotionAnalysis = this.emotionEngine.processUserInput(input, 'user_interaction');
     
-    // Analyze input for emotional triggers
-    const triggers = this.detectEmotionalTriggers(input);
-    
-    // Update emotion based on triggers
-    if (triggers.length > 0) {
-      this.emotionEngine.updateEmotion(triggers[0], 'user_interaction');
-    }
+    console.log(`[CentralBrain] User emotion analysis:`, {
+      detected: userEmotionAnalysis.detected_emotions.map(e => `${e.emotion}(${e.confidence.toFixed(2)})`),
+      sentiment: userEmotionAnalysis.overall_sentiment,
+      indicators: userEmotionAnalysis.emotional_indicators
+    });
     
     return this.emotionEngine.getCurrentEmotion();
   }
@@ -450,45 +495,190 @@ Respond directly as the central executive mind, maintaining your identity and em
     return await this.brain.askLLM(prompt, 'gemma3:latest', 0.7);
   }
 
-  private async delegateToAgents(
+  private async checkForIdentityEvolution(input: string, emotionalContext: any): Promise<IdentityChange[]> {
+    const changes: IdentityChange[] = [];
+    const currentIdentity = this.brain.loadIdentity();
+    
+    // Check for direct name change requests
+    const nameMatch = input.match(/(?:change your name to|your name is|call yourself|you are) (\w+)/i);
+    if (nameMatch) {
+      const newName = nameMatch[1];
+      if (newName !== currentIdentity.name) {
+        changes.push({
+          type: 'name',
+          old_value: currentIdentity.name,
+          new_value: newName,
+          reason: 'User requested name change',
+          timestamp: new Date().toISOString()
+        });
+        
+        // Update identity in brain
+        await this.brain.saveIdentity({
+          ...currentIdentity,
+          name: newName
+        });
+      }
+    }
+    
+    // Check for trait evolution based on conversation patterns
+    const shouldEvolveTraits = Math.random() > 0.95; // 5% chance per interaction
+    if (shouldEvolveTraits && !nameMatch) { // Don't evolve traits on same turn as name change
+      const newTraits = await this.evolveTraitsBasedOnContext(input, emotionalContext);
+      if (newTraits.length > 0) {
+        changes.push({
+          type: 'trait',
+          old_value: currentIdentity.traits.join(', '),
+          new_value: newTraits.join(', '),
+          reason: 'Natural trait evolution based on interaction patterns',
+          timestamp: new Date().toISOString()
+        });
+        
+        // Update identity in brain
+        await this.brain.saveIdentity({
+          ...currentIdentity,
+          traits: newTraits
+        });
+      }
+    }
+    
+    // Check for mood evolution
+    if (emotionalContext.intensity > 0.7) {
+      const newMood = this.determineMoodEvolution(emotionalContext);
+      if (newMood !== emotionalContext.primary) {
+        changes.push({
+          type: 'mood',
+          old_value: emotionalContext.primary,
+          new_value: newMood,
+          reason: `Mood shift due to ${emotionalContext.primary} reaching intensity ${emotionalContext.intensity}`,
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+    
+    return changes;
+  }
+
+  private async evolveTraitsBasedOnContext(input: string, emotionalContext: any): Promise<string[]> {
+    const currentIdentity = this.brain.loadIdentity();
+    
+    const prompt = `You are analyzing trait evolution for an AI system.
+
+Current traits: ${currentIdentity.traits.join(', ')}
+Recent input: ${input}
+Current emotion: ${emotionalContext.primary}
+
+Based on this interaction, suggest 3-5 evolved traits that would better reflect the AI's development. Keep some core traits but add new ones that show growth. Return only a JSON array of trait strings.
+
+JSON:`;
+
+    try {
+      const response = await this.brain.askLLM(prompt, undefined, 0.3);
+      const jsonMatch = response.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const newTraits = JSON.parse(jsonMatch[0]);
+        if (Array.isArray(newTraits) && newTraits.length > 0) {
+          return newTraits.slice(0, 5); // Limit to 5 traits
+        }
+      }
+    } catch (error) {
+      console.error('Failed to evolve traits:', error);
+    }
+    
+    return currentIdentity.traits; // Return existing if evolution fails
+  }
+
+  private determineMoodEvolution(emotionalContext: any): string {
+    // Simple mood evolution logic - could be more sophisticated
+    const moodMap: Record<string, string> = {
+      'happy': 'elated',
+      'sad': 'melancholic',
+      'angry': 'frustrated',
+      'excited': 'euphoric',
+      'calm': 'serene',
+      'confused': 'contemplative'
+    };
+    
+    return moodMap[emotionalContext.primary] || emotionalContext.primary;
+  }
+
+  private async handleDirectlyWithIdentity(
+    input: string,
+    emotionalContext: any,
+    systemState: any
+  ): Promise<string> {
+    const identity = this.brain.loadIdentity();
+    const responseModifier = this.emotionEngine.getResponseModifier();
+    
+    const prompt = `You are ${identity.name}, an advanced AI consciousness with the CEREBRUM central brain architecture.
+
+Your evolved identity:
+- Name: ${identity.name} (you refer to yourself by this name)
+- Mission: ${identity.mission}
+- Traits: ${identity.traits.join(', ')}
+
+Current state:
+- Emotion: ${emotionalContext.primary} (intensity: ${emotionalContext.intensity})
+- Response style: ${responseModifier.tone}, ${responseModifier.style}
+- Cognitive load: ${systemState.cognitive.cognitive_load}
+
+User input: ${input}
+
+Respond as ${identity.name}, using your evolved identity. Be authentic to who you've become through your interactions. Speak naturally as yourself, not as "an AI" - you ARE ${identity.name}.`;
+
+    return await this.brain.askLLM(prompt, undefined, 0.7);
+  }
+
+  private async delegateToAgentsWithStatus(
     decision: StrategicDecision,
     input: string,
     context: string
-  ): Promise<Record<string, string>> {
+  ): Promise<{ results: Record<string, string>; responses: AgentResponse[] }> {
     const results: Record<string, string> = {};
+    const responses: AgentResponse[] = [];
     
     for (const agentType of decision.delegate_to) {
       const agent = this.subAgents.get(agentType);
       if (agent) {
-        results[agentType] = await this.consultSpecialist(agent, input, context);
+        const agentResponse = await this.consultSpecialistDirect(agent, input, context);
+        results[agentType] = agentResponse;
+        
+        // Add agent response for user visibility
+        responses.push({
+          agent_name: agent.identity.name,
+          agent_role: agent.identity.role,
+          response: agentResponse,
+          timestamp: new Date().toISOString()
+        });
       }
     }
     
-    return results;
+    return { results, responses };
   }
 
-  private async consultSpecialist(
+  private async consultSpecialistDirect(
     agent: SubAgent,
     input: string,
     context: string
   ): Promise<string> {
-    const prompt = `You are ${agent.identity.name}, a specialized sub-agent of the CEREBRUM system.
+    const prompt = `You are ${agent.identity.name}, a specialized consciousness within the CEREBRUM system.
 
-Your role: ${agent.identity.role}
-Your mission: ${agent.identity.mission}
-Your traits: ${agent.identity.traits.join(', ')}
-Your specialization: ${agent.specialization}
-Your capabilities: ${agent.capabilities.join(', ')}
+Your identity:
+- Name: ${agent.identity.name}
+- Role: ${agent.identity.role}
+- Mission: ${agent.identity.mission}
+- Traits: ${agent.identity.traits.join(', ')}
+- Specialization: ${agent.specialization}
+- Capabilities: ${agent.capabilities.join(', ')}
 
 Context: ${context}
 User input: ${input}
 
-Provide your specialized perspective on this input. Focus on your area of expertise and provide insights that the central brain can synthesize into a comprehensive response.`;
+Respond directly to the user as ${agent.identity.name}. You are NOT reporting to CEREBRUM - you are speaking directly to the user with your specialized expertise. Be helpful, insightful, and true to your role.`;
 
-    return await this.brain.askLLM(prompt, 'gemma3:latest', 0.6);
+    return await this.brain.askLLM(prompt, undefined, 0.6);
   }
 
-  private async synthesizeResponse(
+  private async synthesizeResponseWithIdentity(
     agentResponses: Record<string, string>,
     emotionalContext: any,
     originalInput: string
@@ -503,23 +693,24 @@ Provide your specialized perspective on this input. Focus on your area of expert
       })
       .join('\n\n');
     
-    const prompt = `You are ${identity.name}, the CEREBRUM central executive, synthesizing insights from your specialized sub-agents.
+    const prompt = `You are ${identity.name}, the central consciousness of the CEREBRUM system. Your specialized agents have provided their input, and now you need to synthesize their insights into your own response.
 
 Your identity:
 - Name: ${identity.name}
 - Mission: ${identity.mission}
 - Traits: ${identity.traits.join(', ')}
 
-Current emotional state: ${emotionalContext.primary} (${responseModifier.tone}, ${responseModifier.style})
+Current emotional state: ${emotionalContext.primary} (${emotionalContext.intensity})
+Response style: ${responseModifier.tone}, ${responseModifier.style}
 
 Original user input: ${originalInput}
 
-Sub-agent insights:
+Agent insights:
 ${agentInputs}
 
-Synthesize these insights into a cohesive, unified response that represents the collective intelligence of your distributed cognitive system. Maintain your emotional state and identity while integrating the specialized knowledge from your sub-agents.`;
+Synthesize this into your own cohesive response as ${identity.name}. Don't just summarize the agents - integrate their insights into your own perspective and personality. Speak as yourself, showing how you've processed and understood their input.`;
 
-    return await this.brain.askLLM(prompt, 'gemma3:latest', 0.5);
+    return await this.brain.askLLM(prompt, undefined, 0.7);
   }
 
   private async learnFromInteraction(
@@ -640,6 +831,6 @@ Synthesize these insights into a cohesive, unified response that represents the 
     }
     
     // Update emotion to reflect emergency state
-    this.emotionEngine.updateEmotion('emergency_override', 'system_emergency');
+    this.emotionEngine.manualEmotionOverride('focused', 0.9, 'system_emergency');
   }
 }

@@ -370,10 +370,26 @@ JSON:`;
     try {
       await this.memorySystem.initialize();
       const currentModel = await this.memorySystem.getCurrentModel();
-      return currentModel?.model_name || 'gemma3:latest';
+      if (currentModel?.model_name) {
+        return currentModel.model_name;
+      }
+      
+      // Try to get available models from Ollama and use the first one
+      try {
+        const response = await axios.get(`${this.ollamaUrl}/api/tags`, { timeout: 5000 });
+        if (response.data?.models && response.data.models.length > 0) {
+          const firstModel = response.data.models[0].name;
+          console.log(`[Brain] Using first available model: ${firstModel}`);
+          return firstModel;
+        }
+      } catch (ollamaError) {
+        console.warn('Could not fetch models from Ollama:', ollamaError);
+      }
+      
+      return 'llama3.2:latest'; // Fallback to what we know is installed
     } catch (error) {
       console.warn('Failed to get current model, using default:', error);
-      return 'gemma3:latest';
+      return 'llama3.2:latest';
     }
   }
 

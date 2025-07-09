@@ -35,7 +35,10 @@ export async function POST(request: NextRequest) {
         agents_involved: result.agents_involved,
         cognitive_load: result.cognitive_load,
         emotional_state: result.emotional_state,
-        decision_path: result.decision_path
+        decision_path: result.decision_path,
+        identity_changes: result.identity_changes || [],
+        agent_responses: result.agent_responses || [],
+        processing_status: result.processing_status
       },
       timestamp: new Date().toISOString()
     });

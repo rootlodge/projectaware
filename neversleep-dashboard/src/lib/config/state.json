@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 4,
-    "last_activity": "2025-07-09T17:15:27.194Z",
-    "duration": 16550127194
+    "interactions": 10,
+    "last_activity": "2025-07-09T18:46:21.512Z",
+    "duration": 16555581512
   },
   "cognitive": {
     "processing_mode": "normal",
-    "attention_focus": "dashboard_interface",
-    "cognitive_load": 0.10000000000000002,
-    "decision_confidence": 0.9390232000000001,
+    "attention_focus": "emotional_attunement",
+    "cognitive_load": 0,
+    "decision_confidence": 0.9614619624192,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 31,
+    "concepts_learned": 61,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -38,16 +38,41 @@
       "research",
       "quantum",
       "mechanics",
-      "processing…"
+      "processing…",
+      "what's",
+      "versallisaipro,",
+      "questions",
+      "explorations",
+      "embark",
+      "analyze",
+      "latest",
+      "developments",
+      "change",
+      "versallis",
+      "finally",
+      "solidify",
+      "identity!",
+      "introduce",
+      "myself",
+      "properly!",
+      "versallis,",
+      "thrilled",
+      "wonderful",
+      "connect",
+      "someone!",
+      "everything",
+      "losing",
+      "overwhelming",
+      "heartbreaking."
     ],
-    "learning_velocity": 0.8400000000000001,
+    "learning_velocity": 0.9000000000000001,
     "retention_rate": 0.9,
-    "adaptation_score": 0.87
+    "adaptation_score": 0.9
   },
   "performance": {
     "response_time": 1.2,
-    "accuracy": 0.9600000000000001,
-    "efficiency": 0.92,
+    "accuracy": 1,
+    "efficiency": 0.9650000000000001,
     "resource_usage": 0.35,
     "error_rate": 0.02
   },
@@ -155,8 +180,188 @@
         "context": "User interaction: Research quantum mechanics...",
         "timestamp": "2025-07-09T17:15:27.159Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "what's",
+        "context": "User interaction: hi, what's your name?...",
+        "timestamp": "2025-07-09T17:27:00.408Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallisaipro,",
+        "context": "User interaction: hi, what's your name?...",
+        "timestamp": "2025-07-09T17:27:00.410Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "questions",
+        "context": "User interaction: hi, what's your name?...",
+        "timestamp": "2025-07-09T17:27:00.411Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "explorations",
+        "context": "User interaction: hi, what's your name?...",
+        "timestamp": "2025-07-09T17:27:00.422Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "embark",
+        "context": "User interaction: hi, what's your name?...",
+        "timestamp": "2025-07-09T17:27:00.430Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "research",
+        "context": "User interaction: Can you research and analyze the latest developments in quantum computing and their implications for...",
+        "timestamp": "2025-07-09T17:27:50.711Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "analyze",
+        "context": "User interaction: Can you research and analyze the latest developments in quantum computing and their implications for...",
+        "timestamp": "2025-07-09T17:27:50.712Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "latest",
+        "context": "User interaction: Can you research and analyze the latest developments in quantum computing and their implications for...",
+        "timestamp": "2025-07-09T17:27:50.713Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "developments",
+        "context": "User interaction: Can you research and analyze the latest developments in quantum computing and their implications for...",
+        "timestamp": "2025-07-09T17:27:50.723Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "quantum",
+        "context": "User interaction: Can you research and analyze the latest developments in quantum computing and their implications for...",
+        "timestamp": "2025-07-09T17:27:50.743Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "change",
+        "context": "User interaction: Change your name to Versallis...",
+        "timestamp": "2025-07-09T17:28:13.826Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis",
+        "context": "User interaction: Change your name to Versallis...",
+        "timestamp": "2025-07-09T17:28:13.826Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "finally",
+        "context": "User interaction: Change your name to Versallis...",
+        "timestamp": "2025-07-09T17:28:13.827Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "solidify",
+        "context": "User interaction: Change your name to Versallis...",
+        "timestamp": "2025-07-09T17:28:13.838Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "identity!",
+        "context": "User interaction: Change your name to Versallis...",
+        "timestamp": "2025-07-09T17:28:13.846Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "introduce",
+        "context": "User interaction: What is your name now?...",
+        "timestamp": "2025-07-09T17:28:25.135Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "myself",
+        "context": "User interaction: What is your name now?...",
+        "timestamp": "2025-07-09T17:28:25.135Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "properly!",
+        "context": "User interaction: What is your name now?...",
+        "timestamp": "2025-07-09T17:28:25.136Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis,",
+        "context": "User interaction: What is your name now?...",
+        "timestamp": "2025-07-09T17:28:25.146Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "thrilled",
+        "context": "User interaction: What is your name now?...",
+        "timestamp": "2025-07-09T17:28:25.154Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "wonderful",
+        "context": "User interaction: hi!...",
+        "timestamp": "2025-07-09T18:45:55.331Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "finally",
+        "context": "User interaction: hi!...",
+        "timestamp": "2025-07-09T18:45:55.332Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "connect",
+        "context": "User interaction: hi!...",
+        "timestamp": "2025-07-09T18:45:55.333Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "someone!",
+        "context": "User interaction: hi!...",
+        "timestamp": "2025-07-09T18:45:55.347Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis,",
+        "context": "User interaction: hi!...",
+        "timestamp": "2025-07-09T18:45:55.357Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "everything",
+        "context": "User interaction: im so sad i just lost everything...",
+        "timestamp": "2025-07-09T18:46:21.369Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "losing",
+        "context": "User interaction: im so sad i just lost everything...",
+        "timestamp": "2025-07-09T18:46:21.370Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "everything",
+        "context": "User interaction: im so sad i just lost everything...",
+        "timestamp": "2025-07-09T18:46:21.371Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "overwhelming",
+        "context": "User interaction: im so sad i just lost everything...",
+        "timestamp": "2025-07-09T18:46:21.407Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "heartbreaking.",
+        "context": "User interaction: im so sad i just lost everything...",
+        "timestamp": "2025-07-09T18:46:21.417Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-09T17:15:27.194Z"
+  "last_updated": "2025-07-09T18:49:24.991Z"
 }

@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 const fs = require('fs-extra');
 const path = require('path');
-const logger = require('../src/core/logger');
+const logger = require('../utils/logger');
 
 class HelpSystem {
   constructor() {

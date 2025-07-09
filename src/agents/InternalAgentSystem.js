@@ -1,8 +1,8 @@
 // Specialized Internal Agent System for neversleep.ai
 const MultiAgentManager = require('./MultiAgentManager');
-const logger = require('../core/logger');
+const logger = require('../utils/logger');
 const fs = require('fs-extra');
-const { askLLM } = require('./brain');
+const { askLLM } = require('..core/brain');
 
 class InternalAgentSystem {
   constructor() {

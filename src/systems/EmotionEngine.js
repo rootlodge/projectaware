@@ -1,11 +1,11 @@
 const fs = require('fs-extra');
 const path = require('path');
-const logger = require('../src/core/logger');
+const logger = require('../utils/logger');
 
 class EmotionEngine {
   constructor(stateManager) {
     this.stateManager = stateManager;
-    this.emotionFile = path.join(__dirname, 'emotions.json');
+    this.emotionFile = path.join(__dirname, '../config/emotions.json');
     this.emotions = this.loadEmotions();
     this.emotionHistory = [];
     this.maxHistorySize = 100;

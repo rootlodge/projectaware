@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 
-const logsDir = './logs';
+const logsDir = '../logs';
 if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir);
 }

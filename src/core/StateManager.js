@@ -1,12 +1,12 @@
 // Enhanced state management system
 const fs = require('fs');
 const path = require('path');
-const logger = require('../src/core/logger');
+const logger = require('../utils/logger');
 
 class StateManager {
   constructor() {
-    this.stateFile = './state.json';
-    this.dynamicFile = './dynamic.json';
+    this.stateFile = '../config/state.json';
+    this.dynamicFile = '../config/dynamic.json';
     this.initializeState();
   }
 

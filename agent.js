@@ -17,9 +17,9 @@ const {
   stateManager,
   emotionEngine,
   responseCache
-} = require('./brain');
+} = require('./src/core/brain');
 
-const { saveMessage, getRecentMessages, getConversationHistory, getUserResponsePatterns } = require('./memory');
+const { saveMessage, getRecentMessages, getConversationHistory, getUserResponsePatterns } = require('./src/core/memory');
 const MultiAgentManager = require('./MultiAgentManager');
 const InternalAgentSystem = require('./InternalAgentSystem');
 const HelpSystem = require('./HelpSystem');

@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const crypto = require('crypto');
-const logger = require('../src/core/logger');
+const logger = require('../utils/logger');
 
 class ResponseCache {
   constructor() {

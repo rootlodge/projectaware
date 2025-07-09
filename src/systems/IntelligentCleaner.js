@@ -1,13 +1,13 @@
 const fs = require('fs-extra');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-const logger = require('../core/logger');
-const { askLLM } = require('./brain');
+const logger = require('../utils/logger');
+const { askLLM } = require('../core/brain');
 
 class IntelligentCleaner {
   constructor() {
-    this.dbPath = './memory.db';
-    this.logDir = './logs';
+    this.dbPath = '../../memory.db';
+    this.logDir = '../logs';
     this.thresholds = {
       databaseSize: 50 * 1024 * 1024, // 50MB
       logFileSize: 10 * 1024 * 1024,  // 10MB per log

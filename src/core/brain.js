@@ -1,8 +1,8 @@
 const axios = require('axios');
 const fs = require('fs');
 const StateManager = require('./StateManager');
-const EmotionEngine = require('./EmotionEngine');
-const ResponseCache = require('./ResponseCache');
+const EmotionEngine = require('../systems/EmotionEngine');
+const ResponseCache = require('../systems/ResponseCache');
 
 const stateManager = new StateManager();
 const emotionEngine = new EmotionEngine(stateManager);
@@ -199,7 +199,7 @@ Tag this thought with a short 'mood' and 'goal'. Respond as JSON: {"mood": "..."
 }
 
 async function evolveIdentity(memoryLog) {
-  const logger = require('./logger');
+  const logger = require('../utils/logger');
   
   // Analyze emotions from the memory log to understand user context
   const emotionAnalysis = emotionEngine.analyzeEmotion(memoryLog, 'identity_evolution');

@@ -1,10 +1,10 @@
 const fs = require('fs-extra');
 const path = require('path');
-const logger = require('../logger');
+const logger = require('../utils/logger');
 
 class ModelManager {
   constructor() {
-    this.configPath = './config/models.json';
+    this.configPath = '../config/models.json';
     this.config = null;
     this.currentModel = null;
     this.performanceStats = new Map();

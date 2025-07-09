@@ -2,8 +2,8 @@
 const fs = require('fs-extra');
 const path = require('path');
 const EventEmitter = require('events');
-const logger = require('../core/logger');
-const StateManager = require('./StateManager');
+const logger = require('../utils/logger');
+const StateManager = require('../core/StateManager');
 const { askLLM, loadIdentity } = require('./brain');
 
 class MultiAgentManager extends EventEmitter {

@@ -1,5 +1,5 @@
-const logger = require('../logger');
-const { askLLM } = require('../brain');
+const logger = require('../utils/logger');
+const { askLLM } = require('../core/brain');
 
 class DelayedRefinementSystem {
   constructor(centralBrainAgent, stateManager) {

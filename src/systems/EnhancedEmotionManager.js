@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 
 class EnhancedEmotionManager {
   constructor() {
-    this.configPath = '../config/emotions.json';
+    this.configPath = './config/emotions.json';
     this.config = null;
     this.currentEmotion = 'neutral';
     this.emotionIntensity = 0.5;

@@ -5,8 +5,8 @@ const logger = require('../utils/logger');
 
 class StateManager {
   constructor() {
-    this.stateFile = '../config/state.json';
-    this.dynamicFile = '../config/dynamic.json';
+    this.stateFile = './state.json';
+    this.dynamicFile = './dynamic.json';
     this.initializeState();
   }
 

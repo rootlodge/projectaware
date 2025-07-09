@@ -1,9 +1,9 @@
 // Test the new task management and auto-cleaning integration
-const { stateManager, emotionEngine, responseCache } = require('../brain');
-const MultiAgentManager = require('../MultiAgentManager');
-const InternalAgentSystem = require('../InternalAgentSystem');
-const HelpSystem = require('../HelpSystem');
-const CentralBrainAgent = require('../CentralBrainAgent');
+const { stateManager, emotionEngine, responseCache } = require('../src/core/brain');
+const MultiAgentManager = require('../src/agents/MultiAgentManager');
+const InternalAgentSystem = require('../src/agents/InternalAgentSystem');
+const HelpSystem = require('../src/systems/HelpSystem');
+const CentralBrainAgent = require('../src/agents/CentralBrainAgent');
 
 async function testTaskManagement() {
   console.log('🧪 Testing Task Management System...');

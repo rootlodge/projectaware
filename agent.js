@@ -20,9 +20,9 @@ const {
 } = require('./src/core/brain');
 
 const { saveMessage, getRecentMessages, getConversationHistory, getUserResponsePatterns } = require('./src/core/memory');
-const MultiAgentManager = require('./MultiAgentManager');
-const InternalAgentSystem = require('./InternalAgentSystem');
-const HelpSystem = require('./HelpSystem');
+const MultiAgentManager = require('./src/agents/MultiAgentManager');
+const InternalAgentSystem = require('./src/agents/InternalAgentSystem');
+const HelpSystem = require('./src/systems/HelpSystem');
 const CentralBrainAgent = require('./src/agents/CentralBrainAgent');
 
 // Initialize all systems

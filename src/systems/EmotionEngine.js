@@ -5,7 +5,7 @@ const logger = require('../utils/logger');
 class EmotionEngine {
   constructor(stateManager) {
     this.stateManager = stateManager;
-    this.emotionFile = path.join(__dirname, '../config/emotions.json');
+    this.emotionFile = path.join(__dirname, '../../config/emotions.json');
     this.emotions = this.loadEmotions();
     this.emotionHistory = [];
     this.maxHistorySize = 100;

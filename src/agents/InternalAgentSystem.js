@@ -2,7 +2,7 @@
 const MultiAgentManager = require('./MultiAgentManager');
 const logger = require('../utils/logger');
 const fs = require('fs-extra');
-const { askLLM } = require('..core/brain');
+const { askLLM } = require('../core/brain');
 
 class InternalAgentSystem {
   constructor() {
@@ -455,7 +455,7 @@ Respond with JSON: {"approved": true/false, "reasoning": "explanation"}`;
   async executeTraitUpdate(newTraits, reason) {
     try {
       const currentIdentity = this.getCurrentIdentity();
-      const core = await fs.readJSON('./core.json');
+      const core = await fs.readJSON('../src/core/core.json', 'utf-8');
       
       // Filter out locked traits and limit to 10
       const filteredTraits = newTraits

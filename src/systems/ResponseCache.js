@@ -5,7 +5,7 @@ const logger = require('../utils/logger');
 
 class ResponseCache {
   constructor() {
-    this.cacheDir = path.join(__dirname, 'cache');
+    this.cacheDir = path.join(__dirname, '../../cache');
     this.cacheFile = path.join(this.cacheDir, 'responses.json');
     this.metadataFile = path.join(this.cacheDir, 'metadata.json');
     this.maxCacheSize = 1000; // Maximum number of cached responses

@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 
 class ModelManager {
   constructor() {
-    this.configPath = '../config/models.json';
+    this.configPath = './config/models.json';
     this.config = null;
     this.currentModel = null;
     this.performanceStats = new Map();

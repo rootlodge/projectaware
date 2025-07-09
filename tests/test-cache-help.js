@@ -1,5 +1,5 @@
-const ResponseCache = require('../UNORGANIZED-FILES/ResponseCache');
-const HelpSystem = require('../UNORGANIZED-FILES/HelpSystem');
+const ResponseCache = require('../src/systems/ResponseCache');
+const HelpSystem = require('../src/systems/HelpSystem');
 const chalk = require('chalk');
 
 console.log(chalk.blue.bold('🧪 RESPONSE CACHE & HELP SYSTEM TEST'));

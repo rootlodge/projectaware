@@ -7,7 +7,7 @@ class TaskManager {
   constructor(stateManager) {
     this.stateManager = stateManager;
     this.tasksFile = './tasks.json';
-    this.templatesFile = './task_templates.json';
+    this.templatesFile = './config/task_templates.json';
     this.tasks = new Map();
     this.templates = new Map();
     this.activeTaskCount = 0;

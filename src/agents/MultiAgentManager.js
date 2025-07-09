@@ -4,7 +4,7 @@ const path = require('path');
 const EventEmitter = require('events');
 const logger = require('../utils/logger');
 const StateManager = require('../core/StateManager');
-const { askLLM, loadIdentity } = require('./brain');
+const { askLLM, loadIdentity } = require('../core/brain');
 
 class MultiAgentManager extends EventEmitter {
   constructor() {

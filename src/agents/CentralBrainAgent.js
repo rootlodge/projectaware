@@ -625,7 +625,7 @@ Learning insights:`;
   
   getCurrentIdentity() {
     try {
-      const base = JSON.parse(fs.readFileSync('./core.json', 'utf-8'));
+      const base = JSON.parse(fs.readFileSync('../src/core/core.json', 'utf-8'));
       const overlay = JSON.parse(fs.readFileSync('./identity.json', 'utf-8'));
       
       return {

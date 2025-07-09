@@ -1,5 +1,5 @@
-const EmotionEngine = require('../EmotionEngine');
-const StateManager = require('../StateManager');
+const EmotionEngine = require('../UNORGANIZED-FILES/EmotionEngine');
+const StateManager = require('../UNORGANIZED-FILES/StateManager');
 const chalk = require('chalk');
 
 console.log(chalk.blue.bold('🧪 EMOTION ENGINE TEST'));

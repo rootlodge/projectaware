@@ -19,11 +19,11 @@ const {
   responseCache
 } = require('./brain');
 
-const { saveMessage, getRecentMessages, getConversationHistory, getUserResponsePatterns } = require('./memory');
-const MultiAgentManager = require('./MultiAgentManager');
-const InternalAgentSystem = require('./InternalAgentSystem');
-const HelpSystem = require('./HelpSystem');
-const CentralBrainAgent = require('./UNORGANIZED-FILES/CentralBrainAgent');
+const { saveMessage, getRecentMessages, getConversationHistory, getUserResponsePatterns } = require('../memory');
+const MultiAgentManager = require('../MultiAgentManager');
+const InternalAgentSystem = require('../InternalAgentSystem');
+const HelpSystem = require('../HelpSystem');
+const CentralBrainAgent = require('./CentralBrainAgent');
 
 // Initialize all systems
 const multiAgentManager = new MultiAgentManager();

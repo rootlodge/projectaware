@@ -60,6 +60,15 @@ class StateManager {
           emotionPatterns: {},
           emotionTriggers: {},
           emotionalStability: 1.0
+        },
+        tasks: {
+          totalCreated: 0,
+          totalStarted: 0,
+          totalCompleted: 0,
+          totalUpdated: 0,
+          totalDeleted: 0,
+          activeTasks: 0,
+          recentTasks: []
         }
       };
       
@@ -242,6 +251,136 @@ class StateManager {
     };
   }
 
+  /**
+   * Task Management Methods
+   */
+  
+  recordTaskCreation(task) {
+    const state = this.getState();
+    this.updateState({
+      tasks: {
+        ...state.tasks,
+        totalCreated: (state.tasks?.totalCreated || 0) + 1,
+        activeTasks: (state.tasks?.activeTasks || 0) + 1,
+        recentTasks: [
+          ...(state.tasks?.recentTasks || []),
+          {
+            id: task.id,
+            name: task.name,
+            status: task.status,
+            priority: task.priority,
+            createdAt: task.createdAt,
+            action: 'created'
+          }
+        ].slice(-10)
+      }
+    });
+  }
+
+  recordTaskStart(task) {
+    const state = this.getState();
+    this.updateState({
+      tasks: {
+        ...state.tasks,
+        totalStarted: (state.tasks?.totalStarted || 0) + 1,
+        recentTasks: [
+          ...(state.tasks?.recentTasks || []),
+          {
+            id: task.id,
+            name: task.name,
+            status: task.status,
+            priority: task.priority,
+            startTime: task.startTime,
+            action: 'started'
+          }
+        ].slice(-10)
+      }
+    });
+  }
+
+  recordTaskCompletion(task) {
+    const state = this.getState();
+    this.updateState({
+      tasks: {
+        ...state.tasks,
+        totalCompleted: (state.tasks?.totalCompleted || 0) + 1,
+        activeTasks: Math.max(0, (state.tasks?.activeTasks || 1) - 1),
+        recentTasks: [
+          ...(state.tasks?.recentTasks || []),
+          {
+            id: task.id,
+            name: task.name,
+            status: task.status,
+            priority: task.priority,
+            completedAt: task.endTime,
+            duration: task.actualDuration,
+            action: 'completed'
+          }
+        ].slice(-10)
+      },
+      performance: {
+        ...state.performance,
+        taskCompletionRate: (state.tasks?.totalCompleted || 0) / (state.tasks?.totalCreated || 1)
+      }
+    });
+  }
+
+  recordTaskUpdate(task) {
+    const state = this.getState();
+    this.updateState({
+      tasks: {
+        ...state.tasks,
+        totalUpdated: (state.tasks?.totalUpdated || 0) + 1,
+        recentTasks: [
+          ...(state.tasks?.recentTasks || []),
+          {
+            id: task.id,
+            name: task.name,
+            status: task.status,
+            priority: task.priority,
+            updatedAt: task.updatedAt,
+            action: 'updated'
+          }
+        ].slice(-10)
+      }
+    });
+  }
+
+  recordTaskDeletion(task) {
+    const state = this.getState();
+    this.updateState({
+      tasks: {
+        ...state.tasks,
+        totalDeleted: (state.tasks?.totalDeleted || 0) + 1,
+        activeTasks: task.status === 'in_progress' ? Math.max(0, (state.tasks?.activeTasks || 1) - 1) : (state.tasks?.activeTasks || 0),
+        recentTasks: [
+          ...(state.tasks?.recentTasks || []),
+          {
+            id: task.id,
+            name: task.name,
+            status: task.status,
+            priority: task.priority,
+            deletedAt: new Date().toISOString(),
+            action: 'deleted'
+          }
+        ].slice(-10)
+      }
+    });
+  }
+
+  getTaskState() {
+    const state = this.getState();
+    return state.tasks || {
+      totalCreated: 0,
+      totalStarted: 0,
+      totalCompleted: 0,
+      totalUpdated: 0,
+      totalDeleted: 0,
+      activeTasks: 0,
+      recentTasks: []
+    };
+  }
+
   deepMerge(target, source) {
     const output = Object.assign({}, target);
     if (this.isObject(target) && this.isObject(source)) {
@@ -300,6 +439,15 @@ class StateManager {
         identityChanges: 0,
         traitEvolutions: [],
         lastEvolution: new Date().toISOString()
+      },
+      tasks: {
+        totalCreated: 0,
+        totalStarted: 0,
+        totalCompleted: 0,
+        totalUpdated: 0,
+        totalDeleted: 0,
+        activeTasks: 0,
+        recentTasks: []
       }
     };
     

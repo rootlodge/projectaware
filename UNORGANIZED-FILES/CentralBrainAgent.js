@@ -2,6 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const logger = require('./logger');
 const { askLLM } = require('./brain');
+const IntelligentCleaner = require('./IntelligentCleaner');
+const TaskManager = require('./TaskManager');
 
 class CentralBrainAgent {
   constructor(stateManager, emotionEngine, responseCache, multiAgentManager, internalAgentSystem, helpSystem) {
@@ -11,6 +13,12 @@ class CentralBrainAgent {
     this.multiAgentManager = multiAgentManager;
     this.internalAgentSystem = internalAgentSystem;
     this.helpSystem = helpSystem;
+    
+    // Initialize intelligent cleaner
+    this.intelligentCleaner = new IntelligentCleaner();
+    
+    // Initialize task manager
+    this.taskManager = new TaskManager(stateManager);
     
     // Central Brain Identity
     this.identity = {
@@ -700,23 +708,51 @@ Learning insights:`;
     const currentIdentity = this.getCurrentIdentity();
     const systemState = this.analyzeSystemState();
     
+    // First, check if maintenance cleaning is needed
+    const maintenanceResult = await this.performMaintenanceCleaning();
+    if (maintenanceResult.performed) {
+      logger.info('[CentralBrain] Maintenance cleaning performed during independent thinking');
+    }
+    
+    // Check and process pending tasks
+    const taskProcessing = await this.processTaskMaintenance();
+    
+    // Update cleaner with current task status
+    this.intelligentCleaner.setHasActiveTasks(this.taskManager.hasActiveTasks());
+    
+    const taskSummary = this.taskManager.getStatusSummary();
+    const pendingTasks = this.taskManager.getPendingTasks();
+    
     const thinkingPrompt = `You are CEREBRUM, the central executive brain. You're in an independent thinking mode.
 
 YOUR CURRENT IDENTITY:
 - Name: ${currentIdentity.name}
-- Traits: ${currentIdentity.traits ? currentIdentity.traits.join(', ') : 'intelligent, adaptive'}
+- Traits: ${currentIdentity.traits ? 'configured traits' : 'intelligent, adaptive'}
 
 SYSTEM STATE:
 - Current mood: ${systemState.cognitive.currentMood}
 - Focus level: ${systemState.cognitive.focusLevel}
 - Energy level: ${systemState.cognitive.energyLevel}
+- Total interactions: ${systemState.session.totalInteractions}
+
+TASK STATUS:
+- Active tasks: ${taskSummary.activeTasks}
+- Pending tasks: ${taskSummary.pendingTasks}
+- Completed tasks: ${taskSummary.completedTasks}
+- Next priority task: ${taskSummary.nextTask ? taskSummary.nextTask.name : 'None'}
+
+${maintenanceResult.performed ? `MAINTENANCE PERFORMED: ${maintenanceResult.message}` : ''}
+${taskProcessing.processed ? `TASK PROCESSING: ${taskProcessing.message}` : ''}
 
 THINK ABOUT:
 1. How can I better assist my user?
 2. What patterns am I noticing in our interactions?
 3. How should I evolve my identity?
-4. What questions should I be asking?
-5. What improvements can I make?
+4. What questions should I be thinking about?
+5. What improvements can I make to my cognitive processes?
+6. Are there any system optimizations needed?
+7. How can I better manage tasks and priorities?
+8. What should I focus on when the user returns?
 
 Think independently as a digital brain. Be introspective, curious, and self-aware.
 
@@ -732,52 +768,79 @@ Your independent thoughts:`;
       
       return {
         thoughts: thoughts,
+        maintenancePerformed: maintenanceResult.performed,
+        maintenanceMessage: maintenanceResult.message,
+        taskProcessing: taskProcessing,
+        taskSummary: taskSummary,
         timestamp: new Date().toISOString(),
         type: 'independent_thinking'
       };
     } catch (error) {
       logger.error('[CentralBrain] Independent thinking failed:', error.message);
-      return null;
+      return {
+        maintenancePerformed: maintenanceResult.performed,
+        maintenanceMessage: maintenanceResult.message,
+        taskProcessing: taskProcessing,
+        error: error.message
+      };
     }
   }
 
   /**
-   * Clean and delete all memory - fresh start
+   * Clean memory - can be selective or complete
    */
-  async cleanAllMemory() {
+  async cleanAllMemory(selective = false) {
     try {
-      // Clear response cache
-      this.responseCache.clear();
-      
-      // Clear emotion history
-      if (this.emotionEngine.clearHistory) {
-        this.emotionEngine.clearHistory();
-      }
-      
-      // Reset state to defaults
-      this.stateManager.resetToDefaults();
-      
-      // Clear memory database
-      const { clearAllMemory } = require('./memory');
-      await clearAllMemory();
-      
-      // Clear log files
-      const fs = require('fs-extra');
-      const logFiles = ['./logs/thoughts.log', './logs/debug.log', './logs/info.log'];
-      
-      for (const logFile of logFiles) {
-        if (await fs.pathExists(logFile)) {
-          await fs.writeFile(logFile, '');
+      if (selective) {
+        // Use intelligent cleaning
+        const cleaningReport = await this.intelligentCleaner.performCleaning();
+        
+        // Also clear caches
+        this.responseCache.clear();
+        
+        logger.info('[CentralBrain] Selective memory cleaning completed');
+        
+        return {
+          success: true,
+          type: 'selective',
+          message: `Intelligent cleaning completed: removed ${cleaningReport.recordsRemoved} unimportant records and ${cleaningReport.logLinesRemoved} log lines while preserving valuable data.`,
+          report: cleaningReport,
+          timestamp: new Date().toISOString()
+        };
+      } else {
+        // Complete memory wipe
+        this.responseCache.clear();
+        
+        // Clear emotion history
+        if (this.emotionEngine.clearHistory) {
+          this.emotionEngine.clearHistory();
         }
+        
+        // Reset state to defaults
+        this.stateManager.resetToDefaults();
+        
+        // Clear memory database
+        const { clearAllMemory } = require('./memory');
+        await clearAllMemory();
+        
+        // Clear log files
+        const logFiles = ['./logs/thoughts.log', './logs/debug.log', './logs/info.log'];
+        
+        for (const logFile of logFiles) {
+          if (await fs.pathExists(logFile)) {
+            await fs.writeFile(logFile, '');
+          }
+        }
+        
+        logger.info('[CentralBrain] Complete memory wipe completed');
+        
+        return {
+          success: true,
+          type: 'complete',
+          message: 'All memory has been completely cleared. Starting fresh.',
+          timestamp: new Date().toISOString()
+        };
       }
-      
-      logger.info('[CentralBrain] All memory cleaned successfully');
-      
-      return {
-        success: true,
-        message: 'All memory has been cleared. Starting fresh.',
-        timestamp: new Date().toISOString()
-      };
     } catch (error) {
       logger.error('[CentralBrain] Memory cleaning failed:', error.message);
       return {
@@ -785,6 +848,180 @@ Your independent thoughts:`;
         error: error.message,
         timestamp: new Date().toISOString()
       };
+    }
+  }
+
+  /**
+   * Intelligent auto-cleaning during idle periods
+   */
+  async performMaintenanceCleaning() {
+    try {
+      const shouldClean = await this.intelligentCleaner.shouldClean();
+      
+      if (shouldClean) {
+        logger.info('[CentralBrain] Initiating intelligent auto-cleaning...');
+        
+        const cleaningReport = await this.intelligentCleaner.performCleaning();
+        
+        // Record cleaning in state manager
+        this.stateManager.recordInteraction('system_maintenance', {
+          type: 'intelligent_cleaning',
+          recordsRemoved: cleaningReport.recordsRemoved,
+          logLinesRemoved: cleaningReport.logLinesRemoved,
+          spaceFreed: cleaningReport.spaceFreed,
+          reasoning: cleaningReport.reasoning
+        });
+        
+        logger.info(`[CentralBrain] Auto-cleaning completed: ${cleaningReport.recordsRemoved} records, ${cleaningReport.logLinesRemoved} log lines removed`);
+        
+        return {
+          performed: true,
+          report: cleaningReport,
+          message: `Intelligent cleaning completed: removed ${cleaningReport.recordsRemoved} unimportant records and ${cleaningReport.logLinesRemoved} log lines while preserving valuable data.`
+        };
+      }
+      
+      return { performed: false, message: 'No cleaning needed at this time' };
+      
+    } catch (error) {
+      logger.error('[CentralBrain] Maintenance cleaning failed:', error.message);
+      return { performed: false, error: error.message };
+    }
+  }
+
+  /**
+   * Process task maintenance during independent thinking
+   */
+  async processTaskMaintenance() {
+    try {
+      // Process task queue
+      await this.taskManager.processTaskQueue();
+      
+      // Check for overdue tasks
+      const activeTasks = this.taskManager.getActiveTasks();
+      let overdueCount = 0;
+      
+      for (const task of activeTasks) {
+        if (task.startTime) {
+          const startTime = new Date(task.startTime);
+          const elapsed = (Date.now() - startTime) / 1000 / 60; // minutes
+          
+          if (elapsed > (task.estimatedDuration * 2)) {
+            // Task is taking more than double estimated time
+            overdueCount++;
+            logger.warn(`[TaskManager] Task ${task.id} is overdue (${elapsed.toFixed(1)}min elapsed, ${task.estimatedDuration}min estimated)`);
+          }
+        }
+      }
+      
+      // Check for high-priority pending tasks
+      const pendingTasks = this.taskManager.getPendingTasks();
+      const highPriorityPending = pendingTasks.filter(task => task.priority >= 4);
+      
+      let processedCount = 0;
+      for (const task of highPriorityPending.slice(0, 3)) {
+        try {
+          await this.taskManager.startTask(task.id);
+          processedCount++;
+        } catch (error) {
+          logger.warn(`[TaskManager] Failed to auto-start task ${task.id}: ${error.message}`);
+        }
+      }
+      
+      return {
+        processed: processedCount > 0 || overdueCount > 0,
+        message: `Processed ${processedCount} high-priority tasks, ${overdueCount} overdue tasks detected`,
+        overdueCount,
+        processedCount,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      logger.error('[CentralBrain] Task maintenance failed:', error.message);
+      return {
+        processed: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Get task manager for external access
+   */
+  getTaskManager() {
+    return this.taskManager;
+  }
+
+  /**
+   * Handle task-related commands
+   */
+  async handleTaskCommand(command, args) {
+    const taskCommands = {
+      'create': async () => {
+        if (args.length < 2) {
+          return { success: false, message: 'Usage: create task <name> <description>' };
+        }
+        const name = args[0];
+        const description = args.slice(1).join(' ');
+        const task = await this.taskManager.createTask(name, description);
+        return { success: true, message: `Task '${name}' created with ID: ${task.id}`, task };
+      },
+      
+      'list': async () => {
+        const tasks = this.taskManager.getAllTasks();
+        return { success: true, tasks, count: tasks.length };
+      },
+      
+      'status': async () => {
+        if (args.length < 1) {
+          return { success: false, message: 'Usage: task status <task_id>' };
+        }
+        const taskId = args[0];
+        const task = this.taskManager.getTask(taskId);
+        if (!task) {
+          return { success: false, message: `Task '${taskId}' not found` };
+        }
+        return { success: true, task };
+      },
+      
+      'complete': async () => {
+        if (args.length < 1) {
+          return { success: false, message: 'Usage: complete task <task_id>' };
+        }
+        const taskId = args[0];
+        const notes = args.slice(1).join(' ');
+        const task = await this.taskManager.completeTask(taskId, notes);
+        return { success: true, message: `Task '${taskId}' completed`, task };
+      },
+      
+      'delete': async () => {
+        if (args.length < 1) {
+          return { success: false, message: 'Usage: delete task <task_id>' };
+        }
+        const taskId = args[0];
+        await this.taskManager.deleteTask(taskId);
+        return { status: true, message: `Task '${taskId}' deleted` };
+      },
+      
+      'analytics': async () => {
+        const analytics = this.taskManager.getTaskAnalytics();
+        return { success: true, analytics };
+      },
+      
+      'templates': async () => {
+        const templates = this.taskManager.getTemplates();
+        return { success: true, templates };
+      }
+    };
+    
+    const handler = taskCommands[command];
+    if (!handler) {
+      return { success: false, message: `Unknown task command: ${command}` };
+    }
+    
+    try {
+      return await handler();
+    } catch (error) {
+      return { success: false, message: `Task command failed: ${error.message}` };
     }
   }
 }

@@ -1,5 +1,5 @@
-const CentralBrainAgent = require('../CentralBrainAgent');
-const StateManager = require('../StateManager');
+const CentralBrainAgent = require('../UNORGANIZED-FILES/CentralBrainAgent');
+const StateManager = require('../UNORGANIZED-FILES/StateManager');
 const fs = require('fs-extra');
 
 // Mock dependencies for testing

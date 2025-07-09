@@ -1,0 +1,56 @@
+{
+  "currentEmotion": {
+    "primary": "neutral",
+    "secondary": null,
+    "intensity": 0.5,
+    "confidence": 0.7,
+    "timestamp": "2025-07-09T06:40:15.339Z",
+    "triggers": [],
+    "context": "central_brain_analysis",
+    "previous": "neutral"
+  },
+  "history": [
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-09T06:40:15.297Z",
+      "triggers": [],
+      "context": "user_input",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    },
+    {
+      "primary": "neutral",
+      "secondary": null,
+      "intensity": 0.5,
+      "confidence": 0.7,
+      "timestamp": "2025-07-09T06:40:15.339Z",
+      "triggers": [],
+      "context": "central_brain_analysis",
+      "previous": "neutral",
+      "transition": "neutral → neutral"
+    }
+  ],
+  "patterns": {
+    "emotionFrequency": {
+      "neutral": {
+        "count": 2,
+        "totalIntensity": 1,
+        "contexts": {
+          "user_input": 1,
+          "central_brain_analysis": 1
+        },
+        "averageIntensity": 0.5
+      }
+    },
+    "transitions": {
+      "neutral → neutral": 2
+    },
+    "dominantEmotion": "neutral",
+    "emotionalStability": 1
+  },
+  "triggers": {},
+  "timestamp": "2025-07-09T06:40:15.344Z"
+}

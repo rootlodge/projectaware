@@ -1,6 +1,6 @@
 // Test script for Internal Agent System
-const InternalAgentSystem = require('../InternalAgentSystem');
-const logger = require('../logger');
+const InternalAgentSystem = require('../UNORGANIZED-FILES/InternalAgentSystem');
+const logger = require('../UNORGANIZED-FILES/logger');
 
 async function testInternalAgentSystem() {
   console.log('🧠 Testing Internal Agent System...\n');

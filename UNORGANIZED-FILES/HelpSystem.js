@@ -244,14 +244,95 @@ class HelpSystem {
       details: 'Send input through CEREBRUM for intelligent processing with specialist delegation when needed.'
     });
     
+    // Task Management Commands
+    this.addCommand('create task', {
+      category: 'tasks',
+      description: 'Create a new task with description',
+      usage: 'create task <name> <description>',
+      examples: [
+        'create task "Learn Python" "Study Python programming basics"',
+        'create task "Review code" "Review the latest code changes"',
+        'create task "Debug issue" "Fix the memory leak bug"'
+      ],
+      details: 'Create a new task with a name and description. Tasks are automatically assigned priority and can be tracked.'
+    });
+    
+    this.addCommand('list tasks', {
+      category: 'tasks',
+      description: 'Show all tasks with their current status',
+      usage: 'list tasks',
+      examples: ['list tasks', 'tasks'],
+      details: 'Display all tasks with their ID, name, status, priority, and progress information.'
+    });
+    
+    this.addCommand('complete task', {
+      category: 'tasks',
+      description: 'Mark a task as completed',
+      usage: 'complete task <task_id> [completion_notes]',
+      examples: [
+        'complete task task_1',
+        'complete task task_2 "Finished successfully with optimizations"'
+      ],
+      details: 'Mark a task as completed with optional completion notes. Records actual completion time.'
+    });
+    
+    this.addCommand('delete task', {
+      category: 'tasks',
+      description: 'Delete a task from the system',
+      usage: 'delete task <task_id>',
+      examples: ['delete task task_1'],
+      details: 'Permanently remove a task from the system. Use with caution.'
+    });
+    
+    this.addCommand('task status', {
+      category: 'tasks',
+      description: 'Get detailed information about a specific task',
+      usage: 'task status <task_id>',
+      examples: ['task status task_1'],
+      details: 'Display comprehensive information about a task including progress, timestamps, and assigned agents.'
+    });
+    
+    this.addCommand('task analytics', {
+      category: 'tasks',
+      description: 'Show task performance statistics',
+      usage: 'task analytics',
+      examples: ['task analytics'],
+      details: 'Display overall task system performance including completion rates, time accuracy, and trends.'
+    });
+    
+    this.addCommand('task templates', {
+      category: 'tasks',
+      description: 'Show available task templates',
+      usage: 'task templates',
+      examples: ['task templates'],
+      details: 'Display available task templates that can be used for creating common types of tasks.'
+    });
+    
+    // Advanced Cleaning Commands
+    this.addCommand('clean status', {
+      category: 'cleaning',
+      description: 'Show intelligent cleaning system status',
+      usage: 'clean status',
+      examples: ['clean status'],
+      details: 'Display auto-cleaning system status, thresholds, and next scheduled cleaning time.'
+    });
+    
+    this.addCommand('clean memory selective', {
+      category: 'cleaning',
+      description: 'Perform intelligent selective memory cleaning',
+      usage: 'clean memory selective',
+      examples: ['clean memory selective'],
+      details: 'Remove only unimportant data while preserving valuable information using AI-powered analysis.'
+    });
+    
     this.addCommand('clean memory', {
-      category: 'cerebrum',
+      category: 'cleaning',
       description: 'Clear all memory and start fresh',
       usage: 'clean memory',
       examples: ['clean memory', 'clear memory'],
       details: 'Completely wipe all memory, logs, cache, and state. Creates a fresh start.'
     });
-
+    
     // Organize commands by category
     this.organizeByCategory();
   }
@@ -401,7 +482,9 @@ class HelpSystem {
       cache: 'Response caching system',
       'multi-agent': 'Multi-agent workflows and management',
       internal: 'Internal agent system commands',
-      identity: 'Identity and personality management'
+      identity: 'Identity and personality management',
+      tasks: 'Task management and tracking',
+      cleaning: 'Memory and data cleaning commands'
     };
     
     for (const category of this.getCategories()) {
@@ -414,6 +497,8 @@ class HelpSystem {
     console.log(chalk.gray('• Try "help system" to see core system commands'));
     console.log(chalk.gray('• Try "help cerebrum" to learn about Central Brain control'));
     console.log(chalk.gray('• Try "help emotion" to learn about emotion tracking'));
+    console.log(chalk.gray('• Try "help tasks" to explore task management features'));
+    console.log(chalk.gray('• Try "help cleaning" to learn about intelligent cleaning'));
     console.log(chalk.gray('• Try "help multi-agent" to explore multi-agent workflows'));
     console.log(chalk.gray('• Try "help search ai" to find AI-related commands'));
     
@@ -421,6 +506,8 @@ class HelpSystem {
     console.log(chalk.gray('• All user input is processed through CEREBRUM (Central Brain)'));
     console.log(chalk.gray('• CEREBRUM decides when to use specialist agents automatically'));
     console.log(chalk.gray('• Use "brain" to see CEREBRUM status and sub-agents'));
+    console.log(chalk.gray('• Use "create task" to organize work and track progress'));
+    console.log(chalk.gray('• Auto-cleaning keeps storage optimized without losing important data'));
     console.log(chalk.gray('• Use "clean memory" for a completely fresh start'));
     console.log(chalk.gray('• Commands are case-insensitive and have multiple aliases'));
   }

@@ -1,0 +1,60 @@
+{
+  "tasks": {
+    "task_1": {
+      "id": "task_1",
+      "name": "Test Task 1",
+      "description": "This is a test task",
+      "priority": 3,
+      "status": "completed",
+      "createdAt": "2025-07-09T06:37:53.593Z",
+      "updatedAt": "2025-07-09T06:37:53.692Z",
+      "estimatedDuration": 30,
+      "actualDuration": 0,
+      "startTime": null,
+      "endTime": "2025-07-09T06:37:53.692Z",
+      "assignedAgents": [],
+      "requiredAgents": [],
+      "dependencies": [],
+      "tags": [],
+      "steps": [],
+      "completedSteps": [],
+      "metadata": {},
+      "progress": 100,
+      "notes": [
+        {
+          "timestamp": "2025-07-09T06:37:53.692Z",
+          "type": "completion",
+          "content": "Test completion"
+        }
+      ],
+      "attachments": []
+    },
+    "task_2": {
+      "id": "task_2",
+      "name": "Test Task 2",
+      "description": "Another test task",
+      "priority": 3,
+      "status": "pending",
+      "createdAt": "2025-07-09T06:37:53.625Z",
+      "updatedAt": "2025-07-09T06:37:53.625Z",
+      "estimatedDuration": 30,
+      "actualDuration": 0,
+      "startTime": null,
+      "endTime": null,
+      "assignedAgents": [],
+      "requiredAgents": [],
+      "dependencies": [],
+      "tags": [],
+      "steps": [],
+      "completedSteps": [],
+      "metadata": {},
+      "progress": 0,
+      "notes": [],
+      "attachments": []
+    }
+  },
+  "taskCounter": 3,
+  "activeTaskCount": 1,
+  "completedTaskCount": 1,
+  "lastUpdated": "2025-07-09T06:37:53.692Z"
+}

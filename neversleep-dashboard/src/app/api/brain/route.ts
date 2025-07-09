@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Get system status
+    // Get system status from central brain
     const status = centralBrain.getSystemStatus();
     
     return NextResponse.json({

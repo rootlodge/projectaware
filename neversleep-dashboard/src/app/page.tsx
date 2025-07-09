@@ -6,6 +6,8 @@ import SystemStatus from '@/components/SystemStatus';
 import BrainInterface from '@/components/BrainInterface';
 import AgentManager from '@/components/AgentManager';
 import EmotionDisplay from '@/components/EmotionDisplay';
+import ModelSelectorNew from '@/components/ModelSelectorNew';
+import OllamaTest from '@/components/OllamaTest';
 import { Brain, Cpu, Users, Heart, Settings, BarChart3 } from 'lucide-react';
 
 export default function Home() {
@@ -104,11 +106,24 @@ export default function Home() {
         {activeTab === 'brain' && <BrainInterface />}
         {activeTab === 'agents' && <AgentManager />}
         {activeTab === 'emotions' && <EmotionDisplay />}
-        {activeTab === 'system' && <SystemStatus systemStatus={systemStatus} />}
+        {activeTab === 'system' && <SystemStatus />}
         {activeTab === 'settings' && (
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
-            <h2 className="text-2xl font-bold text-white mb-4">Settings</h2>
-            <p className="text-purple-300">Settings panel coming soon...</p>
+          <div className="space-y-6">
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
+              <h2 className="text-2xl font-bold text-white mb-6">Settings</h2>
+              
+              {/* Ollama Test Section */}
+              <div className="mb-8">
+                <OllamaTest />
+              </div>
+              
+              {/* Model Selection Section */}
+              <ModelSelectorNew onModelChange={(model: string) => {
+                console.log('Model changed to:', model);
+                // Optionally trigger a system status refresh
+                fetchSystemStatus();
+              }} />
+            </div>
           </div>
         )}
       </main>

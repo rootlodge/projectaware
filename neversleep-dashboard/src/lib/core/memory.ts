@@ -41,6 +41,19 @@ export interface MemoryStats {
   conversations: number;
   learningEvents: number;
   dbSize: number;
+  modelPreferences: number;
+  currentModel: string;
+}
+
+export interface ModelPreference {
+  id?: number;
+  model_name: string;
+  description: string;
+  speed_rating: number; // 1-5 scale
+  intelligence_rating: number; // 1-5 scale
+  is_default: boolean;
+  created_at: string;
+  last_used: string;
 }
 
 export class MemorySystem {
@@ -65,7 +78,10 @@ export class MemorySystem {
           } else {
             this.isConnected = true;
             console.log('Connected to SQLite database');
-            this.createTables().then(resolve).catch(reject);
+            this.createTables()
+              .then(() => this.initializeDefaultModels())
+              .then(resolve)
+              .catch(reject);
           }
         });
       });
@@ -106,6 +122,16 @@ export class MemorySystem {
         description TEXT,
         context TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+      `CREATE TABLE IF NOT EXISTS model_preferences (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        model_name TEXT NOT NULL,
+        description TEXT,
+        speed_rating INTEGER CHECK(speed_rating BETWEEN 1 AND 5),
+        intelligence_rating INTEGER CHECK(intelligence_rating BETWEEN 1 AND 5),
+        is_default BOOLEAN DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_used DATETIME
       )`
     ];
 
@@ -270,16 +296,27 @@ export class MemorySystem {
       const messageCount = await this.getQuery('SELECT COUNT(*) as count FROM messages');
       const conversationCount = await this.getQuery('SELECT COUNT(*) as count FROM conversations');
       const learningEventCount = await this.getQuery('SELECT COUNT(*) as count FROM learning_events');
+      const modelPreferenceCount = await this.getQuery('SELECT COUNT(*) as count FROM model_preferences');
+      const currentModel = await this.getCurrentModel();
       
       return {
         messages: messageCount.count,
         conversations: conversationCount.count,
         learningEvents: learningEventCount.count,
-        dbSize: this.getDatabaseSize()
+        dbSize: this.getDatabaseSize(),
+        modelPreferences: modelPreferenceCount.count,
+        currentModel: currentModel?.model_name || 'gemma3:latest'
       };
     } catch (error) {
       console.error('Failed to get memory stats:', error);
-      return { messages: 0, conversations: 0, learningEvents: 0, dbSize: 0 };
+      return { 
+        messages: 0, 
+        conversations: 0, 
+        learningEvents: 0, 
+        dbSize: 0,
+        modelPreferences: 0,
+        currentModel: 'gemma3:latest'
+      };
     }
   }
 
@@ -289,11 +326,14 @@ export class MemorySystem {
         await this.initialize();
       }
 
-      const [messagesCount, conversationsCount, learningEventsCount] = await Promise.all([
+      const [messagesCount, conversationsCount, learningEventsCount, modelPreferenceCount] = await Promise.all([
         this.getQuery('SELECT COUNT(*) as count FROM messages'),
         this.getQuery('SELECT COUNT(*) as count FROM conversations'),
-        this.getQuery('SELECT COUNT(*) as count FROM learning_events')
+        this.getQuery('SELECT COUNT(*) as count FROM learning_events'),
+        this.getQuery('SELECT COUNT(*) as count FROM model_preferences')
       ]);
+
+      const currentModel = await this.getCurrentModel();
 
       // Get database file size
       let dbSize = 0;
@@ -309,7 +349,9 @@ export class MemorySystem {
         messages: messagesCount?.count || 0,
         conversations: conversationsCount?.count || 0,
         learningEvents: learningEventsCount?.count || 0,
-        dbSize
+        dbSize,
+        modelPreferences: modelPreferenceCount?.count || 0,
+        currentModel: currentModel?.model_name || 'gemma3:latest'
       };
     } catch (error) {
       console.error('Failed to get memory stats:', error);
@@ -317,7 +359,9 @@ export class MemorySystem {
         messages: 0,
         conversations: 0,
         learningEvents: 0,
-        dbSize: 0
+        dbSize: 0,
+        modelPreferences: 0,
+        currentModel: 'gemma3:latest'
       };
     }
   }
@@ -360,6 +404,104 @@ export class MemorySystem {
           resolve();
         });
       });
+    }
+  }
+
+  // Model preference methods
+  async addModelPreference(model: Omit<ModelPreference, 'id' | 'created_at' | 'last_used'>): Promise<number> {
+    try {
+      const result = await this.runQuery(
+        'INSERT INTO model_preferences (model_name, description, speed_rating, intelligence_rating, is_default) VALUES (?, ?, ?, ?, ?)',
+        [model.model_name, model.description, model.speed_rating, model.intelligence_rating, model.is_default ? 1 : 0]
+      );
+      return result.id!;
+    } catch (error) {
+      console.error('Failed to add model preference:', error);
+      throw error;
+    }
+  }
+
+  async getModelPreferences(): Promise<ModelPreference[]> {
+    try {
+      const models = await this.getAllQuery('SELECT * FROM model_preferences ORDER BY is_default DESC, last_used DESC');
+      return models.map((model: any) => ({
+        ...model,
+        is_default: Boolean(model.is_default)
+      }));
+    } catch (error) {
+      console.error('Failed to get model preferences:', error);
+      return [];
+    }
+  }
+
+  async getCurrentModel(): Promise<ModelPreference | null> {
+    try {
+      const model = await this.getQuery('SELECT * FROM model_preferences WHERE is_default = 1 LIMIT 1');
+      if (model) {
+        return {
+          ...model,
+          is_default: Boolean(model.is_default)
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to get current model:', error);
+      return null;
+    }
+  }
+
+  async setDefaultModel(modelName: string): Promise<void> {
+    try {
+      // First, remove default from all models
+      await this.runQuery('UPDATE model_preferences SET is_default = 0');
+      // Then set the new default
+      await this.runQuery(
+        'UPDATE model_preferences SET is_default = 1, last_used = CURRENT_TIMESTAMP WHERE model_name = ?',
+        [modelName]
+      );
+    } catch (error) {
+      console.error('Failed to set default model:', error);
+      throw error;
+    }
+  }
+
+  async updateModelLastUsed(modelName: string): Promise<void> {
+    try {
+      await this.runQuery(
+        'UPDATE model_preferences SET last_used = CURRENT_TIMESTAMP WHERE model_name = ?',
+        [modelName]
+      );
+    } catch (error) {
+      console.error('Failed to update model last used:', error);
+    }
+  }
+
+  async initializeDefaultModels(): Promise<void> {
+    try {
+      const existingModels = await this.getModelPreferences();
+      
+      if (existingModels.length === 0) {
+        // Add default models
+        await this.addModelPreference({
+          model_name: 'gemma3:latest',
+          description: 'Good balance of speed and intelligence for general conversations',
+          speed_rating: 4,
+          intelligence_rating: 4,
+          is_default: true
+        });
+
+        await this.addModelPreference({
+          model_name: 'llama3.2:latest',
+          description: 'Blazing fast speed for quick responses and tool usage',
+          speed_rating: 5,
+          intelligence_rating: 3,
+          is_default: false
+        });
+
+        console.log('Default models initialized');
+      }
+    } catch (error) {
+      console.error('Failed to initialize default models:', error);
     }
   }
 }

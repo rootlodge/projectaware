@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 0,
-    "last_activity": "2024-12-30T04:00:00.000Z",
-    "duration": 0
+    "interactions": 4,
+    "last_activity": "2025-07-09T17:15:27.194Z",
+    "duration": 16550127194
   },
   "cognitive": {
     "processing_mode": "normal",
     "attention_focus": "dashboard_interface",
-    "cognitive_load": 0.3,
-    "decision_confidence": 0.8,
+    "cognitive_load": 0.10000000000000002,
+    "decision_confidence": 0.9390232000000001,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,16 +21,33 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 15,
-    "knowledge_areas": ["dashboard_development", "ai_systems", "user_interface", "system_architecture"],
-    "learning_velocity": 0.8,
+    "concepts_learned": 31,
+    "knowledge_areas": [
+      "dashboard_development",
+      "ai_systems",
+      "user_interface",
+      "system_architecture",
+      "unable",
+      "process",
+      "request.",
+      "(processing...",
+      "initializing",
+      "response",
+      "sequence...)",
+      "fascinating.",
+      "research",
+      "quantum",
+      "mechanics",
+      "processing…"
+    ],
+    "learning_velocity": 0.8400000000000001,
     "retention_rate": 0.9,
-    "adaptation_score": 0.85
+    "adaptation_score": 0.87
   },
   "performance": {
     "response_time": 1.2,
-    "accuracy": 0.92,
-    "efficiency": 0.88,
+    "accuracy": 0.9600000000000001,
+    "efficiency": 0.92,
     "resource_usage": 0.35,
     "error_rate": 0.02
   },
@@ -42,8 +59,104 @@
         "event": "Dashboard system initialized",
         "timestamp": "2024-12-30T04:00:00.000Z",
         "impact": "high"
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-09T17:08:21.845Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-09T17:08:21.846Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-09T17:08:21.846Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-09T17:12:01.932Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-09T17:12:01.933Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-09T17:12:01.934Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "(processing...",
+        "context": "User interaction: Hi! How are you?...",
+        "timestamp": "2025-07-09T17:14:09.503Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "initializing",
+        "context": "User interaction: Hi! How are you?...",
+        "timestamp": "2025-07-09T17:14:09.505Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "response",
+        "context": "User interaction: Hi! How are you?...",
+        "timestamp": "2025-07-09T17:14:09.516Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "sequence...)",
+        "context": "User interaction: Hi! How are you?...",
+        "timestamp": "2025-07-09T17:14:09.517Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "fascinating.",
+        "context": "User interaction: Hi! How are you?...",
+        "timestamp": "2025-07-09T17:14:09.527Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "research",
+        "context": "User interaction: Research quantum mechanics...",
+        "timestamp": "2025-07-09T17:15:27.139Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "quantum",
+        "context": "User interaction: Research quantum mechanics...",
+        "timestamp": "2025-07-09T17:15:27.140Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "mechanics",
+        "context": "User interaction: Research quantum mechanics...",
+        "timestamp": "2025-07-09T17:15:27.140Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "processing…",
+        "context": "User interaction: Research quantum mechanics...",
+        "timestamp": "2025-07-09T17:15:27.150Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "processing…",
+        "context": "User interaction: Research quantum mechanics...",
+        "timestamp": "2025-07-09T17:15:27.159Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2024-12-30T04:00:00.000Z"
+  "last_updated": "2025-07-09T17:15:27.194Z"
 }

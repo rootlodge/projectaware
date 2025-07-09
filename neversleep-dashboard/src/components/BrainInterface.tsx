@@ -72,35 +72,36 @@ const BrainInterface: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: userMessage.content,
-          conversationId: currentConversationId
+          input: userMessage.content,
+          context: 'user_interaction'
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        const brainMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          type: 'brain',
-          content: data.response,
-          timestamp: new Date().toISOString(),
-          emotion: data.emotion
-        };
+        if (data.success && data.result) {
+          const brainMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            type: 'brain',
+            content: data.result.response,
+            timestamp: new Date().toISOString(),
+            emotion: data.result.emotional_state
+          };
 
-        setMessages(prev => [...prev, brainMessage]);
-        
-        if (data.conversationId && !currentConversationId) {
-          setCurrentConversationId(data.conversationId);
+          setMessages(prev => [...prev, brainMessage]);
+        } else {
+          throw new Error(data.message || 'Failed to get response from brain');
         }
       } else {
-        throw new Error('Failed to get response from brain');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to get response from brain');
       }
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'system',
-        content: 'Sorry, I encountered an error processing your message. Please try again.',
+        content: `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Make sure Ollama is running.`,
         timestamp: new Date().toISOString()
       };
       setMessages(prev => [...prev, errorMessage]);

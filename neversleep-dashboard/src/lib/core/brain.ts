@@ -4,6 +4,7 @@ import path from 'path';
 import { StateManager } from './StateManager';
 import { EmotionEngine } from '../systems/EmotionEngine';
 import { ResponseCache } from '../systems/ResponseCache';
+import { MemorySystem } from './memory';
 
 export interface LLMConfig {
   hallucination_detection: {
@@ -42,6 +43,7 @@ export class Brain {
   private stateManager: StateManager;
   private emotionEngine: EmotionEngine;
   private responseCache: ResponseCache;
+  private memorySystem: MemorySystem;
   private ollamaUrl: string = 'http://localhost:11434';
   private configPath: string;
   private corePath: string;
@@ -51,6 +53,7 @@ export class Brain {
     this.stateManager = stateManager;
     this.emotionEngine = emotionEngine;
     this.responseCache = responseCache;
+    this.memorySystem = new MemorySystem();
     
     // Set up paths for configuration files
     this.configPath = path.join(process.cwd(), 'src', 'lib', 'config', 'config.json');
@@ -126,19 +129,20 @@ export class Brain {
     return cleaned;
   }
 
-  async askLLM(prompt: string, model: string = 'gemma3:latest', temperature?: number): Promise<string> {
+  async askLLM(prompt: string, model?: string, temperature?: number): Promise<string> {
     try {
       const config = this.loadConfig();
-      const actualTemperature = temperature !== null ? temperature : config.llm_settings.temperature;
+      const actualTemperature = temperature ?? config.llm_settings.temperature;
+      const actualModel = model || await this.getCurrentModel();
       
       // Check cache first
-      const cachedResponse = this.responseCache.get(prompt, model, actualTemperature);
+      const cachedResponse = this.responseCache.get(prompt, actualModel, actualTemperature);
       if (cachedResponse) {
         return cachedResponse.response;
       }
       
       const response = await axios.post(`${this.ollamaUrl}/api/generate`, {
-        model,
+        model: actualModel,
         prompt,
         stream: false,
         options: {
@@ -154,8 +158,11 @@ export class Brain {
       
       // Cache the response if it's worth caching
       if (this.responseCache.shouldCache(prompt, validatedResponse)) {
-        this.responseCache.set(prompt, validatedResponse, model, actualTemperature);
+        this.responseCache.set(prompt, validatedResponse, actualModel, actualTemperature);
       }
+      
+      // Update model last used
+      await this.updateModelLastUsed(actualModel);
       
       return validatedResponse;
     } catch (error) {
@@ -357,5 +364,35 @@ JSON:`;
       analysis: "Unable to analyze satisfaction",
       recommendations: ["Improve response quality"]
     };
+  }
+
+  async getCurrentModel(): Promise<string> {
+    try {
+      await this.memorySystem.initialize();
+      const currentModel = await this.memorySystem.getCurrentModel();
+      return currentModel?.model_name || 'gemma3:latest';
+    } catch (error) {
+      console.warn('Failed to get current model, using default:', error);
+      return 'gemma3:latest';
+    }
+  }
+
+  async setDefaultModel(modelName: string): Promise<void> {
+    try {
+      await this.memorySystem.initialize();
+      await this.memorySystem.setDefaultModel(modelName);
+    } catch (error) {
+      console.error('Failed to set default model:', error);
+      throw error;
+    }
+  }
+
+  async updateModelLastUsed(modelName: string): Promise<void> {
+    try {
+      await this.memorySystem.initialize();
+      await this.memorySystem.updateModelLastUsed(modelName);
+    } catch (error) {
+      console.warn('Failed to update model last used:', error);
+    }
   }
 }

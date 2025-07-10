@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getEmotionEngine } from '@/lib/shared/instances';
+import { getEmotionEngine, getGoalEngine } from '@/lib/shared/instances';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,6 +13,18 @@ export async function POST(req: NextRequest) {
     const emotionEngine = getEmotionEngine();
     const analysis = emotionEngine.processUserInput(userInput, context || 'user_interaction');
     const currentEmotion = emotionEngine.getCurrentEmotion();
+    
+    // Log emotion change to goal engine
+    try {
+      const goalEngine = getGoalEngine();
+      await goalEngine.logEmotionChange(
+        currentEmotion.primary, 
+        currentEmotion.intensity, 
+        `User input processed: ${context || 'user_interaction'}`
+      );
+    } catch (error) {
+      console.log('Could not log emotion to goal engine:', error);
+    }
     
     return NextResponse.json({
       analysis,

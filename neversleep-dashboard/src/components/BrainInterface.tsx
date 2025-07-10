@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Brain, User, Bot, RefreshCw, History, Trash2 } from 'lucide-react';
+import { Send, Brain, User, Bot, RefreshCw, History, Trash2, Heart } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -33,6 +33,9 @@ const BrainInterface: React.FC = () => {
   const [conversations, setConversations] = useState<ConversationHistory[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [currentEmotion, setCurrentEmotion] = useState<{emotion: string, intensity: number, timestamp: string} | null>(null);
+  const [systemIdentity, setSystemIdentity] = useState<{name: string} | null>(null);
+  const [emotionChangeNotification, setEmotionChangeNotification] = useState<{emotion: string, show: boolean} | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,6 +44,12 @@ const BrainInterface: React.FC = () => {
 
   useEffect(() => {
     loadConversationHistory();
+    loadCurrentEmotion();
+    loadSystemIdentity();
+    
+    // Poll for emotion updates every 5 seconds
+    const emotionInterval = setInterval(loadCurrentEmotion, 5000);
+    return () => clearInterval(emotionInterval);
   }, []);
 
   const scrollToBottom = () => {
@@ -59,6 +68,41 @@ const BrainInterface: React.FC = () => {
     }
   };
 
+  const loadCurrentEmotion = async () => {
+    try {
+      const response = await fetch('/api/emotions/current');
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentEmotion({
+          emotion: data.emotion,
+          intensity: data.intensity,
+          timestamp: data.timestamp
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load current emotion:', error);
+    }
+  };
+
+  const loadSystemIdentity = async () => {
+    try {
+      const response = await fetch('/api/brain');
+      if (response.ok) {
+        const data = await response.json();
+        setSystemIdentity({ name: data.status?.identity?.name || 'Neversleep AI' });
+      }
+    } catch (error) {
+      console.error('Failed to load system identity:', error);
+    }
+  };
+
+  const showEmotionChangeNotification = (newEmotion: string) => {
+    setEmotionChangeNotification({ emotion: newEmotion, show: true });
+    setTimeout(() => {
+      setEmotionChangeNotification(prev => prev ? { ...prev, show: false } : null);
+    }, 3000);
+  };
+
   const sendMessage = async () => {
     if (!inputValue.trim() || isProcessing) return;
 
@@ -70,17 +114,65 @@ const BrainInterface: React.FC = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const userInput = inputValue.trim();
     setInputValue('');
     setIsProcessing(true);
 
     try {
+      // First, process the user input for emotion analysis
+      const previousEmotion = currentEmotion?.emotion;
+      
+      // Analyze user emotion and update AI emotion
+      const emotionResponse = await fetch('/api/emotions/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          userInput: userInput, 
+          context: 'brain_interface_chat' 
+        })
+      });
+
+      let newAiEmotion = null;
+      if (emotionResponse.ok) {
+        const emotionData = await emotionResponse.json();
+        newAiEmotion = emotionData.currentEmotion?.primary;
+        
+        // Show notification if emotion changed
+        if (newAiEmotion && newAiEmotion !== previousEmotion) {
+          showEmotionChangeNotification(newAiEmotion);
+        }
+        
+        // Update current emotion state
+        setCurrentEmotion({
+          emotion: newAiEmotion,
+          intensity: emotionData.currentEmotion?.intensity || 0.5,
+          timestamp: emotionData.currentEmotion?.timestamp || new Date().toISOString()
+        });
+      }
+
+      // Log user interaction for goal analysis
+      try {
+        await fetch('/api/goals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            action: 'log_user_interaction',
+            content: userInput,
+            context: 'brain_interface_chat'
+          })
+        });
+      } catch (error) {
+        console.log('Could not log user interaction to goals:', error);
+      }
+
+      // Then get the brain response
       const response = await fetch('/api/brain', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          input: userMessage.content,
+          input: userInput,
           context: 'user_interaction'
         }),
       });
@@ -209,13 +301,38 @@ const BrainInterface: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow h-full flex flex-col">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow h-full flex flex-col relative">
+      {/* Emotion Change Notification */}
+      {emotionChangeNotification?.show && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 
+                        bg-purple-500 text-white px-4 py-2 rounded-lg shadow-lg 
+                        animate-pulse flex items-center space-x-2">
+          <Heart className="w-4 h-4" />
+          <span className="text-sm font-medium">
+            {systemIdentity?.name || 'AI'} is feeling {emotionChangeNotification.emotion}
+          </span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold flex items-center">
-          <Brain className="w-5 h-5 mr-2" />
-          Brain Interface
-        </h3>
+        <div className="flex items-center space-x-4">
+          <h3 className="text-lg font-semibold flex items-center">
+            <Brain className="w-5 h-5 mr-2" />
+            Brain Interface
+          </h3>
+          
+          {/* Current Emotion Display */}
+          {currentEmotion && (
+            <div className="flex items-center space-x-2 px-3 py-1 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+              <Heart className="w-4 h-4 text-purple-500" />
+              <span className="text-sm text-purple-700 dark:text-purple-300 font-medium">
+                {currentEmotion.emotion}
+              </span>
+              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+            </div>
+          )}
+        </div>
         
         <div className="flex space-x-2">
           <button
@@ -264,54 +381,56 @@ const BrainInterface: React.FC = () => {
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-4 mb-4">
-        {messages.length === 0 ? (
-          <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-            <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>Start a conversation with the neversleep.ai brain</p>
-            <p className="text-sm mt-2">Type a message below to begin...</p>
-          </div>
-        ) : (
-          messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.type === 'user' ? 'justify-end' : 
-                message.type === 'system' ? 'justify-center' : 'justify-start'}`}
-            >
-              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${getMessageStyle(message.type)}`}>
-                <div className="flex items-center mb-1">
-                  {getMessageIcon(message.type)}
-                  <span className="ml-2 text-xs font-medium">
-                    {message.type === 'agent' && message.agent_name 
-                      ? `${message.agent_name} (${message.agent_role})`
-                      : message.type === 'identity_change'
-                      ? 'Identity Evolution'
-                      : message.type.charAt(0).toUpperCase() + message.type.slice(1)
-                    }
-                  </span>
-                  {message.emotion && (
-                    <span className="ml-2 text-xs opacity-75">
-                      [{message.emotion}]
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm">{message.content}</p>
-                {message.identity_change && (
-                  <div className="mt-2 p-2 bg-black bg-opacity-20 rounded text-xs">
-                    <div className="font-medium">Change Type: {message.identity_change.type}</div>
-                    <div>From: "{message.identity_change.old_value}"</div>
-                    <div>To: "{message.identity_change.new_value}"</div>
-                    <div className="italic mt-1">{message.identity_change.reason}</div>
-                  </div>
-                )}
-                <p className="text-xs opacity-75 mt-1">
-                  {formatTimestamp(message.timestamp)}
-                </p>
-              </div>
+      <div className="flex-1 min-h-0 mb-4">
+        <div className="h-full overflow-y-auto space-y-4 p-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900">
+          {messages.length === 0 ? (
+            <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+              <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>Start a conversation with the neversleep.ai brain</p>
+              <p className="text-sm mt-2">Type a message below to begin...</p>
             </div>
-          ))
-        )}
-        <div ref={messagesEndRef} />
+          ) : (
+            messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.type === 'user' ? 'justify-end' : 
+                  message.type === 'system' ? 'justify-center' : 'justify-start'}`}
+              >
+                <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${getMessageStyle(message.type)}`}>
+                  <div className="flex items-center mb-1">
+                    {getMessageIcon(message.type)}
+                    <span className="ml-2 text-xs font-medium">
+                      {message.type === 'agent' && message.agent_name 
+                        ? `${message.agent_name} (${message.agent_role})`
+                        : message.type === 'identity_change'
+                        ? 'Identity Evolution'
+                        : message.type.charAt(0).toUpperCase() + message.type.slice(1)
+                      }
+                    </span>
+                    {message.emotion && (
+                      <span className="ml-2 text-xs opacity-75">
+                        [{message.emotion}]
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm">{message.content}</p>
+                  {message.identity_change && (
+                    <div className="mt-2 p-2 bg-black bg-opacity-20 rounded text-xs">
+                      <div className="font-medium">Change Type: {message.identity_change.type}</div>
+                      <div>From: "{message.identity_change.old_value}"</div>
+                      <div>To: "{message.identity_change.new_value}"</div>
+                      <div className="italic mt-1">{message.identity_change.reason}</div>
+                    </div>
+                  )}
+                  <p className="text-xs opacity-75 mt-1">
+                    {formatTimestamp(message.timestamp)}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
       {/* Input */}

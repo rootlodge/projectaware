@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { BarChart3, Brain, Users, Heart, Activity, Zap, Database, Clock } from 'lucide-react';
+import SoulDashboard from './SoulDashboard';
 
 interface DashboardProps {
   systemStatus: any;
@@ -244,6 +245,9 @@ export default function Dashboard({ systemStatus }: DashboardProps) {
           </div>
         </div>
       </div>
+
+      {/* Soul System Dashboard */}
+      <SoulDashboard />
     </div>
   );
 }

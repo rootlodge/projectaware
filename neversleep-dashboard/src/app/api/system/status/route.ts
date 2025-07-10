@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { StateManager } from '@/lib/core/StateManager';
-import { EmotionEngine } from '@/lib/systems/EmotionEngine';
+import { getStateManager, getEmotionEngine } from '@/lib/shared/instances';
 import { MemorySystem } from '@/lib/core/memory';
 
 export async function GET() {
   try {
-    // Initialize systems
-    const stateManager = new StateManager();
-    const emotionEngine = new EmotionEngine(stateManager);
+    // Use shared instances
+    const stateManager = getStateManager();
+    const emotionEngine = getEmotionEngine();
     const memory = new MemorySystem();
 
     // Get current state

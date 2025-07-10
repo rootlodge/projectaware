@@ -1,12 +1,9 @@
 import { NextResponse } from 'next/server';
-import { StateManager } from '@/lib/core/StateManager';
-import { EmotionEngine } from '@/lib/systems/EmotionEngine';
+import { getEmotionEngine } from '@/lib/shared/instances';
 
 export async function GET() {
   try {
-    const stateManager = new StateManager();
-    const emotionEngine = new EmotionEngine(stateManager);
-    
+    const emotionEngine = getEmotionEngine();
     const history = emotionEngine.getEmotionHistory();
     
     // Transform history to expected format
@@ -14,7 +11,10 @@ export async function GET() {
       emotion: entry.emotion,
       intensity: entry.intensity,
       timestamp: entry.timestamp,
-      context: entry.context
+      context: entry.context,
+      duration: entry.duration,
+      source: entry.source,
+      user_emotion_detected: entry.user_emotion_detected
     }));
     
     return NextResponse.json(formattedHistory);

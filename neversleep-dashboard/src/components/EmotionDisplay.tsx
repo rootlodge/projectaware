@@ -24,6 +24,9 @@ const EmotionDisplay: React.FC = () => {
   const [emotionHistory, setEmotionHistory] = useState<EmotionData[]>([]);
   const [stats, setStats] = useState<EmotionStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [testInput, setTestInput] = useState('');
+  const [testEmotion, setTestEmotion] = useState('happy');
+  const [testIntensity, setTestIntensity] = useState(0.7);
 
   useEffect(() => {
     loadEmotionData();
@@ -57,6 +60,78 @@ const EmotionDisplay: React.FC = () => {
       console.error('Failed to load emotion data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const testUserInput = async () => {
+    if (!testInput.trim()) return;
+    
+    try {
+      const response = await fetch('/api/emotions/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userInput: testInput, context: 'test_input' })
+      });
+      
+      if (response.ok) {
+        await loadEmotionData();
+        setTestInput('');
+      }
+    } catch (error) {
+      console.error('Failed to process test input:', error);
+    }
+  };
+
+  const manualEmotionOverride = async () => {
+    try {
+      const response = await fetch('/api/emotions/process', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          emotion: testEmotion, 
+          intensity: testIntensity, 
+          context: 'manual_test' 
+        })
+      });
+      
+      if (response.ok) {
+        await loadEmotionData();
+      }
+    } catch (error) {
+      console.error('Failed to override emotion:', error);
+    }
+  };
+
+  const startDemo = async () => {
+    try {
+      const response = await fetch('/api/emotions/demo', {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        // Refresh data periodically during demo
+        setTimeout(() => loadEmotionData(), 1000);
+        setTimeout(() => loadEmotionData(), 3000);
+        setTimeout(() => loadEmotionData(), 5000);
+        setTimeout(() => loadEmotionData(), 7000);
+        setTimeout(() => loadEmotionData(), 9000);
+      }
+    } catch (error) {
+      console.error('Failed to start demo:', error);
+    }
+  };
+
+  const resetEmotions = async () => {
+    try {
+      const response = await fetch('/api/emotions/demo', {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        await loadEmotionData();
+      }
+    } catch (error) {
+      console.error('Failed to reset emotions:', error);
     }
   };
 
@@ -175,6 +250,85 @@ const EmotionDisplay: React.FC = () => {
           <p>No current emotion data available</p>
         </div>
       )}
+
+      {/* Testing Controls */}
+      <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <h4 className="font-medium mb-3">Emotion Testing</h4>
+        
+        {/* Test User Input */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Test User Input:</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={testInput}
+              onChange={(e) => setTestInput(e.target.value)}
+              placeholder="Enter text to analyze emotion..."
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
+              onKeyPress={(e) => e.key === 'Enter' && testUserInput()}
+            />
+            <button
+              onClick={testUserInput}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            >
+              Analyze
+            </button>
+          </div>
+        </div>
+
+        {/* Manual Emotion Override */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Manual Emotion Override:</label>
+          <div className="flex gap-2 items-center">
+            <select
+              value={testEmotion}
+              onChange={(e) => setTestEmotion(e.target.value)}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
+            >
+              <option value="happy">Happy</option>
+              <option value="sad">Sad</option>
+              <option value="excited">Excited</option>
+              <option value="calm">Calm</option>
+              <option value="curious">Curious</option>
+              <option value="frustrated">Frustrated</option>
+              <option value="empathetic">Empathetic</option>
+              <option value="confident">Confident</option>
+            </select>
+            <input
+              type="range"
+              min="0.1"
+              max="0.9"
+              step="0.1"
+              value={testIntensity}
+              onChange={(e) => setTestIntensity(parseFloat(e.target.value))}
+              className="flex-1"
+            />
+            <span className="text-sm w-10">{(testIntensity * 100).toFixed(0)}%</span>
+            <button
+              onClick={manualEmotionOverride}
+              className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600"
+            >
+              Set
+            </button>
+          </div>
+        </div>
+
+        {/* Demo Controls */}
+        <div className="mt-4 flex gap-2">
+          <button
+            onClick={startDemo}
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+          >
+            Start Demo
+          </button>
+          <button
+            onClick={resetEmotions}
+            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+          >
+            Reset to Baseline
+          </button>
+        </div>
+      </div>
 
       {/* Emotion Statistics */}
       {stats && (

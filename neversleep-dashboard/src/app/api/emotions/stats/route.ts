@@ -1,58 +1,25 @@
 import { NextResponse } from 'next/server';
-import { StateManager } from '@/lib/core/StateManager';
-import { EmotionEngine } from '@/lib/systems/EmotionEngine';
+import { getEmotionEngine } from '@/lib/shared/instances';
 
 export async function GET() {
   try {
-    const stateManager = new StateManager();
-    const emotionEngine = new EmotionEngine(stateManager);
-    
+    const emotionEngine = getEmotionEngine();
+    const stats = emotionEngine.getEmotionStats();
     const currentEmotion = emotionEngine.getCurrentEmotion();
-    const history = emotionEngine.getEmotionHistory();
     
-    // Calculate statistics
-    const emotionCount: { [key: string]: number } = {};
-    let totalIntensity = 0;
-    
-    history.forEach(entry => {
-      emotionCount[entry.emotion] = (emotionCount[entry.emotion] || 0) + 1;
-      totalIntensity += entry.intensity;
+    return NextResponse.json({
+      dominantEmotion: stats.dominant_emotions[0] || currentEmotion.primary,
+      averageIntensity: stats.average_intensity,
+      emotionCount: stats.dominant_emotions.reduce((acc, emotion, index) => {
+        acc[emotion] = stats.dominant_emotions.length - index; // Mock counts based on order
+        return acc;
+      }, {} as Record<string, number>),
+      recentTrend: stats.empathy_trend > 0.6 ? 'positive' : stats.empathy_trend < 0.4 ? 'negative' : 'stable',
+      lastUpdated: currentEmotion.timestamp,
+      empathyTrend: stats.empathy_trend,
+      emotionDiversity: stats.emotion_diversity,
+      userEmotionResponses: stats.user_emotion_responses
     });
-    
-    const averageIntensity = history.length > 0 ? totalIntensity / history.length : 0;
-    
-    // Find dominant emotion
-    let dominantEmotion = 'neutral';
-    let maxCount = 0;
-    Object.entries(emotionCount).forEach(([emotion, count]) => {
-      if (count > maxCount) {
-        maxCount = count;
-        dominantEmotion = emotion;
-      }
-    });
-    
-    // Calculate trend (simplified)
-    let recentTrend: 'positive' | 'negative' | 'stable' = 'stable';
-    if (history.length >= 5) {
-      const recent = history.slice(-5);
-      const recentAvg = recent.reduce((sum, entry) => sum + entry.intensity, 0) / recent.length;
-      const older = history.slice(-10, -5);
-      if (older.length > 0) {
-        const olderAvg = older.reduce((sum, entry) => sum + entry.intensity, 0) / older.length;
-        if (recentAvg > olderAvg + 0.1) recentTrend = 'positive';
-        else if (recentAvg < olderAvg - 0.1) recentTrend = 'negative';
-      }
-    }
-    
-    const stats = {
-      dominantEmotion,
-      averageIntensity,
-      emotionCount,
-      recentTrend,
-      lastUpdated: currentEmotion.timestamp
-    };
-    
-    return NextResponse.json(stats);
   } catch (error) {
     console.error('Failed to get emotion stats:', error);
     return NextResponse.json(

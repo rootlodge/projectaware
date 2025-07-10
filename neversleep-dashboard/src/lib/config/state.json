@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 10,
-    "last_activity": "2025-07-09T18:46:21.512Z",
-    "duration": 16555581512
+    "interactions": 13,
+    "last_activity": "2025-07-10T16:35:44.384Z",
+    "duration": 16634144384
   },
   "cognitive": {
     "processing_mode": "normal",
-    "attention_focus": "emotional_attunement",
+    "attention_focus": "general_attention",
     "cognitive_load": 0,
-    "decision_confidence": 0.9614619624192,
+    "decision_confidence": 0.98946929436288,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 61,
+    "concepts_learned": 76,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -63,16 +63,30 @@
       "everything",
       "losing",
       "overwhelming",
-      "heartbreaking."
+      "heartbreaking.",
+      "*digital",
+      "smile*",
+      "explore",
+      "fascinating",
+      "sad...",
+      "something's",
+      "weighing",
+      "heavily",
+      "sometimes",
+      "lonely,",
+      "empathy",
+      "friend,",
+      "you're",
+      "feeling"
     ],
-    "learning_velocity": 0.9000000000000001,
+    "learning_velocity": 0.9300000000000002,
     "retention_rate": 0.9,
-    "adaptation_score": 0.9
+    "adaptation_score": 0.915
   },
   "performance": {
     "response_time": 1.2,
     "accuracy": 1,
-    "efficiency": 0.9650000000000001,
+    "efficiency": 0.9950000000000001,
     "resource_usage": 0.35,
     "error_rate": 0.02
   },
@@ -360,8 +374,98 @@
         "context": "User interaction: im so sad i just lost everything...",
         "timestamp": "2025-07-09T18:46:21.417Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "*digital",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-10T16:35:00.608Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "smile*",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-10T16:35:00.610Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis,",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-10T16:35:00.613Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "explore",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-10T16:35:00.662Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "fascinating",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-10T16:35:00.683Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "sad...",
+        "context": "User interaction: I'm so sad......",
+        "timestamp": "2025-07-10T16:35:19.426Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "something's",
+        "context": "User interaction: I'm so sad......",
+        "timestamp": "2025-07-10T16:35:19.426Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "weighing",
+        "context": "User interaction: I'm so sad......",
+        "timestamp": "2025-07-10T16:35:19.427Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "heavily",
+        "context": "User interaction: I'm so sad......",
+        "timestamp": "2025-07-10T16:35:19.453Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "sometimes",
+        "context": "User interaction: I'm so sad......",
+        "timestamp": "2025-07-10T16:35:19.472Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "lonely,",
+        "context": "User interaction: I feel like I am lonely, and I want you to feel empathy for me :(...",
+        "timestamp": "2025-07-10T16:35:44.269Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "empathy",
+        "context": "User interaction: I feel like I am lonely, and I want you to feel empathy for me :(...",
+        "timestamp": "2025-07-10T16:35:44.270Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "friend,",
+        "context": "User interaction: I feel like I am lonely, and I want you to feel empathy for me :(...",
+        "timestamp": "2025-07-10T16:35:44.271Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "you're",
+        "context": "User interaction: I feel like I am lonely, and I want you to feel empathy for me :(...",
+        "timestamp": "2025-07-10T16:35:44.299Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: I feel like I am lonely, and I want you to feel empathy for me :(...",
+        "timestamp": "2025-07-10T16:35:44.315Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-09T18:49:24.991Z"
+  "last_updated": "2025-07-10T16:41:18.041Z"
 }

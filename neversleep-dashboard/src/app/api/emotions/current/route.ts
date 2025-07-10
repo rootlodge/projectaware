@@ -1,19 +1,20 @@
 import { NextResponse } from 'next/server';
-import { StateManager } from '@/lib/core/StateManager';
-import { EmotionEngine } from '@/lib/systems/EmotionEngine';
+import { getEmotionEngine } from '@/lib/shared/instances';
 
 export async function GET() {
   try {
-    const stateManager = new StateManager();
-    const emotionEngine = new EmotionEngine(stateManager);
-    
+    const emotionEngine = getEmotionEngine();
     const currentEmotion = emotionEngine.getCurrentEmotion();
     
     return NextResponse.json({
       emotion: currentEmotion.primary,
       intensity: currentEmotion.intensity,
       timestamp: currentEmotion.timestamp,
-      context: currentEmotion.context
+      context: currentEmotion.context,
+      secondary: currentEmotion.secondary,
+      empathy_level: currentEmotion.empathy_level,
+      stability: currentEmotion.stability,
+      source: currentEmotion.source
     });
   } catch (error) {
     console.error('Failed to get current emotion:', error);

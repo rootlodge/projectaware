@@ -8,7 +8,8 @@ import AgentManager from '@/components/AgentManager';
 import EmotionDisplay from '@/components/EmotionDisplay';
 import ModelSelectorNew from '@/components/ModelSelectorNew';
 import OllamaTest from '@/components/OllamaTest';
-import { Brain, Cpu, Users, Heart, Settings, BarChart3 } from 'lucide-react';
+import MemoryDashboard from '@/components/MemoryDashboard';
+import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -40,6 +41,7 @@ export default function Home() {
     { id: 'brain', name: 'Brain Interface', icon: Brain },
     { id: 'agents', name: 'Agent Manager', icon: Users },
     { id: 'emotions', name: 'Emotion Engine', icon: Heart },
+    { id: 'memory', name: 'Memory Analytics', icon: Database },
     { id: 'system', name: 'System Status', icon: Cpu },
     { id: 'settings', name: 'Settings', icon: Settings }
   ];
@@ -106,6 +108,7 @@ export default function Home() {
         {activeTab === 'brain' && <BrainInterface />}
         {activeTab === 'agents' && <AgentManager />}
         {activeTab === 'emotions' && <EmotionDisplay />}
+        {activeTab === 'memory' && <MemoryDashboard />}
         {activeTab === 'system' && <SystemStatus />}
         {activeTab === 'settings' && (
           <div className="space-y-6">

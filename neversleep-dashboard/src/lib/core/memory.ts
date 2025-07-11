@@ -504,4 +504,273 @@ export class MemorySystem {
       console.error('Failed to initialize default models:', error);
     }
   }
+
+  async getLearningEvents(limit: number = 50): Promise<LearningEvent[]> {
+    try {
+      const sql = 'SELECT * FROM learning_events ORDER BY timestamp DESC LIMIT ?';
+      return await this.getAllQuery(sql, [limit]);
+    } catch (error) {
+      console.error('Failed to get learning events:', error);
+      return [];
+    }
+  }
+
+  async searchMessages(query: string, type: string = 'all', limit: number = 20): Promise<Message[]> {
+    try {
+      let sql = 'SELECT * FROM messages WHERE ';
+      let params: any[] = [];
+
+      if (type !== 'all') {
+        sql += 'type = ? AND ';
+        params.push(type);
+      }
+
+      sql += 'content LIKE ? ORDER BY timestamp DESC LIMIT ?';
+      params.push(`%${query}%`, limit);
+
+      return await this.getAllQuery(sql, params);
+    } catch (error) {
+      console.error('Failed to search messages:', error);
+      return [];
+    }
+  }
+
+  async getAdvancedAnalytics(): Promise<any> {
+    try {
+      const analytics = {
+        message_stats: await this.getMessageStats(),
+        conversation_patterns: await this.getConversationPatterns(),
+        user_engagement: await this.getUserEngagementMetrics(),
+        emotion_trends: await this.getEmotionTrends(),
+        learning_insights: await this.getLearningInsights(),
+        peak_activity_hours: await this.getPeakActivityHours(),
+        response_quality: await this.getResponseQualityMetrics()
+      };
+
+      return analytics;
+    } catch (error) {
+      console.error('Failed to get advanced analytics:', error);
+      return {};
+    }
+  }
+
+  private async getMessageStats(): Promise<any> {
+    try {
+      const totalMessages = await this.getQuery('SELECT COUNT(*) as count FROM messages');
+      const messagesByType = await this.getAllQuery(`
+        SELECT type, COUNT(*) as count 
+        FROM messages 
+        GROUP BY type 
+        ORDER BY count DESC
+      `);
+      const recentActivity = await this.getAllQuery(`
+        SELECT DATE(timestamp) as date, COUNT(*) as count 
+        FROM messages 
+        WHERE timestamp >= datetime('now', '-7 days') 
+        GROUP BY DATE(timestamp) 
+        ORDER BY date DESC
+      `);
+
+      return {
+        total: totalMessages?.count || 0,
+        by_type: messagesByType,
+        recent_activity: recentActivity
+      };
+    } catch (error) {
+      console.error('Failed to get message stats:', error);
+      return {};
+    }
+  }
+
+  private async getConversationPatterns(): Promise<any> {
+    try {
+      const avgSatisfaction = await this.getQuery(`
+        SELECT AVG(satisfaction_score) as avg_score 
+        FROM conversations 
+        WHERE satisfaction_score IS NOT NULL
+      `);
+      
+      const conversationLengths = await this.getAllQuery(`
+        SELECT 
+          LENGTH(user_message) + LENGTH(ai_response) as total_length,
+          COUNT(*) as count
+        FROM conversations 
+        GROUP BY ROUND(LENGTH(user_message) + LENGTH(ai_response), -2)
+        ORDER BY total_length
+      `);
+
+      const responseTimePatterns = await this.getAllQuery(`
+        SELECT 
+          strftime('%H', timestamp) as hour,
+          COUNT(*) as count
+        FROM conversations 
+        GROUP BY strftime('%H', timestamp)
+        ORDER BY hour
+      `);
+
+      return {
+        avg_satisfaction: avgSatisfaction?.avg_score || 0,
+        conversation_lengths: conversationLengths,
+        response_time_patterns: responseTimePatterns
+      };
+    } catch (error) {
+      console.error('Failed to get conversation patterns:', error);
+      return {};
+    }
+  }
+
+  private async getUserEngagementMetrics(): Promise<any> {
+    try {
+      const uniqueSessions = await this.getQuery(`
+        SELECT COUNT(DISTINCT session_id) as count 
+        FROM conversations
+      `);
+      
+      const avgMessagesPerSession = await this.getQuery(`
+        SELECT AVG(session_msg_count) as avg_messages 
+        FROM (
+          SELECT session_id, COUNT(*) as session_msg_count 
+          FROM conversations 
+          GROUP BY session_id
+        )
+      `);
+
+      const sessionLengths = await this.getAllQuery(`
+        SELECT 
+          session_id,
+          COUNT(*) as message_count,
+          MAX(timestamp) as last_activity,
+          MIN(timestamp) as first_activity
+        FROM conversations 
+        GROUP BY session_id 
+        ORDER BY message_count DESC 
+        LIMIT 10
+      `);
+
+      return {
+        unique_sessions: uniqueSessions?.count || 0,
+        avg_messages_per_session: avgMessagesPerSession?.avg_messages || 0,
+        top_sessions: sessionLengths
+      };
+    } catch (error) {
+      console.error('Failed to get engagement metrics:', error);
+      return {};
+    }
+  }
+
+  private async getEmotionTrends(): Promise<any> {
+    try {
+      const emotionDistribution = await this.getAllQuery(`
+        SELECT 
+          emotion_state,
+          COUNT(*) as count
+        FROM conversations 
+        WHERE emotion_state IS NOT NULL
+        GROUP BY emotion_state 
+        ORDER BY count DESC
+      `);
+
+      const emotionTrends = await this.getAllQuery(`
+        SELECT 
+          DATE(timestamp) as date,
+          emotion_state,
+          COUNT(*) as count
+        FROM conversations 
+        WHERE emotion_state IS NOT NULL 
+        AND timestamp >= datetime('now', '-30 days')
+        GROUP BY DATE(timestamp), emotion_state 
+        ORDER BY date DESC
+      `);
+
+      return {
+        distribution: emotionDistribution,
+        trends: emotionTrends
+      };
+    } catch (error) {
+      console.error('Failed to get emotion trends:', error);
+      return {};
+    }
+  }
+
+  private async getLearningInsights(): Promise<any> {
+    try {
+      const learningEventTypes = await this.getAllQuery(`
+        SELECT 
+          event_type,
+          COUNT(*) as count
+        FROM learning_events 
+        GROUP BY event_type 
+        ORDER BY count DESC
+      `);
+
+      const recentLearning = await this.getAllQuery(`
+        SELECT 
+          event_type,
+          description,
+          timestamp
+        FROM learning_events 
+        ORDER BY timestamp DESC 
+        LIMIT 20
+      `);
+
+      return {
+        event_types: learningEventTypes,
+        recent_events: recentLearning
+      };
+    } catch (error) {
+      console.error('Failed to get learning insights:', error);
+      return {};
+    }
+  }
+
+  private async getPeakActivityHours(): Promise<any> {
+    try {
+      const hourlyActivity = await this.getAllQuery(`
+        SELECT 
+          strftime('%H', timestamp) as hour,
+          COUNT(*) as activity_count
+        FROM messages 
+        GROUP BY strftime('%H', timestamp)
+        ORDER BY activity_count DESC
+      `);
+
+      return hourlyActivity;
+    } catch (error) {
+      console.error('Failed to get peak activity hours:', error);
+      return [];
+    }
+  }
+
+  private async getResponseQualityMetrics(): Promise<any> {
+    try {
+      const qualityMetrics = await this.getQuery(`
+        SELECT 
+          AVG(satisfaction_score) as avg_satisfaction,
+          COUNT(CASE WHEN satisfaction_score >= 4 THEN 1 END) as high_quality,
+          COUNT(CASE WHEN satisfaction_score <= 2 THEN 1 END) as low_quality,
+          COUNT(*) as total_rated
+        FROM conversations 
+        WHERE satisfaction_score IS NOT NULL
+      `);
+
+      const satisfactionTrends = await this.getAllQuery(`
+        SELECT 
+          DATE(timestamp) as date,
+          AVG(satisfaction_score) as avg_satisfaction
+        FROM conversations 
+        WHERE satisfaction_score IS NOT NULL 
+        AND timestamp >= datetime('now', '-30 days')
+        GROUP BY DATE(timestamp) 
+        ORDER BY date DESC
+      `);
+
+      return {
+        metrics: qualityMetrics,
+        trends: satisfactionTrends
+      };
+    } catch (error) {
+      console.error('Failed to get response quality metrics:', error);
+      return {};
+    }
+  }
 }

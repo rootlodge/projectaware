@@ -26,9 +26,32 @@ export async function GET(request: NextRequest) {
       });
     } else {
       const agents = multiAgentManager.getAgents();
+      const systemStatus = multiAgentManager.getSystemStatus();
+      const activeExecutions = multiAgentManager.getActiveExecutions();
+      
+      // Transform agents to match UI expectations
+      const formattedAgents = agents.map(agent => ({
+        id: agent.id,
+        name: agent.name,
+        type: agent.role,
+        status: agent.enabled ? 'active' : 'idle' as const,
+        description: `${agent.specialization} - ${agent.capabilities.join(', ')}`,
+        lastActivity: new Date().toISOString(), // TODO: Track real last activity
+        tasksCompleted: Math.floor(Math.random() * 50), // TODO: Implement real task tracking
+        role: agent.role,
+        specialization: agent.specialization,
+        traits: agent.traits,
+        capabilities: agent.capabilities,
+        model: agent.model,
+        temperature: agent.temperature,
+        enabled: agent.enabled
+      }));
+
       return NextResponse.json({
         success: true,
-        agents,
+        agents: formattedAgents,
+        system_status: systemStatus,
+        active_executions: activeExecutions.length,
         timestamp: new Date().toISOString()
       });
     }

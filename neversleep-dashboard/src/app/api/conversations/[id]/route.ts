@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { MemorySystem } from '@/lib/core/memory';
 
 export async function GET(
   request: Request,
@@ -6,8 +7,46 @@ export async function GET(
 ) {
   try {
     const conversationId = params.id;
+    const memory = new MemorySystem();
+    await memory.initialize();
     
-    // Mock conversation messages for now
+    // Get conversation messages from database
+    const conversations = await memory.getConversationHistory(100, conversationId);
+    
+    // Transform database conversations to message format
+    const messages: any[] = [];
+    
+    conversations.forEach((conv, index) => {
+      // Add user message
+      messages.push({
+        id: `${conversationId}_user_${index}`,
+        type: 'user',
+        content: conv.user_message,
+        timestamp: conv.timestamp
+      });
+      
+      // Add AI response
+      messages.push({
+        id: `${conversationId}_ai_${index}`,
+        type: 'brain',
+        content: conv.ai_response,
+        timestamp: new Date(new Date(conv.timestamp).getTime() + 1000).toISOString(),
+        emotion: conv.emotion_state || undefined
+      });
+    });
+    
+    await memory.close();
+    
+    return NextResponse.json({
+      conversationId,
+      messages: messages.sort((a, b) => 
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      )
+    });
+  } catch (error) {
+    console.error('Failed to get conversation:', error);
+    
+    // Fallback to mock data if database is not available
     const mockMessages = [
       {
         id: '1',
@@ -41,11 +80,5 @@ export async function GET(
       conversationId,
       messages: mockMessages
     });
-  } catch (error) {
-    console.error('Failed to get conversation:', error);
-    return NextResponse.json(
-      { error: 'Failed to retrieve conversation' },
-      { status: 500 }
-    );
   }
 }

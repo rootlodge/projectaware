@@ -411,4 +411,223 @@ JSON:`;
       console.warn('Failed to update model last used:', error);
     }
   }
+
+  async processMessageWithContext(
+    userMessage: string, 
+    sessionId: string,
+    model?: string,
+    includeMemory: boolean = true
+  ): Promise<{ response: string; emotionState: any; learningEvents: any[] }> {
+    try {
+      await this.memorySystem.initialize();
+      
+      // Get current emotion state
+      const emotionState = this.emotionEngine.analyzeUserEmotion(userMessage);
+      this.emotionEngine.processUserInput(userMessage);
+      
+      // Get conversation context if requested
+      let contextPrompt = '';
+      if (includeMemory) {
+        const recentConversations = await this.memorySystem.getConversationHistory(5, sessionId);
+        if (recentConversations.length > 0) {
+          contextPrompt = '\n\nRecent conversation context:\n' + 
+            recentConversations.map(conv => 
+              `User: ${conv.user_message}\nAI: ${conv.ai_response}`
+            ).join('\n') + '\n\n';
+        }
+      }
+
+      // Build enhanced prompt with identity and emotion context
+      const identity = this.loadIdentity();
+      const systemPrompt = this.buildSystemPrompt(identity, emotionState);
+      
+      const fullPrompt = `${systemPrompt}${contextPrompt}User: ${userMessage}\n\nAI:`;
+      
+      // Generate response
+      const response = await this.askLLM(fullPrompt, model);
+      
+      // Analyze the interaction for learning events
+      const learningEvents = this.extractLearningEvents(userMessage, response, emotionState);
+      
+      // Save learning events
+      for (const event of learningEvents) {
+        await this.memorySystem.recordLearningEvent(
+          event.type,
+          event.description,
+          event.context
+        );
+      }
+      
+      // Check for identity evolution
+      const identityChanges = this.analyzeIdentityEvolution(userMessage, response, identity);
+      if (identityChanges.length > 0) {
+        await this.applyIdentityEvolution(identity, identityChanges);
+      }
+      
+      await this.memorySystem.close();
+      
+      return {
+        response,
+        emotionState,
+        learningEvents
+      };
+      
+    } catch (error) {
+      console.error('Failed to process message with context:', error);
+      throw error;
+    }
+  }
+
+  private buildSystemPrompt(identity: Identity, emotionState: any): string {
+    return `You are ${identity.name}, an AI assistant with the following characteristics:
+
+Mission: ${identity.mission}
+
+Core Traits: ${identity.traits.join(', ')}
+Locked Traits: ${identity.locked_traits?.join(', ') || 'None'}
+
+Current Emotional Context: ${emotionState.primary} (intensity: ${emotionState.intensity})
+Emotional Context: ${emotionState.context}
+
+Instructions:
+- Respond in character based on your traits and current emotional state
+- Be helpful, engaging, and adapt your communication style to the user's needs
+- Learn from interactions and evolve your responses while maintaining core traits
+- Consider the emotional context when crafting responses
+
+`;
+  }
+
+  private extractLearningEvents(userMessage: string, aiResponse: string, emotionState: any): any[] {
+    const events = [];
+    
+    // Detect question-answer patterns
+    if (userMessage.includes('?')) {
+      events.push({
+        type: 'question_answered',
+        description: `User asked: "${userMessage.substring(0, 100)}..." - Response provided`,
+        context: JSON.stringify({ emotion: emotionState.primary, response_length: aiResponse.length })
+      });
+    }
+    
+    // Detect problem-solving patterns
+    if (userMessage.toLowerCase().includes('help') || userMessage.toLowerCase().includes('problem')) {
+      events.push({
+        type: 'help_requested',
+        description: `User requested help with: "${userMessage.substring(0, 100)}..."`,
+        context: JSON.stringify({ emotion: emotionState.primary, problem_type: 'general' })
+      });
+    }
+    
+    // Detect learning opportunities
+    if (userMessage.toLowerCase().includes('explain') || userMessage.toLowerCase().includes('how')) {
+      events.push({
+        type: 'explanation_provided',
+        description: `Provided explanation for: "${userMessage.substring(0, 100)}..."`,
+        context: JSON.stringify({ emotion: emotionState.primary, explanation_length: aiResponse.length })
+      });
+    }
+    
+    // Detect emotional responses
+    if (emotionState.intensity > 0.7) {
+      events.push({
+        type: 'high_emotion_detected',
+        description: `High emotional intensity (${emotionState.intensity}) detected: ${emotionState.primary}`,
+        context: JSON.stringify({ emotion: emotionState.primary, intensity: emotionState.intensity, user_message: userMessage.substring(0, 100) })
+      });
+    }
+    
+    return events;
+  }
+
+  private analyzeIdentityEvolution(userMessage: string, aiResponse: string, identity: Identity): any[] {
+    const changes = [];
+    
+    // Detect trait reinforcement or development
+    if (userMessage.toLowerCase().includes('helpful') && aiResponse.length > 100) {
+      if (!identity.traits.includes('thorough')) {
+        changes.push({
+          type: 'trait_development',
+          trait: 'thorough',
+          reason: 'Consistently providing detailed helpful responses'
+        });
+      }
+    }
+    
+    // Detect specialization development
+    if (userMessage.toLowerCase().includes('code') || userMessage.toLowerCase().includes('programming')) {
+      if (!identity.traits.includes('technical')) {
+        changes.push({
+          type: 'trait_development',
+          trait: 'technical',
+          reason: 'Frequent technical discussions and coding assistance'
+        });
+      }
+    }
+    
+    return changes;
+  }
+
+  private async applyIdentityEvolution(identity: Identity, changes: any[]): Promise<void> {
+    try {
+      const updatedTraits = [...identity.traits];
+      
+      for (const change of changes) {
+        if (change.type === 'trait_development' && !updatedTraits.includes(change.trait)) {
+          updatedTraits.push(change.trait);
+          console.log(`[Brain] Identity evolved: Added trait "${change.trait}" - ${change.reason}`);
+          
+          // Record the evolution as a learning event
+          await this.memorySystem.recordLearningEvent(
+            'identity_evolution',
+            `Developed new trait: ${change.trait}`,
+            change.reason
+          );
+        }
+      }
+      
+      if (updatedTraits.length > identity.traits.length) {
+        const evolvedIdentity = { ...identity, traits: updatedTraits };
+        await this.saveIdentity(evolvedIdentity);
+      }
+      
+    } catch (error) {
+      console.error('Failed to evolve identity:', error);
+    }
+  }
+
+  async getContextualResponse(userMessage: string, sessionId?: string): Promise<string> {
+    try {
+      const result = await this.processMessageWithContext(userMessage, sessionId || 'default');
+      return result.response;
+    } catch (error) {
+      console.error('Failed to get contextual response:', error);
+      return await this.askLLM(userMessage);
+    }
+  }
+
+  async getSystemMetrics(): Promise<any> {
+    try {
+      await this.memorySystem.initialize();
+      const memoryStats = await this.memorySystem.getStats();
+      const analytics = await this.memorySystem.getAdvancedAnalytics();
+      
+      const identity = this.loadIdentity();
+      const emotionState = this.emotionEngine.getCurrentEmotion();
+      
+      await this.memorySystem.close();
+      
+      return {
+        memory: memoryStats,
+        analytics,
+        identity,
+        emotion_state: emotionState,
+        cache_stats: this.responseCache.getStats(),
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Failed to get system metrics:', error);
+      return {};
+    }
+  }
 }

@@ -36,6 +36,7 @@ const BrainInterface: React.FC = () => {
   const [currentEmotion, setCurrentEmotion] = useState<{emotion: string, intensity: number, timestamp: string} | null>(null);
   const [systemIdentity, setSystemIdentity] = useState<{name: string} | null>(null);
   const [emotionChangeNotification, setEmotionChangeNotification] = useState<{emotion: string, show: boolean} | null>(null);
+  const [sessionId, setSessionId] = useState<string>(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -165,7 +166,7 @@ const BrainInterface: React.FC = () => {
         console.log('Could not log user interaction to goals:', error);
       }
 
-      // Then get the brain response
+      // Then get the enhanced brain response with full context and memory integration
       const response = await fetch('/api/brain', {
         method: 'POST',
         headers: {
@@ -173,7 +174,9 @@ const BrainInterface: React.FC = () => {
         },
         body: JSON.stringify({
           input: userInput,
-          context: 'user_interaction'
+          context: 'user_interaction',
+          sessionId: currentConversationId || sessionId,
+          model: selectedModel // Pass the selected model for personalized responses
         }),
       });
 
@@ -260,6 +263,8 @@ const BrainInterface: React.FC = () => {
     setMessages([]);
     setCurrentConversationId(null);
     setShowHistory(false);
+    // Generate new session ID for new conversation
+    setSessionId(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   };
 
   const clearCurrentConversation = () => {

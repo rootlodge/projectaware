@@ -1,11 +1,19 @@
 import { StateManager } from '../core/StateManager';
 import { EmotionEngine } from '../systems/EmotionEngine';
 import { GoalEngine } from '../systems/GoalEngine';
+import { CentralBrainAgent } from '../agents/CentralBrainAgent';
+import { MemorySystem } from '../core/memory';
+import { ResponseCache } from '../systems/ResponseCache';
+import { Brain } from '../core/brain';
 
 // Singleton instances to maintain state across API calls
 let stateManagerInstance: StateManager | null = null;
 let emotionEngineInstance: EmotionEngine | null = null;
 let goalEngineInstance: GoalEngine | null = null;
+let centralBrainAgentInstance: CentralBrainAgent | null = null;
+let memorySystemInstance: MemorySystem | null = null;
+let responseCacheInstance: ResponseCache | null = null;
+let brainInstance: Brain | null = null;
 
 export function getStateManager(): StateManager {
   if (!stateManagerInstance) {
@@ -46,6 +54,46 @@ export function getGoalEngine(): GoalEngine {
   return goalEngineInstance;
 }
 
+export function getResponseCache(): ResponseCache {
+  if (!responseCacheInstance) {
+    responseCacheInstance = new ResponseCache();
+  }
+  return responseCacheInstance;
+}
+
+export function getBrain(): Brain {
+  if (!brainInstance) {
+    const stateManager = getStateManager();
+    const emotionEngine = getEmotionEngine();
+    const responseCache = getResponseCache();
+    brainInstance = new Brain(stateManager, emotionEngine, responseCache);
+  }
+  return brainInstance;
+}
+
+export function getCentralBrainAgent(): CentralBrainAgent {
+  if (!centralBrainAgentInstance) {
+    const stateManager = getStateManager();
+    const emotionEngine = getEmotionEngine();
+    const responseCache = getResponseCache();
+    const brain = getBrain();
+    centralBrainAgentInstance = new CentralBrainAgent(stateManager, emotionEngine, responseCache, brain);
+  }
+  return centralBrainAgentInstance;
+}
+
+export function getMemorySystem(): MemorySystem {
+  if (!memorySystemInstance) {
+    memorySystemInstance = new MemorySystem();
+    
+    // Initialize the memory system asynchronously
+    memorySystemInstance.initialize().catch(error => {
+      console.error('Failed to initialize Memory System:', error);
+    });
+  }
+  return memorySystemInstance;
+}
+
 // Reset instances if needed
 export function resetInstances() {
   if (emotionEngineInstance) {
@@ -54,4 +102,8 @@ export function resetInstances() {
   stateManagerInstance = null;
   emotionEngineInstance = null;
   goalEngineInstance = null;
+  centralBrainAgentInstance = null;
+  memorySystemInstance = null;
+  responseCacheInstance = null;
+  brainInstance = null;
 }

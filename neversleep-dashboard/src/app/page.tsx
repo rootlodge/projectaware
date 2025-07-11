@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import Dashboard from '@/components/Dashboard';
 import SystemStatus from '@/components/SystemStatus';
 import BrainInterface from '@/components/BrainInterface';
+import InteractionInterface from '@/components/InteractionInterface';
 import AgentManager from '@/components/AgentManager';
 import EmotionDisplay from '@/components/EmotionDisplay';
 import ModelSelectorNew from '@/components/ModelSelectorNew';
 import OllamaTest from '@/components/OllamaTest';
 import MemoryDashboard from '@/components/MemoryDashboard';
-import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database } from 'lucide-react';
+import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -39,6 +40,7 @@ export default function Home() {
   const tabs = [
     { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
     { id: 'brain', name: 'Brain Interface', icon: Brain },
+    { id: 'interaction', name: 'Interaction', icon: MessageCircle },
     { id: 'agents', name: 'Agent Manager', icon: Users },
     { id: 'emotions', name: 'Emotion Engine', icon: Heart },
     { id: 'memory', name: 'Memory Analytics', icon: Database },
@@ -106,6 +108,7 @@ export default function Home() {
       <main className="container mx-auto px-6 py-8">
         {activeTab === 'dashboard' && <Dashboard systemStatus={systemStatus} />}
         {activeTab === 'brain' && <BrainInterface />}
+        {activeTab === 'interaction' && <InteractionInterface />}
         {activeTab === 'agents' && <AgentManager />}
         {activeTab === 'emotions' && <EmotionDisplay />}
         {activeTab === 'memory' && <MemoryDashboard />}

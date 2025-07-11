@@ -37,6 +37,7 @@ const BrainInterface: React.FC = () => {
   const [systemIdentity, setSystemIdentity] = useState<{name: string} | null>(null);
   const [emotionChangeNotification, setEmotionChangeNotification] = useState<{emotion: string, show: boolean} | null>(null);
   const [sessionId, setSessionId] = useState<string>(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const [selectedModel, setSelectedModel] = useState<string>('gemma3:latest');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -106,6 +107,17 @@ const BrainInterface: React.FC = () => {
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isProcessing) return;
+
+    // Record user activity for autonomous thinking system
+    try {
+      await fetch('/api/autonomous/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'record_activity' })
+      });
+    } catch (error) {
+      console.log('Could not record user activity for autonomous thinking:', error);
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),

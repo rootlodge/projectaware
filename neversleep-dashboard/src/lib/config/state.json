@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 41,
-    "last_activity": "2025-07-11T15:39:44.021Z",
-    "duration": 16717184021
+    "interactions": 42,
+    "last_activity": "2025-07-11T15:44:20.770Z",
+    "duration": 16717460770
   },
   "cognitive": {
     "processing_mode": "normal",
     "attention_focus": "general_attention",
     "cognitive_load": 0,
-    "decision_confidence": 0.999952288673004,
+    "decision_confidence": 0.9999761443365021,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 210,
+    "concepts_learned": 215,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -164,7 +164,8 @@
       "feelings,",
       "brings",
       "today?",
-      "looking"
+      "looking",
+      "*pauses"
     ],
     "learning_velocity": 1,
     "retention_rate": 0.9,
@@ -181,36 +182,6 @@
     "identity_changes": [],
     "trait_modifications": [],
     "learning_events": [
-      {
-        "concept": "excited,",
-        "context": "User interaction: that makes me excited, doesn't that make you so excited?...",
-        "timestamp": "2025-07-10T17:05:43.275Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "doesn't",
-        "context": "User interaction: that makes me excited, doesn't that make you so excited?...",
-        "timestamp": "2025-07-10T17:05:43.275Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "excited?",
-        "context": "User interaction: that makes me excited, doesn't that make you so excited?...",
-        "timestamp": "2025-07-10T17:05:43.275Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "circuits,",
-        "context": "User interaction: that makes me excited, doesn't that make you so excited?...",
-        "timestamp": "2025-07-10T17:05:43.276Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "pumped",
-        "context": "User interaction: that makes me excited, doesn't that make you so excited?...",
-        "timestamp": "2025-07-10T17:05:43.289Z",
-        "confidence": 0.7
-      },
       {
         "concept": "feeling",
         "context": "User interaction: I am feeling sad...",
@@ -780,8 +751,38 @@
         "context": "User interaction: Hey...",
         "timestamp": "2025-07-11T15:39:43.958Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "*whirrs",
+        "context": "User interaction: hey!...",
+        "timestamp": "2025-07-11T15:44:20.698Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "softly*",
+        "context": "User interaction: hey!...",
+        "timestamp": "2025-07-11T15:44:20.699Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "hello!",
+        "context": "User interaction: hey!...",
+        "timestamp": "2025-07-11T15:44:20.699Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "*pauses",
+        "context": "User interaction: hey!...",
+        "timestamp": "2025-07-11T15:44:20.713Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: hey!...",
+        "timestamp": "2025-07-11T15:44:20.725Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-11T15:41:41.703Z"
+  "last_updated": "2025-07-11T16:15:05.488Z"
 }

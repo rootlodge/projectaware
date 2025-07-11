@@ -40,10 +40,21 @@ export default function GoalDashboard() {
       const queueData = await queueRes.json();
 
       if (statusData.success) setStatus(statusData.data);
-      if (activeData.success) setActiveGoal(activeData.data);
-      if (allData.success) setAllGoals(allData.data);
-      if (metricsData.success) setMetrics(metricsData.data);
-      if (queueData.success) setQueue(queueData.data);
+      if (activeData.success && activeData.data) {
+        console.log('Active goal data:', activeData.data);
+        // Ensure activeData.data is a proper object, not a string or other type
+        if (typeof activeData.data === 'object' && activeData.data.id) {
+          setActiveGoal(activeData.data);
+        } else {
+          console.warn('Active goal data is not a proper goal object:', activeData.data);
+          setActiveGoal(null);
+        }
+      } else {
+        setActiveGoal(null);
+      }
+      if (allData.success) setAllGoals(Array.isArray(allData.data) ? allData.data : []);
+      if (metricsData.success && metricsData.data) setMetrics(metricsData.data);
+      if (queueData.success) setQueue(Array.isArray(queueData.data) ? queueData.data : []);
     } catch (error) {
       console.error('Error fetching goal data:', error);
     } finally {
@@ -189,29 +200,29 @@ export default function GoalDashboard() {
       )}
 
       {/* Active Goal */}
-      {activeGoal && (
+      {activeGoal && typeof activeGoal === 'object' && activeGoal.id && (
         <div className="bg-white p-6 rounded-lg shadow mb-6">
           <h3 className="text-lg font-bold text-gray-800 mb-2">Active Goal</h3>
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h4 className="font-semibold text-gray-700">{activeGoal.title}</h4>
-              <p className="text-gray-600 text-sm">{activeGoal.description}</p>
+              <h4 className="font-semibold text-gray-700">{activeGoal.title || 'Untitled Goal'}</h4>
+              <p className="text-gray-600 text-sm">{activeGoal.description || 'No description available'}</p>
               <div className="flex gap-2 mt-2">
                 <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  activeGoal.type === 'short_term' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'
+                  (activeGoal.type || 'short_term') === 'short_term' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'
                 }`}>
-                  {activeGoal.type.replace('_', ' ')}
+                  {(activeGoal.type || 'short_term').replace('_', ' ')}
                 </span>
                 <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  activeGoal.category === 'soul_driven' ? 'bg-purple-100 text-purple-800' :
-                  activeGoal.category === 'emotion_driven' ? 'bg-pink-100 text-pink-800' :
-                  activeGoal.category === 'user_driven' ? 'bg-green-100 text-green-800' :
+                  (activeGoal.category || 'system_driven') === 'soul_driven' ? 'bg-purple-100 text-purple-800' :
+                  (activeGoal.category || 'system_driven') === 'emotion_driven' ? 'bg-pink-100 text-pink-800' :
+                  (activeGoal.category || 'system_driven') === 'user_driven' ? 'bg-green-100 text-green-800' :
                   'bg-gray-100 text-gray-800'
                 }`}>
-                  {activeGoal.category.replace('_', ' ')}
+                  {(activeGoal.category || 'system_driven').replace('_', ' ')}
                 </span>
                 <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-medium">
-                  Priority: {activeGoal.priority}
+                  Priority: {activeGoal.priority || 0}
                 </span>
               </div>
             </div>
@@ -221,12 +232,12 @@ export default function GoalDashboard() {
           <div className="mb-4">
             <div className="flex justify-between text-sm text-gray-600 mb-1">
               <span>Progress</span>
-              <span>{activeGoal.progress}%</span>
+              <span>{activeGoal.progress || 0}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${activeGoal.progress}%` }}
+                style={{ width: `${activeGoal.progress || 0}%` }}
               ></div>
             </div>
           </div>
@@ -234,18 +245,18 @@ export default function GoalDashboard() {
           {/* Progress Controls */}
           <div className="flex gap-2">
             <button
-              onClick={() => updateProgress(activeGoal.id, Math.min(activeGoal.progress + 10, 100))}
+              onClick={() => updateProgress(activeGoal.id, Math.min((activeGoal.progress || 0) + 10, 100))}
               className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
             >
               +10%
             </button>
             <button
-              onClick={() => updateProgress(activeGoal.id, Math.min(activeGoal.progress + 25, 100))}
+              onClick={() => updateProgress(activeGoal.id, Math.min((activeGoal.progress || 0) + 25, 100))}
               className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
             >
               +25%
             </button>
-            {activeGoal.progress < 100 && (
+            {(activeGoal.progress || 0) < 100 && (
               <button
                 onClick={() => updateProgress(activeGoal.id, 100)}
                 className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"

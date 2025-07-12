@@ -2,11 +2,12 @@ export interface Goal {
   id: string;
   title: string;
   description: string;
-  type: 'short_term' | 'long_term' | 'micro_task' | 'project_based' | 'learning_objective';
+  type: 'short_term' | 'long_term' | 'micro_task' | 'project_based' | 'learning_objective' | 'system_optimization' | 'user_support';
   category: 'user_derived' | 'internal_system' | 'cerebrum_autonomous';
+  tier: GoalTier;
   origin: GoalOrigin;
   priority: number; // 1-10, 10 being highest
-  status: 'active' | 'completed' | 'paused' | 'failed' | 'cancelled' | 'in_progress' | 'analysis';
+  status: 'active' | 'completed' | 'paused' | 'failed' | 'cancelled' | 'in_progress' | 'analysis' | 'waiting_approval' | 'delegated';
   progress: number; // 0-100 percentage
   created_at: string;
   updated_at: string;
@@ -20,6 +21,7 @@ export interface Goal {
     emotional_states?: string[];
     system_events?: string[];
     cerebrum_analysis?: CerebrumAnalysis;
+    pattern_detection?: PatternDetectionResult;
   };
   
   // Detailed success criteria with measurable outcomes
@@ -28,6 +30,7 @@ export interface Goal {
     measurable_outcomes: MeasurableOutcome[];
     completion_conditions: string[];
     deliverables: GoalDeliverable[];
+    validation_agents?: string[]; // Which agents will validate completion
   };
   
   // Enhanced dependencies and relationships
@@ -35,15 +38,71 @@ export interface Goal {
   sub_goal_ids: string[];
   related_goal_ids: string[];
   blocking_dependencies: string[];
+  prerequisite_skills?: string[];
   
   // Autonomous AI tracking
   cerebrum_metadata?: CerebrumGoalMetadata;
+  execution_strategy?: GoalExecutionStrategy;
   
   // Reflection and evolution
   reflections: GoalReflection[];
   thoughts: GoalThought[];
   actions_taken: GoalAction[];
   agent_interactions: AgentInteraction[];
+  
+  // Self-awareness and learning
+  learning_objectives?: LearningObjective[];
+  knowledge_gaps?: string[];
+  skill_requirements?: SkillRequirement[];
+}
+
+export interface GoalTier {
+  level: 'user_derived' | 'internal_system' | 'cerebrum_autonomous';
+  description: string;
+  characteristics: {
+    autonomous_execution: boolean;
+    requires_user_approval: boolean;
+    can_create_subgoals: boolean;
+    can_delegate_to_agents: boolean;
+    proactive_updates: boolean;
+    completion_presentation: boolean;
+  };
+  authority_level: number; // 1-10, how much autonomy this goal has
+}
+
+export interface PatternDetectionResult {
+  pattern_type: 'conversation_topic' | 'user_interest' | 'skill_gap' | 'workflow_optimization' | 'problem_recurring';
+  confidence: number;
+  evidence_strength: number;
+  detection_method: string;
+  supporting_data: Record<string, any>;
+  recommendation_urgency: number; // 1-10
+}
+
+export interface GoalExecutionStrategy {
+  approach: 'sequential' | 'parallel' | 'hybrid' | 'adaptive';
+  agent_assignments: AgentAssignment[];
+  milestone_checkpoints: Milestone[];
+  risk_mitigation: RiskMitigation[];
+  user_interaction_points: UserInteractionPoint[];
+  autonomous_decision_boundaries: string[];
+}
+
+export interface LearningObjective {
+  skill: string;
+  current_level: number; // 0-10
+  target_level: number; // 0-10
+  learning_method: string;
+  resources_needed: string[];
+  validation_criteria: string[];
+}
+
+export interface SkillRequirement {
+  skill_name: string;
+  required_level: number; // 0-10
+  current_level: number; // 0-10
+  gap_analysis: string;
+  acquisition_plan?: string;
 }
 
 export interface GoalOrigin {

@@ -26,7 +26,17 @@ interface ConversationHistory {
   messageCount: number;
 }
 
-const BrainInterface: React.FC = () => {
+interface BrainInterfaceProps {
+  initialConversationData?: {
+    aiQuestion: string;
+    userResponse: string;
+    emotion: string;
+    priority: number;
+    timestamp: string;
+  };
+}
+
+const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -53,6 +63,33 @@ const BrainInterface: React.FC = () => {
     const emotionInterval = setInterval(loadCurrentEmotion, 5000);
     return () => clearInterval(emotionInterval);
   }, []);
+
+  // Handle initial conversation data from autonomous interactions
+  useEffect(() => {
+    if (initialConversationData) {
+      // Add the AI's question as a system message
+      const aiQuestionMessage: Message = {
+        id: `ai_question_${Date.now()}`,
+        type: 'system',
+        content: `🤖 AI Autonomous Question (Priority ${initialConversationData.priority}): ${initialConversationData.aiQuestion}`,
+        timestamp: initialConversationData.timestamp,
+        emotion: initialConversationData.emotion
+      };
+      
+      // Add the user's response
+      const userResponseMessage: Message = {
+        id: `user_response_${Date.now()}`,
+        type: 'user',
+        content: initialConversationData.userResponse,
+        timestamp: new Date().toISOString()
+      };
+      
+      setMessages([aiQuestionMessage, userResponseMessage]);
+      
+      // Set the input value for potential continuation
+      setInputValue(`Following up on: ${initialConversationData.userResponse}`);
+    }
+  }, [initialConversationData]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -105,19 +142,39 @@ const BrainInterface: React.FC = () => {
     }, 3000);
   };
 
+  // Record user activity for autonomous thinking system (immediate stop)
+  const lastActivityRecordRef = useRef<number>(0);
+  const recordUserActivity = async (immediate: boolean = true) => {
+    const now = Date.now();
+    if (!immediate && now - lastActivityRecordRef.current < 2000) return; // Throttle regular calls
+    
+    lastActivityRecordRef.current = now;
+    try {
+      if (immediate) {
+        // Force immediate stop when user starts typing in brain interface
+        await fetch('/api/autonomous/activity', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ immediate: true })
+        });
+      } else {
+        // Regular pause for general activity
+        await fetch('/api/autonomous/pause', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'pause', reason: 'user_activity_in_brain_interface' })
+        });
+      }
+    } catch (error) {
+      console.error('Failed to record user activity:', error);
+    }
+  };
+
   const sendMessage = async () => {
     if (!inputValue.trim() || isProcessing) return;
 
     // Record user activity for autonomous thinking system
-    try {
-      await fetch('/api/autonomous/status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'record_activity' })
-      });
-    } catch (error) {
-      console.log('Could not record user activity for autonomous thinking:', error);
-    }
+    await recordUserActivity(true); // Force immediate stop when sending message
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -230,7 +287,9 @@ const BrainInterface: React.FC = () => {
             type: 'brain',
             content: data.result.response,
             timestamp: new Date().toISOString(),
-            emotion: data.result.emotional_state
+            emotion: typeof data.result.emotional_state === 'string' 
+              ? data.result.emotional_state 
+              : (data.result.emotional_state?.primary || 'neutral')
           };
           
           messagesToAdd.push(brainMessage);
@@ -426,7 +485,7 @@ const BrainInterface: React.FC = () => {
                     </span>
                     {message.emotion && (
                       <span className="ml-2 text-xs opacity-75">
-                        [{message.emotion}]
+                        [{typeof message.emotion === 'string' ? message.emotion : 'mixed emotions'}]
                       </span>
                     )}
                   </div>
@@ -455,7 +514,10 @@ const BrainInterface: React.FC = () => {
         <input
           type="text"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            recordUserActivity(true); // Force immediate stop when user starts typing
+          }}
           onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
           placeholder="Type your message..."
           className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 

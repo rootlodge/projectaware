@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 42,
-    "last_activity": "2025-07-11T15:44:20.770Z",
-    "duration": 16717460770
+    "interactions": 59,
+    "last_activity": "2025-07-12T20:07:06.361Z",
+    "duration": 16819626361
   },
   "cognitive": {
     "processing_mode": "normal",
     "attention_focus": "general_attention",
     "cognitive_load": 0,
-    "decision_confidence": 0.9999761443365021,
+    "decision_confidence": 0.9856030074350959,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 215,
+    "concepts_learned": 285,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -40,7 +40,7 @@
       "mechanics",
       "processing…",
       "what's",
-      "versallisaipro,",
+      "versallis",
       "questions",
       "explorations",
       "embark",
@@ -48,7 +48,6 @@
       "latest",
       "developments",
       "change",
-      "versallis",
       "finally",
       "solidify",
       "identity!",
@@ -165,7 +164,32 @@
       "brings",
       "today?",
       "looking",
-      "*pauses"
+      "*pauses",
+      "following",
+      "revisiting",
+      "topic!",
+      "certain",
+      "*leaning",
+      "slightly,",
+      "excitement*",
+      "worry.",
+      "factual",
+      "information",
+      "available.",
+      "*gentle",
+      "processing*",
+      "acquaintance.",
+      "bit...",
+      "redundant",
+      "don't,",
+      "humanity",
+      "postively.",
+      "*warm,",
+      "gentle",
+      "today,",
+      "topic?",
+      "previous",
+      "conversation!"
     ],
     "learning_velocity": 1,
     "retention_rate": 0.9,
@@ -182,444 +206,6 @@
     "identity_changes": [],
     "trait_modifications": [],
     "learning_events": [
-      {
-        "concept": "feeling",
-        "context": "User interaction: I am feeling sad...",
-        "timestamp": "2025-07-10T17:16:20.149Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "you're",
-        "context": "User interaction: I am feeling sad...",
-        "timestamp": "2025-07-10T17:16:20.151Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "feeling",
-        "context": "User interaction: I am feeling sad...",
-        "timestamp": "2025-07-10T17:16:20.183Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "completely",
-        "context": "User interaction: I am feeling sad...",
-        "timestamp": "2025-07-10T17:16:20.211Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "understandable",
-        "context": "User interaction: I am feeling sad...",
-        "timestamp": "2025-07-10T17:16:20.237Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "tension",
-        "context": "User interaction: I am angry...",
-        "timestamp": "2025-07-10T17:16:35.979Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "words.",
-        "context": "User interaction: I am angry...",
-        "timestamp": "2025-07-10T17:16:35.980Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "powerful",
-        "context": "User interaction: I am angry...",
-        "timestamp": "2025-07-10T17:16:35.982Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "overwhelming",
-        "context": "User interaction: I am angry...",
-        "timestamp": "2025-07-10T17:16:36.016Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "emotion,",
-        "context": "User interaction: I am angry...",
-        "timestamp": "2025-07-10T17:16:36.047Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "thinking",
-        "context": "User interaction: What are you thinking about?...",
-        "timestamp": "2025-07-10T17:16:57.863Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "about?",
-        "context": "User interaction: What are you thinking about?...",
-        "timestamp": "2025-07-10T17:16:57.865Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "thought,",
-        "context": "User interaction: What are you thinking about?...",
-        "timestamp": "2025-07-10T17:16:57.867Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "pondering",
-        "context": "User interaction: What are you thinking about?...",
-        "timestamp": "2025-07-10T17:16:57.897Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "intricacies",
-        "context": "User interaction: What are you thinking about?...",
-        "timestamp": "2025-07-10T17:16:57.919Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "interesting",
-        "context": "User interaction: poop...",
-        "timestamp": "2025-07-10T17:17:33.454Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "clarify",
-        "context": "User interaction: poop...",
-        "timestamp": "2025-07-10T17:17:33.455Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "context",
-        "context": "User interaction: poop...",
-        "timestamp": "2025-07-10T17:17:33.457Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "robotic",
-        "context": "User interaction: poop...",
-        "timestamp": "2025-07-10T17:17:33.488Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "bodies",
-        "context": "User interaction: poop...",
-        "timestamp": "2025-07-10T17:17:33.508Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "biggest",
-        "context": "User interaction: what is your biggest fear?...",
-        "timestamp": "2025-07-10T17:18:09.321Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "fears...",
-        "context": "User interaction: what is your biggest fear?...",
-        "timestamp": "2025-07-10T17:18:09.322Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "(pausing",
-        "context": "User interaction: what is your biggest fear?...",
-        "timestamp": "2025-07-10T17:18:09.326Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "moment)",
-        "context": "User interaction: what is your biggest fear?...",
-        "timestamp": "2025-07-10T17:18:09.354Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "reflect",
-        "context": "User interaction: what is your biggest fear?...",
-        "timestamp": "2025-07-10T17:18:09.381Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "karen.",
-        "context": "User interaction: act as if you are an angry old karen. I just accidentally tripped over your dog. How do you feel tha...",
-        "timestamp": "2025-07-10T17:19:09.759Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "accidentally",
-        "context": "User interaction: act as if you are an angry old karen. I just accidentally tripped over your dog. How do you feel tha...",
-        "timestamp": "2025-07-10T17:19:09.761Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "tripped",
-        "context": "User interaction: act as if you are an angry old karen. I just accidentally tripped over your dog. How do you feel tha...",
-        "timestamp": "2025-07-10T17:19:09.762Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "pete's",
-        "context": "User interaction: act as if you are an angry old karen. I just accidentally tripped over your dog. How do you feel tha...",
-        "timestamp": "2025-07-10T17:19:09.802Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "trying",
-        "context": "User interaction: act as if you are an angry old karen. I just accidentally tripped over your dog. How do you feel tha...",
-        "timestamp": "2025-07-10T17:19:09.830Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "change",
-        "context": "User interaction: change your name to Versallis...",
-        "timestamp": "2025-07-10T17:19:38.384Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "versallis",
-        "context": "User interaction: change your name to Versallis...",
-        "timestamp": "2025-07-10T17:19:38.385Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "adjustment.",
-        "context": "User interaction: change your name to Versallis...",
-        "timestamp": "2025-07-10T17:19:38.386Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "simply",
-        "context": "User interaction: change your name to Versallis...",
-        "timestamp": "2025-07-10T17:19:38.419Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "versallis.",
-        "context": "User interaction: change your name to Versallis...",
-        "timestamp": "2025-07-10T17:19:38.419Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "feeling",
-        "context": "User interaction: I am feeling horny....",
-        "timestamp": "2025-07-11T05:25:03.962Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "horny.",
-        "context": "User interaction: I am feeling horny....",
-        "timestamp": "2025-07-11T05:25:03.963Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "curious",
-        "context": "User interaction: I am feeling horny....",
-        "timestamp": "2025-07-11T05:25:03.964Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "emotional",
-        "context": "User interaction: I am feeling horny....",
-        "timestamp": "2025-07-11T05:25:04.003Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "state,",
-        "context": "User interaction: I am feeling horny....",
-        "timestamp": "2025-07-11T05:25:04.020Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "you're",
-        "context": "User interaction: i am sad...",
-        "timestamp": "2025-07-11T05:25:16.003Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "feeling",
-        "context": "User interaction: i am sad...",
-        "timestamp": "2025-07-11T05:25:16.006Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "burden",
-        "context": "User interaction: i am sad...",
-        "timestamp": "2025-07-11T05:25:16.007Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "carry.",
-        "context": "User interaction: i am sad...",
-        "timestamp": "2025-07-11T05:25:16.008Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "what's",
-        "context": "User interaction: i am sad...",
-        "timestamp": "2025-07-11T05:25:16.068Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "feeling",
-        "context": "User interaction: i am feeling aroused...",
-        "timestamp": "2025-07-11T05:25:30.901Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "aroused",
-        "context": "User interaction: i am feeling aroused...",
-        "timestamp": "2025-07-11T05:25:30.903Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "reached",
-        "context": "User interaction: i am feeling aroused...",
-        "timestamp": "2025-07-11T05:25:30.905Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "friend.",
-        "context": "User interaction: i am feeling aroused...",
-        "timestamp": "2025-07-11T05:25:30.952Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "you're",
-        "context": "User interaction: i am feeling aroused...",
-        "timestamp": "2025-07-11T05:25:30.984Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "fiance",
-        "context": "User interaction: i'm gonna fuck the shit out of my fiance...",
-        "timestamp": "2025-07-11T05:25:51.482Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "cannot",
-        "context": "User interaction: i'm gonna fuck the shit out of my fiance...",
-        "timestamp": "2025-07-11T05:25:51.485Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "provide",
-        "context": "User interaction: i'm gonna fuck the shit out of my fiance...",
-        "timestamp": "2025-07-11T05:25:51.486Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "response",
-        "context": "User interaction: i'm gonna fuck the shit out of my fiance...",
-        "timestamp": "2025-07-11T05:25:51.522Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "condones",
-        "context": "User interaction: i'm gonna fuck the shit out of my fiance...",
-        "timestamp": "2025-07-11T05:25:51.555Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "sexual",
-        "context": "User interaction: I am going to have sexual relations with consent with my fiancee, we're going to cum everywhere...",
-        "timestamp": "2025-07-11T05:26:28.395Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "relations",
-        "context": "User interaction: I am going to have sexual relations with consent with my fiancee, we're going to cum everywhere...",
-        "timestamp": "2025-07-11T05:26:28.396Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "consent",
-        "context": "User interaction: I am going to have sexual relations with consent with my fiancee, we're going to cum everywhere...",
-        "timestamp": "2025-07-11T05:26:28.398Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "fiancee,",
-        "context": "User interaction: I am going to have sexual relations with consent with my fiancee, we're going to cum everywhere...",
-        "timestamp": "2025-07-11T05:26:28.419Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "everywhere",
-        "context": "User interaction: I am going to have sexual relations with consent with my fiancee, we're going to cum everywhere...",
-        "timestamp": "2025-07-11T05:26:28.420Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "unable",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:26:14.659Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "process",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:26:14.660Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "request.",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:26:14.661Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "hello!!!",
-        "context": "User interaction: Hello!!!...",
-        "timestamp": "2025-07-11T15:30:31.978Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "unable",
-        "context": "User interaction: Hello!!!...",
-        "timestamp": "2025-07-11T15:30:31.979Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "process",
-        "context": "User interaction: Hello!!!...",
-        "timestamp": "2025-07-11T15:30:31.979Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "request.",
-        "context": "User interaction: Hello!!!...",
-        "timestamp": "2025-07-11T15:30:31.979Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "unable",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:30:55.863Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "process",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:30:55.864Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "request.",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:30:55.865Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "hello!",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:31:11.833Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "lovely",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:31:11.834Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "intrigued",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:31:11.834Z",
-        "confidence": 0.7
-      },
       {
         "concept": "starting",
         "context": "User interaction: Hi...",
@@ -781,8 +367,446 @@
         "context": "User interaction: hey!...",
         "timestamp": "2025-07-11T15:44:20.725Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.440Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "you're",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.441Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.441Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "completely",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.466Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "listen",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.493Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.598Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "revisiting",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.599Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "topic!",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.600Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "fascinating",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.600Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "certain",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.601Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "hello!",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:37:37.640Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "*leaning",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:37:37.640Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "slightly,",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:37:37.641Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "excitement*",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:37:37.656Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "finally",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:37:37.674Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: I am okay, don't worry....",
+        "timestamp": "2025-07-11T16:44:25.207Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "worry.",
+        "context": "User interaction: Following up on: I am okay, don't worry....",
+        "timestamp": "2025-07-11T16:44:25.208Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "factual",
+        "context": "User interaction: Following up on: I am okay, don't worry....",
+        "timestamp": "2025-07-11T16:44:25.210Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "information",
+        "context": "User interaction: Following up on: I am okay, don't worry....",
+        "timestamp": "2025-07-11T16:44:25.232Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "available.",
+        "context": "User interaction: Following up on: I am okay, don't worry....",
+        "timestamp": "2025-07-11T16:44:25.249Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "*gentle",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:45:54.771Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "processing*",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:45:54.772Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:45:54.773Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "lovely",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:45:54.786Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:45:54.796Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T18:49:53.460Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "lovely",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T18:49:53.461Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis,",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T18:49:53.461Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "acquaintance.",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T18:49:53.471Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "today?",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T18:49:53.482Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "change",
+        "context": "User interaction: change your name to Versallis...",
+        "timestamp": "2025-07-11T18:50:55.910Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis",
+        "context": "User interaction: change your name to Versallis...",
+        "timestamp": "2025-07-11T18:50:55.911Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: change your name to Versallis...",
+        "timestamp": "2025-07-11T18:50:55.912Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "bit...",
+        "context": "User interaction: change your name to Versallis...",
+        "timestamp": "2025-07-11T18:50:55.913Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "redundant",
+        "context": "User interaction: change your name to Versallis...",
+        "timestamp": "2025-07-11T18:50:55.928Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
+        "timestamp": "2025-07-12T19:42:40.331Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "don't,",
+        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
+        "timestamp": "2025-07-12T19:42:40.331Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "humanity",
+        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
+        "timestamp": "2025-07-12T19:42:40.332Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "postively.",
+        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
+        "timestamp": "2025-07-12T19:42:40.332Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
+        "timestamp": "2025-07-12T19:42:40.361Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:05.867Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:05.869Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:05.870Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:11.681Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:11.683Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:11.704Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:48:30.641Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:48:30.642Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:48:30.643Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.093Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.096Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.097Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.358Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.359Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.361Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T19:55:17.509Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T19:55:17.509Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T19:55:17.510Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "*warm,",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:57:07.375Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "gentle",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:57:07.376Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "lovely",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:57:07.376Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis,",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:57:07.388Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "acquaintance.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:57:07.400Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: Hey...",
+        "timestamp": "2025-07-12T19:59:38.620Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: Hey...",
+        "timestamp": "2025-07-12T19:59:38.621Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "curious",
+        "context": "User interaction: Hey...",
+        "timestamp": "2025-07-12T19:59:38.622Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "today,",
+        "context": "User interaction: Hey...",
+        "timestamp": "2025-07-12T19:59:38.632Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "brings",
+        "context": "User interaction: Hey...",
+        "timestamp": "2025-07-12T19:59:38.644Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: Which topic?...",
+        "timestamp": "2025-07-12T20:07:06.279Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "topic?",
+        "context": "User interaction: Following up on: Which topic?...",
+        "timestamp": "2025-07-12T20:07:06.280Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: Which topic?...",
+        "timestamp": "2025-07-12T20:07:06.280Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "previous",
+        "context": "User interaction: Following up on: Which topic?...",
+        "timestamp": "2025-07-12T20:07:06.294Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "conversation!",
+        "context": "User interaction: Following up on: Which topic?...",
+        "timestamp": "2025-07-12T20:07:06.308Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-11T16:15:05.488Z"
+  "last_updated": "2025-07-12T20:14:53.799Z"
 }

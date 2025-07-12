@@ -21,9 +21,14 @@ interface AutonomousInteraction {
   content: string;
   timestamp: string;
   emotion_state: string;
+  emotion_intensity: number;
+  priority: number; // 1-5, higher is more urgent
   requires_response: boolean;
   context?: string;
   user_name?: string;
+  responded_to?: boolean;
+  user_response?: string;
+  response_timestamp?: string;
 }
 
 interface ThinkingStatus {
@@ -42,7 +47,11 @@ interface ThinkingStats {
   efficiency_trend: number;
 }
 
-export default function InteractionInterface() {
+interface InteractionInterfaceProps {
+  onNavigateToBrain?: (conversationData: any) => void;
+}
+
+export default function InteractionInterface({ onNavigateToBrain }: InteractionInterfaceProps) {
   const [thoughts, setThoughts] = useState<AutonomousThought[]>([]);
   const [interactions, setInteractions] = useState<AutonomousInteraction[]>([]);
   const [thinkingStatus, setThinkingStatus] = useState<ThinkingStatus | null>(null);
@@ -112,8 +121,15 @@ export default function InteractionInterface() {
       });
       
       if (response.ok) {
+        const data = await response.json();
         setUserResponse('');
         setRespondingToId(null);
+        
+        // If should navigate to brain interface, call the callback
+        if (data.data.shouldNavigateToBrain && onNavigateToBrain) {
+          onNavigateToBrain(data.data.conversationData);
+        }
+        
         // Refresh data to see any new AI responses
         await fetchData();
       }
@@ -290,10 +306,15 @@ export default function InteractionInterface() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {interactions.map((interaction) => (
+                  {interactions
+                    .filter(i => !i.responded_to) // Show only pending interactions
+                    .sort((a, b) => b.priority - a.priority) // Sort by priority (highest first)
+                    .map((interaction) => (
                     <div
                       key={interaction.id}
-                      className={`border rounded-lg p-4 transition-all ${getTypeColor(interaction.type)}`}
+                      className={`border rounded-lg p-4 transition-all ${getTypeColor(interaction.type)} ${
+                        interaction.priority >= 4 ? 'ring-2 ring-red-400/50' : ''
+                      }`}
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center space-x-2">
@@ -301,6 +322,18 @@ export default function InteractionInterface() {
                           <span className="font-medium capitalize">{interaction.type}</span>
                           <span className="text-xs opacity-75 capitalize">
                             ({interaction.emotion_state})
+                          </span>
+                          {/* Priority Badge */}
+                          <span className={`text-xs px-2 py-1 rounded-full font-bold ${
+                            interaction.priority >= 4 ? 'bg-red-500/20 text-red-300' :
+                            interaction.priority >= 3 ? 'bg-yellow-500/20 text-yellow-300' :
+                            'bg-gray-500/20 text-gray-300'
+                          }`}>
+                            P{interaction.priority}
+                          </span>
+                          {/* Emotion Intensity */}
+                          <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full">
+                            {Math.round(interaction.emotion_intensity * 100)}%
                           </span>
                         </div>
                         <div className="text-xs opacity-75 flex items-center space-x-1">
@@ -346,15 +379,54 @@ export default function InteractionInterface() {
                           ) : (
                             <button
                               onClick={() => setRespondingToId(interaction.id)}
-                              className="px-4 py-2 bg-white/10 text-white rounded hover:bg-white/20 transition-colors"
+                              className={`px-4 py-2 text-white rounded transition-colors ${
+                                interaction.priority >= 4 
+                                  ? 'bg-red-600 hover:bg-red-700' 
+                                  : 'bg-white/10 hover:bg-white/20'
+                              }`}
                             >
-                              Respond to this question
+                              {interaction.priority >= 4 ? 'Urgent: Respond' : 'Respond to this question'}
                             </button>
                           )}
                         </div>
                       )}
                     </div>
                   ))}
+                  
+                  {/* Show responded interactions separately */}
+                  {interactions.some(i => i.responded_to) && (
+                    <div className="mt-8">
+                      <h4 className="text-white font-semibold mb-4">Previous Interactions</h4>
+                      <div className="space-y-3">
+                        {interactions
+                          .filter(i => i.responded_to)
+                          .map((interaction) => (
+                          <div
+                            key={interaction.id}
+                            className={`border rounded-lg p-4 opacity-75 ${getTypeColor(interaction.type)}`}
+                          >
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex items-center space-x-2">
+                                {getTypeIcon(interaction.type)}
+                                <span className="font-medium capitalize">{interaction.type}</span>
+                                <span className="text-xs opacity-75">✓ Responded</span>
+                              </div>
+                              <div className="text-xs opacity-75">
+                                {formatTimeAgo(interaction.timestamp)}
+                              </div>
+                            </div>
+                            <p className="text-white/75 mb-2">{interaction.content}</p>
+                            {interaction.user_response && (
+                              <div className="bg-white/5 rounded p-2 text-sm">
+                                <span className="text-blue-300">Your response: </span>
+                                <span className="text-white/75">{interaction.user_response}</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

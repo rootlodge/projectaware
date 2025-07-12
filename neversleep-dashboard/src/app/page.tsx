@@ -15,6 +15,7 @@ import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [systemStatus, setSystemStatus] = useState<any>(null);
+  const [brainConversationData, setBrainConversationData] = useState<any>(null);
 
   useEffect(() => {
     // Load initial system status
@@ -24,6 +25,46 @@ export default function Home() {
     const interval = setInterval(fetchSystemStatus, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Handle autonomous thinking pause/resume based on active tab
+  useEffect(() => {
+    const handleAutonomousThinking = async () => {
+      try {
+        const action = activeTab === 'brain' ? 'pause' : 'resume';
+        const reason = activeTab === 'brain' ? 'user_in_brain_interface' : 'user_left_brain_interface';
+        const force = activeTab === 'brain'; // Force disable when entering brain interface
+        
+        await fetch('/api/autonomous/pause', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action, reason, force })
+        });
+
+        // Also notify the autonomous system about page change
+        if (activeTab) {
+          await fetch('/api/autonomous/page-change', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              page: activeTab,
+              path: `/${activeTab}` 
+            })
+          });
+        }
+
+        console.log(`[UI] Autonomous thinking ${action}d${force ? ' (forced)' : ''} due to: ${reason}`);
+
+        // Clear brain conversation data when leaving brain interface
+        if (activeTab !== 'brain') {
+          setBrainConversationData(null);
+        }
+      } catch (error) {
+        console.error('Failed to control autonomous thinking:', error);
+      }
+    };
+
+    handleAutonomousThinking();
+  }, [activeTab]);
 
   const fetchSystemStatus = async () => {
     try {
@@ -35,6 +76,11 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to fetch system status:', error);
     }
+  };
+
+  const handleNavigateToBrain = (conversationData: any) => {
+    setBrainConversationData(conversationData);
+    setActiveTab('brain');
   };
 
   const tabs = [
@@ -107,8 +153,8 @@ export default function Home() {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {activeTab === 'dashboard' && <Dashboard systemStatus={systemStatus} />}
-        {activeTab === 'brain' && <BrainInterface />}
-        {activeTab === 'interaction' && <InteractionInterface />}
+        {activeTab === 'brain' && <BrainInterface initialConversationData={brainConversationData} />}
+        {activeTab === 'interaction' && <InteractionInterface onNavigateToBrain={handleNavigateToBrain} />}
         {activeTab === 'agents' && <AgentManager />}
         {activeTab === 'emotions' && <EmotionDisplay />}
         {activeTab === 'memory' && <MemoryDashboard />}

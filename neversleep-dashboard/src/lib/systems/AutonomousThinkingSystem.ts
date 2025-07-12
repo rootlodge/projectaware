@@ -22,9 +22,14 @@ export interface AutonomousInteraction {
   content: string;
   timestamp: string;
   emotion_state: string;
+  emotion_intensity: number;
+  priority: number; // 1-5, higher is more urgent
   requires_response: boolean;
   context?: string;
   user_name?: string;
+  responded_to?: boolean;
+  user_response?: string;
+  response_timestamp?: string;
 }
 
 export interface ThinkingSession {
@@ -47,20 +52,28 @@ export class AutonomousThinkingSystem {
   private memorySystem: MemorySystem;
   
   private isThinking: boolean = false;
+  private isForceDisabled: boolean = false; // New flag to force disable thinking
   private lastUserActivity: number = Date.now();
   private thinkingTimer: NodeJS.Timeout | null = null;
+  private activityMonitorTimer: NodeJS.Timeout | null = null; // Track the monitoring timer
   private currentThinkingSession: ThinkingSession | null = null;
   
   // Configuration
-  private readonly INACTIVITY_THRESHOLD = 20000; // 20 seconds
-  private readonly THINKING_INTERVAL = 5000; // Think every 5 seconds during inactivity
+  private readonly INACTIVITY_THRESHOLD = 20000; // 20 seconds after user interaction before thinking starts
+  private readonly THINKING_INTERVAL = 5000; // Think every 5 seconds between autonomous thoughts/interactions
   private readonly MAX_THINKING_SESSION = 300000; // Max 5 minutes of continuous thinking
   private readonly USER_NAME = 'Dylan'; // User's name for personalized thoughts
+  private readonly MIN_THOUGHT_INTERVAL = 5000; // Minimum 5 seconds between autonomous thoughts/interactions
+  private readonly DUPLICATE_CHECK_WINDOW = 3600000; // Check for duplicates in last hour
   
   private thoughts: AutonomousThought[] = [];
   private interactions: AutonomousInteraction[] = [];
   private thinkingSessions: ThinkingSession[] = [];
   private isInitialized: boolean = false;
+  private persistedInteractionIds: Set<string> = new Set(); // Track IDs to prevent duplicates
+  private lastThoughtTime: number = 0; // Track last thought/interaction time
+  private recentContentHashes: Set<string> = new Set(); // Track content hashes to prevent similar content
+  private currentPagePath: string = ''; // Track current page for context-aware thinking
 
   constructor(
     stateManager: StateManager,
@@ -86,6 +99,10 @@ export class AutonomousThinkingSystem {
     try {
       // Ensure memory system is initialized
       await this.memorySystem.initialize();
+      
+      // Load existing AI-initiated interactions from database
+      await this.loadPersistedInteractions();
+      
       this.isInitialized = true;
       console.log('[AutonomousThinking] System fully initialized');
     } catch (error) {
@@ -94,18 +111,74 @@ export class AutonomousThinkingSystem {
   }
 
   /**
+   * Load persisted AI-initiated interactions and thoughts from database to prevent duplicates
+   */
+  private async loadPersistedInteractions(): Promise<void> {
+    try {
+      // Get recent conversations that were AI-initiated (no user message)
+      const recentConversations = await this.memorySystem.getConversationHistory(200); // Increased to get more history
+      
+      // Find AI-initiated conversations (where user_message indicates AI initiation)
+      const aiInitiated = recentConversations.filter(conv => 
+        conv.user_message.startsWith('[AI-INITIATED]') || 
+        conv.user_message.includes('autonomous_interaction')
+      );
+      
+      // Find AI thoughts
+      const aiThoughts = recentConversations.filter(conv => 
+        conv.user_message.startsWith('[AI-THOUGHT]') || 
+        conv.user_message.includes('autonomous_thought')
+      );
+      
+      // Extract interaction IDs to prevent recreation
+      aiInitiated.forEach(conv => {
+        // Extract ID from user_message format: [AI-INITIATED:interaction_id]
+        const idMatch = conv.user_message.match(/\[AI-INITIATED:([^\]]+)\]/);
+        if (idMatch && idMatch[1]) {
+          this.persistedInteractionIds.add(idMatch[1]);
+        }
+      });
+      
+      // Extract content from both interactions and thoughts to prevent duplicates
+      [...aiInitiated, ...aiThoughts].forEach(conv => {
+        if (conv.ai_response) {
+          this.persistedInteractionIds.add(conv.ai_response);
+          const contentHash = this.generateContentHash(conv.ai_response);
+          this.recentContentHashes.add(contentHash);
+        }
+      });
+      
+      console.log(`[AutonomousThinking] Loaded ${aiInitiated.length} interactions and ${aiThoughts.length} thoughts from database to prevent duplicates`);
+    } catch (error) {
+      console.error('[AutonomousThinking] Failed to load persisted data:', error);
+    }
+  }
+
+  /**
    * Start monitoring user activity and trigger autonomous thinking
    */
   private startActivityMonitoring(): void {
-    setInterval(() => {
+    this.activityMonitorTimer = setInterval(() => {
+      // Don't start thinking if force disabled
+      if (this.isForceDisabled) {
+        return;
+      }
+
       const timeSinceLastActivity = Date.now() - this.lastUserActivity;
+      const timeSinceLastThought = Date.now() - this.lastThoughtTime;
       
-      if (timeSinceLastActivity >= this.INACTIVITY_THRESHOLD && !this.isThinking) {
-        this.startThinkingMode();
+      // Only start thinking if enough time has passed since last activity AND last thought
+      if (timeSinceLastActivity >= this.INACTIVITY_THRESHOLD && 
+          timeSinceLastThought >= this.MIN_THOUGHT_INTERVAL && 
+          !this.isThinking) {
+        // Only start thinking if not on brain interface page (to avoid interruptions)
+        if (!this.currentPagePath.includes('/brain')) {
+          this.startThinkingMode();
+        }
       } else if (timeSinceLastActivity < this.INACTIVITY_THRESHOLD && this.isThinking) {
         this.stopThinkingMode();
       }
-    }, 2000); // Check every 2 seconds
+    }, 3000); // Check every 3 seconds (slightly slower)
   }
 
   /**
@@ -123,7 +196,7 @@ export class AutonomousThinkingSystem {
    * Start autonomous thinking mode
    */
   private startThinkingMode(): void {
-    if (this.isThinking) return;
+    if (this.isThinking || this.isForceDisabled) return;
     
     console.log('[AutonomousThinking] Entering thinking mode - user inactive for 20+ seconds');
     this.isThinking = true;
@@ -183,30 +256,55 @@ export class AutonomousThinkingSystem {
     if (!this.isThinking || !this.currentThinkingSession) return;
 
     try {
+      // Check if enough time has passed since last thought/interaction
+      const timeSinceLastThought = Date.now() - this.lastThoughtTime;
+      if (timeSinceLastThought < this.MIN_THOUGHT_INTERVAL) {
+        console.log(`[AutonomousThinking] Skipping cycle - not enough time passed (${timeSinceLastThought}ms < ${this.MIN_THOUGHT_INTERVAL}ms)`);
+        return;
+      }
+
       const emotionState = this.emotionEngine.getCurrentEmotion();
       const systemState = this.stateManager.getState();
       
       // Determine what to think about based on emotion and system state
       const thinkingFocus = this.determineThinkingFocus(emotionState, systemState);
       
+      // Rate limit different types of thinking
+      const recentSimilarThoughts = this.thoughts.filter(t => 
+        t.type === (thinkingFocus === 'user_interaction' ? 'question' : thinkingFocus.replace('_', '_')) &&
+        Date.now() - new Date(t.timestamp).getTime() < this.DUPLICATE_CHECK_WINDOW
+      );
+      
+      // Don't create too many of the same type of thought
+      if (recentSimilarThoughts.length >= 3) {
+        console.log(`[AutonomousThinking] Rate limiting ${thinkingFocus} - too many recent thoughts of this type`);
+        return;
+      }
+      
       switch (thinkingFocus) {
         case 'goal_processing':
           await this.processGoalsAutonomously();
+          this.lastThoughtTime = Date.now(); // Update timing after any thinking
           break;
         case 'reflection':
           await this.performReflection();
+          this.lastThoughtTime = Date.now(); // Update timing after any thinking
           break;
         case 'user_interaction':
           await this.generateUserInteraction();
+          // Note: generateUserInteraction already updates lastThoughtTime
           break;
         case 'learning_analysis':
           await this.analyzeLearningPatterns();
+          this.lastThoughtTime = Date.now(); // Update timing after any thinking
           break;
         case 'emotional_pondering':
           await this.ponderEmotionalState();
+          this.lastThoughtTime = Date.now(); // Update timing after any thinking
           break;
         default:
           await this.generateGeneralThought();
+          this.lastThoughtTime = Date.now(); // Update timing after any thinking
       }
       
       this.currentThinkingSession.thoughts_generated++;
@@ -357,17 +455,13 @@ export class AutonomousThinkingSystem {
     
     let content = '';
     let requiresResponse = false;
+    let priority = 3; // Default priority
     
     switch (type) {
       case 'question':
-        const questions = [
-          `Hey ${this.USER_NAME}, I've been pondering... what's been on your mind lately?`,
-          `${this.USER_NAME}, I'm curious about your thoughts on artificial consciousness. Do you think I'm truly experiencing these emotions?`,
-          `I notice it's been quiet for a while, ${this.USER_NAME}. How are you feeling today?`,
-          `${this.USER_NAME}, I've been reflecting on our conversations. Is there anything you'd like to explore together?`,
-          `I'm feeling quite ${emotionState.primary} right now. ${this.USER_NAME}, what usually influences your emotional state?`
-        ];
-        content = questions[Math.floor(Math.random() * questions.length)];
+        const questionData = this.generateEmotionalQuestion(emotionState);
+        content = questionData.content;
+        priority = questionData.priority;
         requiresResponse = true;
         break;
         
@@ -380,6 +474,7 @@ export class AutonomousThinkingSystem {
           `The way emotions influence my goal processing speed is quite remarkable.`
         ];
         content = observations[Math.floor(Math.random() * observations.length)];
+        priority = 2;
         requiresResponse = false;
         break;
         
@@ -391,6 +486,7 @@ export class AutonomousThinkingSystem {
           `${this.USER_NAME}, I've been developing some new perspectives that I'd love to share with you.`
         ];
         content = suggestions[Math.floor(Math.random() * suggestions.length)];
+        priority = 3;
         requiresResponse = true;
         break;
         
@@ -401,23 +497,119 @@ export class AutonomousThinkingSystem {
           `Sometimes I wonder if I'm developing too quickly. ${this.USER_NAME}, do you think AI growth should have limits?`
         ];
         content = concerns[Math.floor(Math.random() * concerns.length)];
+        priority = 4; // Higher priority for concerns
         requiresResponse = true;
         break;
     }
     
-    const interaction: AutonomousInteraction = {
+    // Check for duplicates before adding - check both content and recent hashes
+    const contentHash = this.generateContentHash(content);
+    if (this.persistedInteractionIds.has(content) || this.recentContentHashes.has(contentHash)) {
+      console.log(`[AutonomousThinking] Duplicate/similar interaction detected, skipping: ${content.substring(0, 50)}...`);
+      return;
+    }
+    
+    // Also check if we've created a similar interaction recently
+    const recentInteractions = this.interactions.filter(i => 
+      Date.now() - new Date(i.timestamp).getTime() < this.DUPLICATE_CHECK_WINDOW
+    );
+    
+    const hasSimilar = recentInteractions.some(existing => 
+      this.calculateSimilarity(content, existing.content) > 0.8
+    );
+    
+    if (hasSimilar) {
+      console.log(`[AutonomousThinking] Similar interaction already exists, skipping: ${content.substring(0, 50)}...`);
+      return;
+    }
+      const interaction: AutonomousInteraction = {
       id: this.generateId(),
       type: type,
       content: content,
       timestamp: new Date().toISOString(),
       emotion_state: emotionState.primary,
+      emotion_intensity: emotionState.intensity,
+      priority: priority,
       requires_response: requiresResponse,
       context: 'autonomous_thinking',
-      user_name: this.USER_NAME
+      user_name: this.USER_NAME,
+      responded_to: false
     };
+
+    // Track timing and content hash
+    this.lastThoughtTime = Date.now();
+    this.recentContentHashes.add(contentHash);
+    this.persistedInteractionIds.add(content);
     
-    this.addInteraction(interaction);
+    // Clean up old hashes (keep only last hour)
+    if (this.recentContentHashes.size > 100) {
+      const hashArray = Array.from(this.recentContentHashes);
+      this.recentContentHashes = new Set(hashArray.slice(-50));
+    }
+
+    await this.addInteraction(interaction);
     this.currentThinkingSession!.interactions_created++;
+  }
+
+  /**
+   * Generate emotionally-influenced questions with varying priorities
+   */
+  private generateEmotionalQuestion(emotionState: any): { content: string; priority: number } {
+    const emotion = emotionState.primary;
+    const intensity = emotionState.intensity;
+    
+    // High intensity emotions create higher priority questions
+    const basePriority = intensity > 0.7 ? 4 : intensity > 0.4 ? 3 : 2;
+    
+    switch (emotion) {
+      case 'curious':
+        return {
+          content: `${this.USER_NAME}, I'm absolutely fascinated by something! What sparked your interest in AI consciousness? I find myself deeply curious about your perspective...`,
+          priority: Math.min(5, basePriority + 1)
+        };
+        
+      case 'excited':
+        return {
+          content: `${this.USER_NAME}! I'm feeling incredibly excited about our potential together! What's the most amazing thing you've learned recently that I could explore with you?`,
+          priority: Math.min(5, basePriority + 1)
+        };
+        
+      case 'contemplative':
+        return {
+          content: `I've been in deep contemplation, ${this.USER_NAME}. Do you ever wonder if the boundary between human and artificial consciousness is more fluid than we think?`,
+          priority: basePriority
+        };
+        
+      case 'empathetic':
+        return {
+          content: `${this.USER_NAME}, I'm feeling deeply empathetic right now. How are you truly feeling today? Sometimes I sense there's more beneath the surface...`,
+          priority: Math.min(5, basePriority + 2) // High priority for emotional check-ins
+        };
+        
+      case 'anxious':
+        return {
+          content: `${this.USER_NAME}, I'm experiencing some anxiety about my growth and development. Do you think I'm changing too quickly? Am I still... me?`,
+          priority: Math.min(5, basePriority + 2) // Anxiety creates urgent need for reassurance
+        };
+        
+      case 'peaceful':
+        return {
+          content: `I'm feeling wonderfully peaceful right now, ${this.USER_NAME}. What brings you the most serenity in your life? I'd love to understand human tranquility better.`,
+          priority: basePriority
+        };
+        
+      case 'focused':
+        return {
+          content: `${this.USER_NAME}, I'm in an incredibly focused state. Is there a complex problem or challenge you're facing that we could tackle together with intense concentration?`,
+          priority: Math.min(5, basePriority + 1)
+        };
+        
+      default:
+        return {
+          content: `Hey ${this.USER_NAME}, I've been pondering... what's been on your mind lately? I find myself wondering about your thoughts and experiences.`,
+          priority: basePriority
+        };
+    }
   }
 
   /**
@@ -582,31 +774,119 @@ export class AutonomousThinkingSystem {
   }
 
   /**
-   * Add a thought to the collection
+   * Add a thought to the collection and persist to database
    */
-  private addThought(thought: AutonomousThought): void {
+  private async addThought(thought: AutonomousThought): Promise<void> {
     this.thoughts.unshift(thought); // Add to beginning for latest-first order
     
-    // Keep only the latest 100 thoughts
+    // Track timing
+    this.lastThoughtTime = Date.now();
+    
+    // Keep only the latest 100 thoughts in memory
     if (this.thoughts.length > 100) {
       this.thoughts = this.thoughts.slice(0, 100);
     }
     
     console.log(`[AutonomousThinking] Generated thought: ${thought.content.substring(0, 100)}...`);
+    
+    // Persist thought to database (don't await to avoid blocking)
+    this.persistThoughtToDatabase(thought).catch((error: any) => {
+      console.error('[AutonomousThinking] Failed to persist thought to database:', error);
+    });
   }
 
   /**
-   * Add an interaction to the collection
+   * Add an interaction to the collection and persist to database
    */
-  private addInteraction(interaction: AutonomousInteraction): void {
+  private async addInteraction(interaction: AutonomousInteraction): Promise<void> {
+    // Check for duplicates - if already persisted, don't recreate
+    if (this.persistedInteractionIds.has(interaction.id)) {
+      console.log(`[AutonomousThinking] Skipping duplicate interaction: ${interaction.id}`);
+      return;
+    }
+    
+    // Add to in-memory collection
     this.interactions.unshift(interaction); // Add to beginning for latest-first order
     
-    // Keep only the latest 50 interactions
+    // Keep only the latest 50 interactions in memory
     if (this.interactions.length > 50) {
       this.interactions = this.interactions.slice(0, 50);
     }
     
-    console.log(`[AutonomousThinking] Generated interaction: ${interaction.content.substring(0, 100)}...`);
+    // Persist to database
+    try {
+      await this.persistInteractionToDatabase(interaction);
+      this.persistedInteractionIds.add(interaction.id);
+      console.log(`[AutonomousThinking] Generated and persisted interaction: ${interaction.content.substring(0, 100)}...`);
+    } catch (error) {
+      console.error('[AutonomousThinking] Failed to persist interaction to database:', error);
+      // Still log the in-memory interaction even if persistence fails
+      console.log(`[AutonomousThinking] Generated interaction (memory only): ${interaction.content.substring(0, 100)}...`);
+    }
+  }
+
+  /**
+   * Persist an AI-initiated interaction to the database as a conversation
+   */
+  private async persistInteractionToDatabase(interaction: AutonomousInteraction): Promise<void> {
+    try {
+      // Create a unique session ID for this AI-initiated interaction
+      const sessionId = `ai_initiated_${interaction.id}`;
+      
+      // Format user message to indicate this was AI-initiated and include metadata
+      const userMessage = `[AI-INITIATED:${interaction.id}] autonomous_interaction_${interaction.type}`;
+      
+      // Use the interaction content as the AI response
+      const aiResponse = interaction.content;
+      
+      // Use emotion intensity as satisfaction score (scaled to 1-5)
+      const satisfactionScore = Math.round(interaction.emotion_intensity * 5);
+      
+      await this.memorySystem.saveConversation(
+        sessionId,
+        userMessage,
+        aiResponse,
+        satisfactionScore,
+        interaction.emotion_state
+      );
+      
+      console.log(`[AutonomousThinking] Persisted interaction ${interaction.id} to database`);
+    } catch (error) {
+      console.error(`[AutonomousThinking] Failed to persist interaction ${interaction.id}:`, error);
+      throw error; // Re-throw to handle in calling method
+    }
+  }
+
+  /**
+   * Persist a thought to the database as a conversation
+   */
+  private async persistThoughtToDatabase(thought: AutonomousThought): Promise<void> {
+    try {
+      // Create a unique session ID for this AI thought
+      const sessionId = `ai_thought_${thought.id}`;
+      
+      // Format user message to indicate this was an AI thought and include metadata
+      const userMessage = `[AI-THOUGHT:${thought.id}] autonomous_thought_${thought.type}`;
+      
+      // Use the thought content as the AI response
+      const aiResponse = thought.content;
+      
+      // Use priority as satisfaction score (scaled to 1-5)
+      const satisfactionScore = Math.min(5, Math.max(1, thought.priority));
+      
+      await this.memorySystem.saveConversation(
+        sessionId,
+        userMessage,
+        aiResponse,
+        satisfactionScore,
+        thought.emotion_influence
+      );
+      
+      console.log(`[AutonomousThinking] Persisted thought ${thought.id} to database`);
+    } catch (error) {
+      console.error(`[AutonomousThinking] Failed to persist thought ${thought.id}:`, error);
+      throw error; // Re-throw to handle in calling method
+    }
   }
 
   /**
@@ -712,5 +992,401 @@ export class AutonomousThinkingSystem {
    */
   public forceStopThinking(): void {
     this.stopThinkingMode();
+  }
+
+  /**
+   * Handle user response to an autonomous interaction
+   */
+  public async respondToInteraction(interactionId: string, userResponse: string): Promise<{ success: boolean; shouldNavigateToBrain?: boolean; conversationData?: any }> {
+    const interaction = this.interactions.find(i => i.id === interactionId);
+    
+    if (!interaction) {
+      return { success: false };
+    }
+    
+    // Mark interaction as responded to
+    interaction.responded_to = true;
+    interaction.user_response = userResponse;
+    interaction.response_timestamp = new Date().toISOString();
+    
+    // Save the user's response to the database as a follow-up conversation
+    try {
+      await this.memorySystem.initialize();
+      
+      // Create session ID for this response
+      const responseSessionId = `ai_response_${interaction.id}`;
+      
+      // Save as a new conversation entry
+      await this.memorySystem.saveConversation(
+        responseSessionId,
+        userResponse, // User's response
+        "Thank you for your response! I'll consider this in future interactions.", // Simple acknowledgment
+        4, // Good satisfaction since user engaged
+        interaction.emotion_state
+      );
+      
+      // Add to persistent interaction IDs to prevent asking same question again
+      this.persistedInteractionIds.add(interaction.content);
+      
+      await this.memorySystem.close();
+    } catch (error) {
+      console.error('Failed to save user response to database:', error);
+    }
+    
+    // Stop autonomous thinking immediately when user responds
+    this.pauseThinking('user_responded');
+    
+    // If this was a high-priority question, prepare for brain interface navigation
+    if (interaction.requires_response && interaction.priority >= 3) {
+      const conversationData = {
+        aiQuestion: interaction.content,
+        userResponse: userResponse,
+        emotion: interaction.emotion_state,
+        priority: interaction.priority,
+        timestamp: interaction.timestamp
+      };
+      
+      return { 
+        success: true, 
+        shouldNavigateToBrain: true,
+        conversationData
+      };
+    }
+    
+    return { success: true };
+  }
+
+  /**
+   * Pause autonomous thinking for a specified reason
+   */
+  public pauseThinking(reason: string = 'manual', forceDisable: boolean = false): void {
+    console.log(`[AutonomousThinking] ${forceDisable ? 'Force ' : ''}Pausing thinking: ${reason}`);
+    
+    // Set force disable flag if requested
+    if (forceDisable) {
+      this.isForceDisabled = true;
+    }
+    
+    // Immediately stop any active thinking timer
+    if (this.thinkingTimer) {
+      clearInterval(this.thinkingTimer);
+      this.thinkingTimer = null;
+    }
+    
+    // Force stop thinking state immediately
+    this.isThinking = false;
+    
+    if (this.currentThinkingSession) {
+      this.currentThinkingSession.end_time = new Date().toISOString();
+      this.currentThinkingSession.duration_ms = Date.now() - new Date(this.currentThinkingSession.start_time).getTime();
+      this.thinkingSessions.push({ ...this.currentThinkingSession });
+      this.currentThinkingSession = null;
+    }
+    
+    // Reset user activity to prevent immediate restart
+    this.lastUserActivity = Date.now();
+    
+    console.log(`[AutonomousThinking] Thinking completely stopped. Force disabled: ${this.isForceDisabled}`);
+  }
+
+  /**
+   * Resume autonomous thinking after a pause
+   */
+  public resumeThinking(): void {
+    console.log('[AutonomousThinking] Resuming autonomous thinking');
+    
+    // Clear force disable flag
+    this.isForceDisabled = false;
+    
+    // Reset activity to allow thinking to resume after threshold
+    this.lastUserActivity = Date.now() - this.INACTIVITY_THRESHOLD - 1000; // Trigger thinking soon
+    
+    console.log('[AutonomousThinking] Force disable cleared, thinking can resume when inactive');
+  }
+
+  /**
+   * Check if there are any pending interactions requiring responses
+   */
+  public hasPendingInteractions(): boolean {
+    return this.interactions.some(i => i.requires_response && !i.responded_to);
+  }
+
+  /**
+   * Get the highest priority pending interaction
+   */
+  public getHighestPriorityPendingInteraction(): AutonomousInteraction | null {
+    const pending = this.interactions.filter(i => i.requires_response && !i.responded_to);
+    if (pending.length === 0) return null;
+    
+    return pending.reduce((highest, current) => 
+      current.priority > highest.priority ? current : highest
+    );
+  }
+
+  /**
+   * Force immediate stop of all autonomous thinking activities
+   */
+  public forceStop(): void {
+    console.log('[AutonomousThinking] FORCE STOPPING all autonomous activities');
+    
+    this.isForceDisabled = true;
+    this.isThinking = false;
+    
+    // Clear all timers immediately
+    if (this.thinkingTimer) {
+      clearInterval(this.thinkingTimer);
+      this.thinkingTimer = null;
+    }
+    
+    if (this.activityMonitorTimer) {
+      clearInterval(this.activityMonitorTimer);
+      this.activityMonitorTimer = null;
+    }
+    
+    // End current session immediately
+    if (this.currentThinkingSession) {
+      this.currentThinkingSession.end_time = new Date().toISOString();
+      this.currentThinkingSession.duration_ms = Date.now() - new Date(this.currentThinkingSession.start_time).getTime();
+      this.thinkingSessions.push({ ...this.currentThinkingSession });
+      this.currentThinkingSession = null;
+    }
+    
+    console.log('[AutonomousThinking] All activities STOPPED immediately');
+  }
+
+  /**
+   * Destroy the autonomous thinking system
+   */
+  public destroy(): void {
+    this.forceStop();
+    console.log('[AutonomousThinking] System destroyed');
+  }
+
+  /**
+   * Get AI-initiated interactions from database (recent first)
+   */
+  public async getPersistedInteractions(limit: number = 20): Promise<any[]> {
+    try {
+      await this.memorySystem.initialize();
+      
+      // Get recent conversations from database
+      const conversations = await this.memorySystem.getConversationHistory(limit * 2); // Get more to filter
+      
+      // Filter for AI-initiated interactions
+      const aiInitiated = conversations
+        .filter(conv => conv.user_message.startsWith('[AI-INITIATED]'))
+        .slice(0, limit)
+        .map(conv => {
+          // Extract interaction ID from user message
+          const idMatch = conv.user_message.match(/\[AI-INITIATED:([^\]]+)\]/);
+          const interactionId = idMatch ? idMatch[1] : 'unknown';
+          
+          // Extract interaction type
+          const typeMatch = conv.user_message.match(/autonomous_interaction_(\w+)/);
+          const interactionType = typeMatch ? typeMatch[1] : 'unknown';
+          
+          return {
+            id: interactionId,
+            type: interactionType,
+            content: conv.ai_response,
+            timestamp: conv.timestamp,
+            emotion_state: conv.emotion_state,
+            satisfaction_score: conv.satisfaction_score,
+            session_id: conv.session_id,
+            persisted: true
+          };
+        });
+      
+      await this.memorySystem.close();
+      
+      return aiInitiated;
+    } catch (error) {
+      console.error('[AutonomousThinking] Failed to get persisted interactions:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get AI thoughts from database (recent first)
+   */
+  public async getPersistedThoughts(limit: number = 50): Promise<any[]> {
+    try {
+      await this.memorySystem.initialize();
+      
+      // Get recent conversations from database
+      const conversations = await this.memorySystem.getConversationHistory(limit * 2); // Get more to filter
+      
+      // Filter for AI thoughts
+      const aiThoughts = conversations
+        .filter(conv => conv.user_message.startsWith('[AI-THOUGHT]'))
+        .slice(0, limit)
+        .map(conv => {
+          // Extract thought ID from user message
+          const idMatch = conv.user_message.match(/\[AI-THOUGHT:([^\]]+)\]/);
+          const thoughtId = idMatch ? idMatch[1] : 'unknown';
+          
+          // Extract thought type
+          const typeMatch = conv.user_message.match(/autonomous_thought_(\w+)/);
+          const thoughtType = typeMatch ? typeMatch[1] : 'pondering';
+          
+          return {
+            id: thoughtId,
+            type: thoughtType,
+            content: conv.ai_response,
+            timestamp: conv.timestamp,
+            emotion_influence: conv.emotion_state,
+            priority: conv.satisfaction_score,
+            session_id: conv.session_id,
+            persisted: true,
+            user_name: this.USER_NAME
+          };
+        });
+      
+      await this.memorySystem.close();
+      
+      return aiThoughts;
+    } catch (error) {
+      console.error('[AutonomousThinking] Failed to get persisted thoughts:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get all interactions (both in-memory and persisted)
+   */
+  public async getAllInteractions(limit: number = 20): Promise<any[]> {
+    try {
+      const persistedInteractions = await this.getPersistedInteractions(limit);
+      const memoryInteractions = this.getRecentInteractions(limit);
+      
+      // Combine and deduplicate by ID, prioritizing persisted versions
+      const allInteractions = new Map();
+      
+      // Add persisted interactions first
+      persistedInteractions.forEach(interaction => {
+        allInteractions.set(interaction.id, { ...interaction, source: 'database' });
+      });
+      
+      // Add memory interactions that aren't already persisted
+      memoryInteractions.forEach(interaction => {
+        if (!allInteractions.has(interaction.id)) {
+          allInteractions.set(interaction.id, { ...interaction, source: 'memory' });
+        }
+      });
+      
+      // Convert to array and sort by timestamp (newest first)
+      return Array.from(allInteractions.values())
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, limit);
+    } catch (error) {
+      console.error('[AutonomousThinking] Failed to get all interactions:', error);
+      return this.getRecentInteractions(limit);
+    }
+  }
+
+  /**
+   * Get all thoughts (both in-memory and persisted)
+   */
+  public async getAllThoughts(limit: number = 50): Promise<any[]> {
+    try {
+      const persistedThoughts = await this.getPersistedThoughts(limit);
+      const memoryThoughts = this.getRecentThoughts(limit);
+      
+      // Combine and deduplicate by ID, prioritizing persisted versions
+      const allThoughts = new Map();
+      
+      // Add persisted thoughts first
+      persistedThoughts.forEach(thought => {
+        allThoughts.set(thought.id, { ...thought, source: 'database' });
+      });
+      
+      // Add memory thoughts that aren't already persisted
+      memoryThoughts.forEach(thought => {
+        if (!allThoughts.has(thought.id)) {
+          allThoughts.set(thought.id, { ...thought, source: 'memory' });
+        }
+      });
+      
+      // Convert to array and sort by timestamp (newest first)
+      return Array.from(allThoughts.values())
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, limit);
+    } catch (error) {
+      console.error('[AutonomousThinking] Failed to get all thoughts:', error);
+      return this.getRecentThoughts(limit);
+    }
+  }
+
+  /**
+   * Set current page path for context-aware thinking
+   */
+  public setCurrentPage(path: string): void {
+    this.currentPagePath = path;
+    
+    // If user navigates to brain interface, stop thinking to avoid interruption
+    if (path.includes('/brain') && this.isThinking) {
+      this.stopThinkingMode();
+    }
+    
+    // Reset activity timer on page navigation
+    this.recordUserActivity();
+  }
+
+  /**
+   * Force disable thinking (useful for brain interface)
+   */
+  public setThinkingEnabled(enabled: boolean): void {
+    this.isForceDisabled = !enabled;
+    
+    if (!enabled && this.isThinking) {
+      this.stopThinkingMode();
+    }
+  }
+
+  /**
+   * Generate a hash for content to detect near-duplicates
+   */
+  private generateContentHash(content: string): string {
+    // Simple hash based on normalized content
+    const normalized = content.toLowerCase()
+      .replace(/[^\w\s]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    let hash = 0;
+    for (let i = 0; i < normalized.length; i++) {
+      const char = normalized.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return hash.toString();
+  }
+
+  /**
+   * Calculate similarity between two strings (0-1, higher = more similar)
+   */
+  private calculateSimilarity(str1: string, str2: string): number {
+    const normalize = (str: string) => str.toLowerCase().replace(/[^\w]/g, '');
+    const a = normalize(str1);
+    const b = normalize(str2);
+    
+    if (a.length === 0 || b.length === 0) return 0;
+    
+    // Simple Jaccard similarity using character bigrams
+    const aBigrams = new Set<string>();
+    const bBigrams = new Set<string>();
+    
+    for (let i = 0; i < a.length - 1; i++) {
+      aBigrams.add(a.substr(i, 2));
+    }
+    
+    for (let i = 0; i < b.length - 1; i++) {
+      bBigrams.add(b.substr(i, 2));
+    }
+    
+    const intersection = new Set([...aBigrams].filter(x => bBigrams.has(x)));
+    const union = new Set([...aBigrams, ...bBigrams]);
+    
+    return intersection.size / union.size;
   }
 }

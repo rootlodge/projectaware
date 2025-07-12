@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAutonomousThinkingSystem } from '@/lib/systems/autonomousThinkingInstance';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,20 +13,25 @@ export async function POST(req: NextRequest) {
       );
     }
     
+    // Get the autonomous thinking system and handle the response
+    const autonomousSystem = getAutonomousThinkingSystem();
+    const result = await autonomousSystem.respondToInteraction(interactionId, response);
+    
+    if (!result.success) {
+      return NextResponse.json(
+        { success: false, error: 'Interaction not found' },
+        { status: 404 }
+      );
+    }
+    
     // Log the user response
     console.log(`[AI Interaction Response] User responded to ${interactionId}: ${response}`);
     
-    // In a full implementation, you would:
-    // 1. Find the interaction by ID
-    // 2. Mark it as responded to
-    // 3. Potentially generate a follow-up AI response
-    // 4. Log this interaction for learning
-    
-    // For now, simulate processing the response
-    const { getGoalEngine } = require('@/lib/systems/GoalEngine');
-    const { getEmotionEngine } = require('@/lib/systems/EmotionEngine');
-    
+    // Try to process through goal and emotion engines for learning
     try {
+      const { getGoalEngine } = require('@/lib/shared/instances');
+      const { getEmotionEngine } = require('@/lib/shared/instances');
+      
       const goalEngine = getGoalEngine();
       const emotionEngine = getEmotionEngine();
       
@@ -46,7 +52,9 @@ export async function POST(req: NextRequest) {
       data: { 
         message: 'Response recorded successfully',
         interactionId,
-        userResponse: response
+        userResponse: response,
+        shouldNavigateToBrain: result.shouldNavigateToBrain || false,
+        conversationData: result.conversationData || null
       }
     });
   } catch (error) {

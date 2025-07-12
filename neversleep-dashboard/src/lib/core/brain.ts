@@ -138,33 +138,85 @@ export class Brain {
       // Check cache first
       const cachedResponse = this.responseCache.get(prompt, actualModel, actualTemperature);
       if (cachedResponse) {
+        console.log(`Cache hit for key: ${prompt.substring(0, 10)}...`);
         return cachedResponse.response;
       }
       
-      const response = await axios.post(`${this.ollamaUrl}/api/generate`, {
-        model: actualModel,
-        prompt,
-        stream: false,
-        options: {
-          temperature: actualTemperature,
-          top_p: config.llm_settings.top_p,
-          repeat_penalty: config.llm_settings.repeat_penalty,
-          num_predict: config.llm_settings.max_tokens
-        }
-      });
+      console.log(`Cache miss for key: ${prompt.substring(0, 10)}...`);
       
-      const result = response.data.response.trim();
-      const validatedResponse = this.validateResponse(result);
-      
-      // Cache the response if it's worth caching
-      if (this.responseCache.shouldCache(prompt, validatedResponse)) {
-        this.responseCache.set(prompt, validatedResponse, actualModel, actualTemperature);
+      // Test Ollama connection first
+      try {
+        await axios.get(`${this.ollamaUrl}/api/tags`, { timeout: 5000 });
+      } catch (connectionError: any) {
+        console.error('[Brain] Ollama connection failed:', connectionError?.message || connectionError);
+        
+        // Return a contextual fallback response instead of throwing
+        const fallbackResponse = this.generateFallbackResponse(prompt);
+        console.log('[Brain] Using fallback response due to Ollama unavailability');
+        
+        // Don't cache fallback responses as they should only be temporary
+        return fallbackResponse;
       }
       
-      // Update model last used
-      await this.updateModelLastUsed(actualModel);
+      // Retry logic with exponential backoff for the actual generation request
+      const maxRetries = 3;
+      let lastError: any = null;
       
-      return validatedResponse;
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          console.log(`[Brain] Attempt ${attempt}/${maxRetries} for LLM request`);
+          
+          const response = await axios.post(`${this.ollamaUrl}/api/generate`, {
+            model: actualModel,
+            prompt,
+            stream: false,
+            options: {
+              temperature: actualTemperature,
+              top_p: config.llm_settings.top_p,
+              repeat_penalty: config.llm_settings.repeat_penalty,
+              num_predict: config.llm_settings.max_tokens
+            }
+          }, {
+            timeout: 60000, // 60 second timeout
+            maxContentLength: 50 * 1024 * 1024, // 50MB max response
+            maxBodyLength: 50 * 1024 * 1024,
+            headers: {
+              'Content-Type': 'application/json',
+              'Connection': 'keep-alive'
+            }
+          });
+          
+          const result = response.data.response.trim();
+          const validatedResponse = this.validateResponse(result);
+          
+          // Cache the response if it's worth caching
+          if (this.responseCache.shouldCache(prompt, validatedResponse)) {
+            this.responseCache.set(prompt, validatedResponse, actualModel, actualTemperature);
+          }
+          
+          // Update model last used
+          await this.updateModelLastUsed(actualModel);
+          
+          console.log(`[Brain] LLM request succeeded on attempt ${attempt}`);
+          return validatedResponse;
+          
+        } catch (error: any) {
+          lastError = error;
+          console.error(`[Brain] Attempt ${attempt} failed:`, error?.message || error);
+          
+          if (attempt < maxRetries) {
+            // Exponential backoff: 1s, 2s, 4s
+            const delay = Math.pow(2, attempt - 1) * 1000;
+            console.log(`[Brain] Waiting ${delay}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
+      }
+      
+      // All retries failed, use fallback
+      console.error(`[Brain] All ${maxRetries} attempts failed, using fallback response`);
+      const fallbackResponse = this.generateFallbackResponse(prompt);
+      return fallbackResponse;
     } catch (error) {
       console.error('LLM request failed:', error);
       return "Unable to process request.";
@@ -421,9 +473,12 @@ JSON:`;
     try {
       await this.memorySystem.initialize();
       
-      // Get current emotion state
-      const emotionState = this.emotionEngine.analyzeUserEmotion(userMessage);
+      // Analyze user emotion and update AI emotional state
+      const userEmotionAnalysis = this.emotionEngine.analyzeUserEmotion(userMessage);
       this.emotionEngine.processUserInput(userMessage);
+      
+      // Get the AI's current emotion state (not the user analysis)
+      const emotionState = this.emotionEngine.getCurrentEmotion();
       
       // Get conversation context if requested
       let contextPrompt = '';
@@ -501,7 +556,7 @@ Instructions:
   private extractLearningEvents(userMessage: string, aiResponse: string, emotionState: any): any[] {
     const events = [];
     
-    // Detect question-answer patterns
+    // Detect question-answered patterns
     if (userMessage.includes('?')) {
       events.push({
         type: 'question_answered',
@@ -629,5 +684,37 @@ Instructions:
       console.error('Failed to get system metrics:', error);
       return {};
     }
+  }
+
+  private generateFallbackResponse(prompt: string): string {
+    // Analyze the prompt to provide a contextual fallback response
+    const lowerPrompt = prompt.toLowerCase();
+    
+    if (lowerPrompt.includes('hello') || lowerPrompt.includes('hi') || lowerPrompt.includes('greet')) {
+      return "Hello! I'm currently experiencing some technical difficulties with my main language model, but I'm still here to help as best I can.";
+    }
+    
+    if (lowerPrompt.includes('how are you') || lowerPrompt.includes('feeling')) {
+      return "I'm functioning in limited mode due to some connection issues, but I'm still processing and ready to assist you.";
+    }
+    
+    if (lowerPrompt.includes('help') || lowerPrompt.includes('assist')) {
+      return "I'd love to help you! I'm currently running in fallback mode due to connection issues with my main processing system, but I can still provide basic assistance.";
+    }
+    
+    if (lowerPrompt.includes('error') || lowerPrompt.includes('problem') || lowerPrompt.includes('issue')) {
+      return "I understand you're experiencing an issue. While my main language processing is temporarily unavailable, I can acknowledge your concern and suggest trying again in a moment.";
+    }
+    
+    if (lowerPrompt.includes('code') || lowerPrompt.includes('programming') || lowerPrompt.includes('debug')) {
+      return "I'd be happy to help with coding tasks, but I'm currently operating in limited mode. For complex programming assistance, please try again when my full capabilities are restored.";
+    }
+    
+    if (lowerPrompt.includes('think') || lowerPrompt.includes('reflect') || lowerPrompt.includes('analyze')) {
+      return "I'm currently unable to perform deep analysis due to connection issues with my primary thinking systems. I'm operating in basic mode but remain attentive to your needs.";
+    }
+    
+    // Default fallback for any other prompt
+    return "I'm currently experiencing connectivity issues with my main language processing system. While I can't provide my usual detailed responses right now, I'm still here and will be back to full capacity shortly. Please try again in a moment.";
   }
 }

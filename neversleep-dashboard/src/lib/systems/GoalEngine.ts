@@ -566,9 +566,31 @@ export class GoalEngine {
         },
         sub_goal_ids: [],
         related_goal_ids: [],
+        blocking_dependencies: [],
         reflections: [],
         thoughts: [],
-        actions_taken: []
+        actions_taken: [],
+        agent_interactions: [],
+        tier: {
+          level: 'cerebrum_autonomous',
+          description: 'AI-generated goal from emotion analysis',
+          characteristics: {
+            autonomous_execution: true,
+            requires_user_approval: false,
+            can_create_subgoals: true,
+            can_delegate_to_agents: true,
+            proactive_updates: true,
+            completion_presentation: true
+          },
+          authority_level: 8
+        },
+        origin: {
+          source: 'cerebrum_analysis',
+          confidence: 0.9,
+          evidence: ['Emotion engine analysis', 'High intensity detected'],
+          timestamp: new Date().toISOString(),
+          creator_agent: 'CerebrumGoalAnalyzer'
+        }
       };
       goals.push(goal);
     }
@@ -620,9 +642,31 @@ export class GoalEngine {
         },
         sub_goal_ids: [],
         related_goal_ids: [],
+        blocking_dependencies: [],
         reflections: [],
         thoughts: [],
-        actions_taken: []
+        actions_taken: [],
+        agent_interactions: [],
+        tier: {
+          level: 'internal_system',
+          description: 'System-generated improvement goal',
+          characteristics: {
+            autonomous_execution: true,
+            requires_user_approval: false,
+            can_create_subgoals: true,
+            can_delegate_to_agents: true,
+            proactive_updates: true,
+            completion_presentation: false
+          },
+          authority_level: 6
+        },
+        origin: {
+          source: 'system_generated',
+          confidence: 0.7,
+          evidence: ['System performance analysis', 'Learning optimization'],
+          timestamp: new Date().toISOString(),
+          creator_agent: 'GoalEngine'
+        }
       };
       goals.push(goal);
     }
@@ -680,9 +724,31 @@ export class GoalEngine {
         },
         sub_goal_ids: [],
         related_goal_ids: [],
+        blocking_dependencies: [],
         reflections: [],
         thoughts: [],
-        actions_taken: []
+        actions_taken: [],
+        agent_interactions: [],
+        tier: {
+          level: 'user_derived',
+          description: 'User-focused improvement goal',
+          characteristics: {
+            autonomous_execution: false,
+            requires_user_approval: true,
+            can_create_subgoals: true,
+            can_delegate_to_agents: true,
+            proactive_updates: true,
+            completion_presentation: true
+          },
+          authority_level: 9
+        },
+        origin: {
+          source: 'user_implicit',
+          confidence: 0.85,
+          evidence: ['User interaction patterns', 'Feedback analysis'],
+          timestamp: new Date().toISOString(),
+          creator_agent: 'GoalEngine'
+        }
       };
       goals.push(goal);
     }

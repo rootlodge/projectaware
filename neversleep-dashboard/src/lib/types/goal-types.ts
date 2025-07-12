@@ -105,6 +105,36 @@ export interface SkillRequirement {
   acquisition_plan?: string;
 }
 
+export interface Milestone {
+  id: string;
+  name: string;
+  description: string;
+  target_date: string;
+  completion_criteria: string[];
+  dependencies: string[];
+  status: 'pending' | 'in_progress' | 'completed' | 'blocked';
+  progress: number; // 0-100
+}
+
+export interface RiskMitigation {
+  risk_id: string;
+  risk_description: string;
+  probability: number; // 0-1
+  impact: number; // 0-10
+  mitigation_strategy: string;
+  contingency_plan: string;
+  monitoring_indicators: string[];
+}
+
+export interface UserInteractionPoint {
+  interaction_type: 'approval_required' | 'feedback_requested' | 'progress_update' | 'completion_presentation' | 'clarification_needed';
+  trigger_condition: string;
+  message_template: string;
+  urgency: number; // 1-10
+  auto_escalate_after: number; // minutes
+  context_data?: Record<string, any>;
+}
+
 export interface GoalOrigin {
   source: 'user_explicit' | 'user_implicit' | 'cerebrum_analysis' | 'system_generated' | 'agent_derived';
   confidence: number; // 0-1, how confident we are about this goal

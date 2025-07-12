@@ -1,6 +1,80 @@
 import { MemorySystem } from '../core/memory';
 import { EmotionEngine } from './EmotionEngine';
+import { StateManager } from '../core/StateManager';
 
+// Enhanced Memory Types
+export interface EpisodicMemory {
+  id: string;
+  timestamp: string;
+  event_type: 'conversation' | 'interaction' | 'learning' | 'decision' | 'emotion';
+  context: string;
+  participants: string[];
+  location: string;
+  emotional_state: {
+    valence: number;
+    arousal: number;
+    emotions: string[];
+  };
+  significance: number;
+  related_memories: string[];
+  tags: string[];
+}
+
+export interface SemanticMemory {
+  id: string;
+  concept: string;
+  definition: string;
+  category: string;
+  properties: Record<string, any>;
+  relationships: Array<{
+    type: 'is-a' | 'part-of' | 'related-to' | 'opposite-of';
+    target: string;
+    strength: number;
+  }>;
+  confidence: number;
+  sources: string[];
+  last_accessed: string;
+  access_count: number;
+}
+
+export interface ProceduralMemory {
+  id: string;
+  skill_name: string;
+  category: 'cognitive' | 'technical' | 'social' | 'creative';
+  steps: Array<{
+    order: number;
+    action: string;
+    conditions: string[];
+    expected_outcome: string;
+  }>;
+  proficiency_level: number;
+  practice_sessions: number;
+  success_rate: number;
+  last_used: string;
+  improvement_suggestions: string[];
+}
+
+export interface WorkingMemory {
+  id: string;
+  content_type: 'goal' | 'task' | 'context' | 'attention';
+  content: any;
+  priority: number;
+  decay_rate: number;
+  created_at: string;
+  last_accessed: string;
+  associations: string[];
+}
+
+export interface MemoryInsight {
+  type: 'pattern' | 'trend' | 'anomaly' | 'correlation';
+  description: string;
+  confidence: number;
+  supporting_data: any[];
+  implications: string[];
+  recommended_actions: string[];
+}
+
+// Existing interfaces...
 export interface EnhancedMemoryStats {
   // Basic metrics
   total_conversations: number;
@@ -153,12 +227,423 @@ export interface ProjectMentionMetrics {
 export class EnhancedMemoryAnalytics {
   private memorySystem: MemorySystem;
   private emotionEngine: EmotionEngine;
+  private stateManager: StateManager;
+  private episodicMemories: Map<string, EpisodicMemory> = new Map();
+  private semanticMemories: Map<string, SemanticMemory> = new Map();
+  private proceduralMemories: Map<string, ProceduralMemory> = new Map();
+  private workingMemory: Map<string, WorkingMemory> = new Map();
   private analysisCache: Map<string, { data: any; timestamp: number }> = new Map();
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-  constructor(memorySystem: MemorySystem, emotionEngine: EmotionEngine) {
+  constructor(memorySystem: MemorySystem, emotionEngine: EmotionEngine, stateManager: StateManager) {
     this.memorySystem = memorySystem;
     this.emotionEngine = emotionEngine;
+    this.stateManager = stateManager;
+    this.initializeMemorySystems();
+  }
+
+  /**
+   * Initialize the enhanced memory systems
+   */
+  private async initializeMemorySystems(): Promise<void> {
+    try {
+      await this.loadEpisodicMemories();
+      await this.loadSemanticMemories();
+      await this.loadProceduralMemories();
+      await this.initializeWorkingMemory();
+      console.log('[EnhancedMemory] Memory systems initialized');
+    } catch (error) {
+      console.error('[EnhancedMemory] Error initializing memory systems:', error);
+    }
+  }
+
+  /**
+   * Store episodic memory (specific events and experiences)
+   */
+  public async storeEpisodicMemory(
+    eventType: EpisodicMemory['event_type'],
+    context: string,
+    participants: string[] = [],
+    location: string = 'digital_space'
+  ): Promise<string> {
+    try {
+      const currentEmotion = await this.emotionEngine.getCurrentEmotion();
+      const significance = this.calculateSignificance(context, currentEmotion);
+      
+      const memory: EpisodicMemory = {
+        id: `episodic_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        timestamp: new Date().toISOString(),
+        event_type: eventType,
+        context,
+        participants,
+        location,
+        emotional_state: {
+          valence: (currentEmotion as any).valence || 0,
+          arousal: (currentEmotion as any).arousal || 0,
+          emotions: (currentEmotion as any).emotions || []
+        },
+        significance,
+        related_memories: await this.findRelatedMemories(context),
+        tags: await this.extractTags(context)
+      };
+
+      this.episodicMemories.set(memory.id, memory);
+      await this.persistEpisodicMemory(memory);
+      
+      console.log(`[EnhancedMemory] Stored episodic memory: ${memory.id}`);
+      return memory.id;
+    } catch (error) {
+      console.error('[EnhancedMemory] Error storing episodic memory:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Store semantic memory (facts, concepts, general knowledge)
+   */
+  public async storeSemanticMemory(
+    concept: string,
+    definition: string,
+    category: string,
+    properties: Record<string, any> = {}
+  ): Promise<string> {
+    try {
+      const existingMemory = Array.from(this.semanticMemories.values())
+        .find(m => m.concept.toLowerCase() === concept.toLowerCase());
+
+      if (existingMemory) {
+        existingMemory.definition = definition;
+        existingMemory.properties = { ...existingMemory.properties, ...properties };
+        existingMemory.last_accessed = new Date().toISOString();
+        existingMemory.access_count += 1;
+        
+        await this.persistSemanticMemory(existingMemory);
+        return existingMemory.id;
+      }
+
+      const memory: SemanticMemory = {
+        id: `semantic_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        concept,
+        definition,
+        category,
+        properties,
+        relationships: await this.findSemanticRelationships(concept),
+        confidence: 0.8,
+        sources: ['user_interaction'],
+        last_accessed: new Date().toISOString(),
+        access_count: 1
+      };
+
+      this.semanticMemories.set(memory.id, memory);
+      await this.persistSemanticMemory(memory);
+      
+      console.log(`[EnhancedMemory] Stored semantic memory: ${concept}`);
+      return memory.id;
+    } catch (error) {
+      console.error('[EnhancedMemory] Error storing semantic memory:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate memory insights from patterns
+   */
+  public async generateMemoryInsights(): Promise<MemoryInsight[]> {
+    try {
+      const insights: MemoryInsight[] = [];
+      
+      // Analyze episodic memory patterns
+      insights.push(...await this.analyzeEpisodicPatterns());
+      
+      // Analyze semantic memory relationships
+      insights.push(...await this.analyzeSemanticNetworks());
+      
+      // Analyze skill development patterns
+      insights.push(...await this.analyzeSkillDevelopment());
+      
+      // Analyze working memory efficiency
+      insights.push(...await this.analyzeWorkingMemoryPatterns());
+      
+      console.log(`[EnhancedMemory] Generated ${insights.length} memory insights`);
+      return insights;
+    } catch (error) {
+      console.error('[EnhancedMemory] Error generating memory insights:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Retrieve memories by context similarity
+   */
+  public async retrieveByContext(context: string, limit: number = 10): Promise<{
+    episodic: EpisodicMemory[];
+    semantic: SemanticMemory[];
+    procedural: ProceduralMemory[];
+  }> {
+    try {
+      const episodic = await this.findSimilarEpisodicMemories(context, limit);
+      const semantic = await this.findRelevantSemanticMemories(context, limit);
+      const procedural = await this.findApplicableProcedures(context, limit);
+      
+      return { episodic, semantic, procedural };
+    } catch (error) {
+      console.error('[EnhancedMemory] Error retrieving memories by context:', error);
+      return { episodic: [], semantic: [], procedural: [] };
+    }
+  }
+
+  // Helper methods for memory analysis and processing
+
+  private calculateSignificance(context: string, emotion: any): number {
+    let significance = 0.5;
+    significance += emotion.arousal * 0.3;
+    significance += Math.abs(emotion.valence) * 0.2;
+    
+    const importantKeywords = ['goal', 'learn', 'problem', 'success', 'failure', 'important'];
+    const contextLower = context.toLowerCase();
+    
+    for (const keyword of importantKeywords) {
+      if (contextLower.includes(keyword)) {
+        significance += 0.1;
+      }
+    }
+    
+    return Math.min(significance, 1.0);
+  }
+
+  private async findRelatedMemories(context: string): Promise<string[]> {
+    const related: string[] = [];
+    const contextWords = context.toLowerCase().split(' ');
+    
+    for (const [id, memory] of this.episodicMemories) {
+      const memoryWords = memory.context.toLowerCase().split(' ');
+      const commonWords = contextWords.filter(word => memoryWords.includes(word));
+      
+      if (commonWords.length >= 2) {
+        related.push(id);
+      }
+    }
+    
+    return related.slice(0, 5);
+  }
+
+  private async extractTags(context: string): Promise<string[]> {
+    const words = context.toLowerCase().split(' ');
+    const importantWords = words.filter(word => 
+      word.length > 3 && 
+      !['this', 'that', 'with', 'from', 'they', 'were', 'been'].includes(word)
+    );
+    
+    return importantWords.slice(0, 5);
+  }
+
+  private async findSemanticRelationships(concept: string): Promise<SemanticMemory['relationships']> {
+    const relationships: SemanticMemory['relationships'] = [];
+    
+    for (const memory of this.semanticMemories.values()) {
+      if (memory.concept !== concept) {
+        const relationshipType = this.determineRelationshipType(concept, memory.concept);
+        if (relationshipType) {
+          relationships.push({
+            type: relationshipType,
+            target: memory.concept,
+            strength: 0.5
+          });
+        }
+      }
+    }
+    
+    return relationships;
+  }
+
+  private determineRelationshipType(concept1: string, concept2: string): SemanticMemory['relationships'][0]['type'] | null {
+    const c1 = concept1.toLowerCase();
+    const c2 = concept2.toLowerCase();
+    
+    if (c1.includes(c2) || c2.includes(c1)) return 'related-to';
+    if (c1.endsWith('ing') && c2.endsWith('ing')) return 'related-to';
+    
+    return null;
+  }
+
+  // Analysis methods for generating insights
+
+  private async analyzeEpisodicPatterns(): Promise<MemoryInsight[]> {
+    const insights: MemoryInsight[] = [];
+    
+    const emotionalEvents = Array.from(this.episodicMemories.values())
+      .filter(m => Math.abs(m.emotional_state.valence) > 0.7);
+    
+    if (emotionalEvents.length > 3) {
+      insights.push({
+        type: 'pattern',
+        description: `Detected pattern of ${emotionalEvents.length} emotionally significant events`,
+        confidence: 0.8,
+        supporting_data: emotionalEvents.slice(0, 3),
+        implications: ['User experiences strong emotional responses to certain situations'],
+        recommended_actions: ['Provide emotional support during similar future events']
+      });
+    }
+    
+    return insights;
+  }
+
+  private async analyzeSemanticNetworks(): Promise<MemoryInsight[]> {
+    const insights: MemoryInsight[] = [];
+    
+    const categories = Array.from(this.semanticMemories.values())
+      .reduce((acc, memory) => {
+        acc[memory.category] = (acc[memory.category] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+    
+    const dominantCategory = Object.entries(categories)
+      .sort(([,a], [,b]) => b - a)[0];
+    
+    if (dominantCategory && dominantCategory[1] > 5) {
+      insights.push({
+        type: 'trend',
+        description: `Strong knowledge cluster in ${dominantCategory[0]} (${dominantCategory[1]} concepts)`,
+        confidence: 0.9,
+        supporting_data: [categories],
+        implications: [`User has deep interest/expertise in ${dominantCategory[0]}`],
+        recommended_actions: [`Provide advanced content related to ${dominantCategory[0]}`]
+      });
+    }
+    
+    return insights;
+  }
+
+  private async analyzeSkillDevelopment(): Promise<MemoryInsight[]> {
+    const insights: MemoryInsight[] = [];
+    
+    const improvingSkills = Array.from(this.proceduralMemories.values())
+      .filter(skill => skill.practice_sessions > 3 && skill.proficiency_level > 0.5);
+    
+    if (improvingSkills.length > 0) {
+      insights.push({
+        type: 'trend',
+        description: `${improvingSkills.length} skills showing improvement`,
+        confidence: 0.85,
+        supporting_data: improvingSkills.map(s => ({ name: s.skill_name, level: s.proficiency_level })),
+        implications: ['User is actively developing competencies'],
+        recommended_actions: ['Provide advanced challenges for improving skills']
+      });
+    }
+    
+    return insights;
+  }
+
+  private async analyzeWorkingMemoryPatterns(): Promise<MemoryInsight[]> {
+    const insights: MemoryInsight[] = [];
+    
+    const currentLoad = this.workingMemory.size;
+    const highPriorityItems = Array.from(this.workingMemory.values())
+      .filter(item => item.priority > 7).length;
+    
+    if (currentLoad > 10) {
+      insights.push({
+        type: 'anomaly',
+        description: `High working memory load detected (${currentLoad} items)`,
+        confidence: 0.9,
+        supporting_data: [{ load: currentLoad, highPriority: highPriorityItems }],
+        implications: ['Cognitive overload may affect performance'],
+        recommended_actions: ['Suggest task prioritization', 'Offer to help organize thoughts']
+      });
+    }
+    
+    return insights;
+  }
+
+  // Retrieval helper methods
+
+  private async findSimilarEpisodicMemories(context: string, limit: number): Promise<EpisodicMemory[]> {
+    const similarities = Array.from(this.episodicMemories.values())
+      .map(memory => ({
+        memory,
+        similarity: this.calculateSimilarity(context.toLowerCase(), memory.context.toLowerCase())
+      }))
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, limit);
+    
+    return similarities.map(s => s.memory);
+  }
+
+  private async findRelevantSemanticMemories(context: string, limit: number): Promise<SemanticMemory[]> {
+    const contextWords = context.toLowerCase().split(' ');
+    
+    const relevant = Array.from(this.semanticMemories.values())
+      .filter(memory => 
+        contextWords.some(word => 
+          memory.concept.toLowerCase().includes(word) ||
+          memory.definition.toLowerCase().includes(word)
+        )
+      )
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, limit);
+    
+    return relevant;
+  }
+
+  private async findApplicableProcedures(context: string, limit: number): Promise<ProceduralMemory[]> {
+    const applicable = Array.from(this.proceduralMemories.values())
+      .filter(procedure => 
+        context.toLowerCase().includes(procedure.skill_name.toLowerCase()) ||
+        procedure.steps.some(step => 
+          context.toLowerCase().includes(step.action.toLowerCase())
+        )
+      )
+      .sort((a, b) => b.proficiency_level - a.proficiency_level)
+      .slice(0, limit);
+    
+    return applicable;
+  }
+
+  private calculateSimilarity(str1: string, str2: string): number {
+    const set1 = new Set(str1.split(' '));
+    const set2 = new Set(str2.split(' '));
+    const intersection = new Set([...set1].filter(x => set2.has(x)));
+    const union = new Set([...set1, ...set2]);
+    
+    return intersection.size / union.size;
+  }
+
+  // Persistence methods (simplified stubs - would use proper database in production)
+
+  private async loadEpisodicMemories(): Promise<void> {
+    console.log('[EnhancedMemory] Loading episodic memories...');
+  }
+
+  private async loadSemanticMemories(): Promise<void> {
+    console.log('[EnhancedMemory] Loading semantic memories...');
+  }
+
+  private async loadProceduralMemories(): Promise<void> {
+    console.log('[EnhancedMemory] Loading procedural memories...');
+  }
+
+  private async initializeWorkingMemory(): Promise<void> {
+    console.log('[EnhancedMemory] Initializing working memory...');
+  }
+
+  private async persistEpisodicMemory(memory: EpisodicMemory): Promise<void> {
+    // Save to persistent storage
+  }
+
+  private async persistSemanticMemory(memory: SemanticMemory): Promise<void> {
+    // Save to persistent storage
+  }
+
+  // Public getters for memory stats
+
+  public getMemoryStats() {
+    return {
+      episodic: this.episodicMemories.size,
+      semantic: this.semanticMemories.size,
+      procedural: this.proceduralMemories.size,
+      working: this.workingMemory.size,
+      totalCapacity: this.episodicMemories.size + this.semanticMemories.size + this.proceduralMemories.size
+    };
   }
 
   /**
@@ -418,7 +903,7 @@ export class EnhancedMemoryAnalytics {
       Object.entries(goalIndicators).forEach(([patternType, data]) => {
         data.keywords.forEach(keyword => {
           if (text.includes(keyword)) {
-            data.examples.push(conv.user_message.substring(0, 100));
+            (data.examples as string[]).push(conv.user_message.substring(0, 100));
           }
         });
       });
@@ -475,7 +960,7 @@ export class EnhancedMemoryAnalytics {
       goalPatterns.forEach(({ pattern, category, confidence_base }) => {
         const matches = conv.user_message.match(pattern);
         if (matches) {
-          matches.forEach(match => {
+          matches.forEach((match: string) => {
             indicators.push({
               indicator_text: match,
               confidence: confidence_base,
@@ -656,8 +1141,14 @@ export class EnhancedMemoryAnalytics {
   private analyzeKeywordFrequency(conversations: any[]): KeywordAnalysis[] { return []; }
   private identifySemanticClusters(conversations: any[]): SemanticCluster[] { return []; }
   private calculateInformationDensity(conversations: any[]): InformationDensityMetrics { return {} as any; }
-  private identifyKnowledgeGaps(conversations: any[]): KnowledgeGap[] { return []; }
-  private identifyExpertiseAreas(conversations: any[]): ExpertiseArea[] { return []; }
+  private identifyKnowledgeGaps(conversations: any[]): KnowledgeGap[] { 
+    // Implement knowledge gap analysis
+    return [];
+  }
+  private identifyExpertiseAreas(conversations: any[]): ExpertiseArea[] { 
+    // Implement expertise area identification
+    return [];
+  }
   private analyzeLearningProgression(conversations: any[]): LearningProgressionMetrics { return {} as any; }
   private analyzeDailyActivity(conversations: any[]): HourlyActivity[] { return []; }
   private analyzeWeeklyPatterns(conversations: any[]): WeeklyPattern[] { return []; }
@@ -671,7 +1162,10 @@ export class EnhancedMemoryAnalytics {
   private analyzeErrorRecovery(conversations: any[]): ErrorRecoveryMetrics { return {} as any; }
   private analyzeGoalCorrelations(conversations: any[]): GoalCorrelation[] { return []; }
   private classifyUserIntents(conversations: any[]): IntentClassification[] { return []; }
-  private detectLearningObjectives(conversations: any[]): LearningObjectiveMetrics[] { return []; }
+  private detectLearningObjectives(conversations: any[]): LearningObjectiveMetrics[] { 
+    // Implement learning objectives detection
+    return [];
+  }
   private analyzeCollaborationPatterns(conversations: any[]): CollaborationPattern[] { return []; }
   private async analyzeQueryPerformance(): Promise<QueryPerformanceMetrics> { return {} as any; }
   private analyzeMemoryUsage(): MemoryUsageTrend[] { return []; }

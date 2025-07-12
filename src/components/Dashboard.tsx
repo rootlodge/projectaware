@@ -1,6 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+// Utility fetcher for predictions
+async function fetchPredictions() {
+  try {
+    const res = await fetch('/api/agents/predict');
+    if (!res.ok) throw new Error('Failed to fetch predictions');
+    return await res.json();
+  } catch (err) {
+    return { predictions: [], anticipatedNeeds: [], error: typeof err === 'object' && err && 'message' in err ? (err as any).message : String(err) };
+  }
+}
 import { BarChart3, Brain, Users, Heart, Activity, Zap, Database, Clock } from 'lucide-react';
 import SoulDashboard from './SoulDashboard';
 import GoalDashboard from './GoalDashboard';
@@ -10,6 +20,21 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ systemStatus }: DashboardProps) {
+  // State for predictions and needs
+  const [predictData, setPredictData] = useState<{ predictions: any[]; anticipatedNeeds: any[]; error?: string }>({ predictions: [], anticipatedNeeds: [] });
+  const [loadingPredict, setLoadingPredict] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    setLoadingPredict(true);
+    fetchPredictions().then(data => {
+      if (mounted) {
+        setPredictData(data);
+        setLoadingPredict(false);
+      }
+    });
+    return () => { mounted = false; };
+  }, []);
   const [metrics, setMetrics] = useState({
     cpu_usage: 0,
     memory_usage: 0,
@@ -88,6 +113,55 @@ export default function Dashboard({ systemStatus }: DashboardProps) {
 
   return (
     <div className="space-y-8">
+      {/* Advanced Autonomous Intelligence Section */}
+      <section aria-labelledby="advanced-ai-heading" className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
+        <h2 id="advanced-ai-heading" className="text-2xl font-bold text-white mb-4 flex items-center">
+          <Zap className="w-6 h-6 mr-2 text-yellow-400" aria-hidden="true" />
+          Advanced Autonomous Intelligence
+        </h2>
+        {loadingPredict ? (
+          <div className="text-purple-300">Loading predictions...</div>
+        ) : predictData.error ? (
+          <div className="text-red-400">{predictData.error}</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-lg font-semibold text-yellow-300 mb-2">Predicted Next Actions</h3>
+              {predictData.predictions.length === 0 ? (
+                <div className="text-purple-300">No predictions available.</div>
+              ) : (
+                <ul className="space-y-2">
+                  {predictData.predictions.map((pred, idx) => (
+                    <li key={idx} className="bg-yellow-500/10 rounded p-3 text-white flex flex-col" aria-label={`Prediction ${idx + 1}`}>
+                      <span className="font-medium">{pred.action || JSON.stringify(pred)}</span>
+                      {pred.confidence !== undefined && (
+                        <span className="text-yellow-200 text-xs">Confidence: {(pred.confidence * 100).toFixed(1)}%</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-green-300 mb-2">Anticipated Needs</h3>
+              {predictData.anticipatedNeeds.length === 0 ? (
+                <div className="text-purple-300">No anticipated needs detected.</div>
+              ) : (
+                <ul className="space-y-2">
+                  {predictData.anticipatedNeeds.map((need, idx) => (
+                    <li key={idx} className="bg-green-500/10 rounded p-3 text-white flex flex-col" aria-label={`Anticipated need ${idx + 1}`}>
+                      <span className="font-medium">{need.need || JSON.stringify(need)}</span>
+                      {need.priority !== undefined && (
+                        <span className="text-green-200 text-xs">Priority: {need.priority}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+      </section>
       {/* Welcome Section */}
       <div className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
         <div className="flex items-center justify-between">

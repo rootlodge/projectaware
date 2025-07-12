@@ -1,11 +1,3 @@
-  /**
-   * Predicts the user's next likely actions based on current state and history.
-   * @returns Promise resolving to an array of predicted actions
-   */
-  async predictNextActions(): Promise<any[]> {
-    // TODO: Implement real prediction logic using user state, history, and context
-    return [];
-  }
 /**
  * UserModel: Tracks and predicts user intent, preferences, and behavioral patterns.
  * Part of Advanced Autonomous Intelligence.
@@ -54,11 +46,34 @@ export class UserModel {
     return this.behaviors.slice(-5);
   }
   /**
-   * Predicts the user's next likely actions based on current state and history.
-   * @returns Promise resolving to an array of predicted actions
+   * Predicts the user's next likely actions based on recent intents and behaviors.
+   * @returns Promise resolving to an array of objects: { action, confidence }
+   * @example
+   *   const predictions = await userModel.predictNextActions();
+   *   // [{ action: 'Intent: ...', confidence: 0.9 }, ...]
    */
-  async predictNextActions(): Promise<any[]> {
-    // TODO: Implement real prediction logic using user state, history, and context
-    return [];
+  async predictNextActions(): Promise<{ action: string; confidence: number }[]> {
+    // Use the most recent intent and behavior as a simple prediction
+    const recentIntents = this.getRecentIntents();
+    const recentBehaviors = this.getRecentBehaviors();
+    const predictions: { action: string; confidence: number }[] = [];
+
+    if (recentIntents.length > 0) {
+      predictions.push({
+        action: `Intent: ${recentIntents[recentIntents.length - 1].intent}`,
+        confidence: recentIntents[recentIntents.length - 1].confidence
+      });
+    }
+    if (recentBehaviors.length > 0) {
+      predictions.push({
+        action: `Behavior: ${recentBehaviors[recentBehaviors.length - 1].pattern}`,
+        confidence: Math.min(1, recentBehaviors[recentBehaviors.length - 1].frequency / 10)
+      });
+    }
+    // If no data, return a default message
+    if (predictions.length === 0) {
+      predictions.push({ action: 'No recent user data available', confidence: 0 });
+    }
+    return predictions;
   }
 }

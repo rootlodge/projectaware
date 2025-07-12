@@ -108,16 +108,17 @@ export class GoalEngine {
    */
   private async processTierBasedGoals(): Promise<void> {
     const allGoals = await this.db.getActiveGoals();
-    
-    // Separate goals by tier
-    const userDerivedGoals = allGoals.filter(g => g.category === 'user_derived');
-    const internalGoals = allGoals.filter(g => g.category === 'internal_system');
-    const cerebrumGoals = allGoals.filter(g => g.category === 'cerebrum_autonomous');
+    // Separate goals by category
+    const userGoals = allGoals.filter(g => g.category === 'user_driven');
+    const systemGoals = allGoals.filter(g => g.category === 'system_driven');
+    const soulGoals = allGoals.filter(g => g.category === 'soul_driven');
+    const emotionGoals = allGoals.filter(g => g.category === 'emotion_driven');
 
-    // Process each tier with appropriate priority
-    await this.processUserDerivedGoals(userDerivedGoals);
-    await this.processInternalSystemGoals(internalGoals);
-    await this.processCerebrumAutonomousGoals(cerebrumGoals);
+    // Process each category with appropriate logic
+    await this.processUserDerivedGoals(userGoals);
+    await this.processInternalSystemGoals(systemGoals);
+    await this.processSoulDrivenGoals(soulGoals);
+    await this.processEmotionDrivenGoals(emotionGoals);
   }
 
   /**
@@ -125,26 +126,38 @@ export class GoalEngine {
    */
   private async processUserDerivedGoals(goals: Goal[]): Promise<void> {
     for (const goal of goals) {
-      if (goal.tier?.characteristics.proactive_updates) {
+      if (goal.tier?.characteristics?.proactive_updates) {
         await this.checkForUserUpdateTriggers(goal);
       }
-      
-      if (goal.tier?.characteristics.can_delegate_to_agents) {
+      if (goal.tier?.characteristics?.can_delegate_to_agents) {
         await this.delegateToAgentsIfNeeded(goal);
       }
+    }
+  }
+
+  private async processInternalSystemGoals(goals: Goal[]): Promise<void> {
+    for (const goal of goals) {
+      if (goal.tier?.characteristics?.autonomous_execution) {
+        await this.executeAutonomousSystemGoal(goal);
+      }
+    }
+  }
+
+  private async processSoulDrivenGoals(goals: Goal[]): Promise<void> {
+    for (const goal of goals) {
+      // Add soul-driven specific logic here if needed
+    }
+  }
+
+  private async processEmotionDrivenGoals(goals: Goal[]): Promise<void> {
+    for (const goal of goals) {
+      // Add emotion-driven specific logic here if needed
     }
   }
 
   /**
    * Process internal system goals with automatic execution
    */
-  private async processInternalSystemGoals(goals: Goal[]): Promise<void> {
-    for (const goal of goals) {
-      if (goal.tier?.characteristics.autonomous_execution) {
-        await this.executeAutonomousSystemGoal(goal);
-      }
-    }
-  }
 
   /**
    * Process CEREBRUM autonomous goals with advanced AI capabilities
@@ -455,7 +468,7 @@ export class GoalEngine {
           title: `Strengthen ${key} alignment`,
           description: `Work on embodying the core value of ${key}: ${value}`,
           type: 'long_term',
-          category: 'cerebrum_autonomous',
+          category: 'soul_driven',
           priority: 5,
           status: 'active',
           progress: 0,
@@ -532,7 +545,7 @@ export class GoalEngine {
         title: `Regulate ${currentEmotion.primary} intensity`,
         description: `Work on managing high intensity ${currentEmotion.primary} (${currentEmotion.intensity})`,
         type: 'short_term',
-        category: 'cerebrum_autonomous',
+        category: 'emotion_driven',
         priority: 8,
         status: 'active',
         progress: 0,
@@ -608,7 +621,7 @@ export class GoalEngine {
         title: 'Enhance learning capabilities',
         description: 'Focus on improving learning efficiency and knowledge retention',
         type: 'long_term',
-        category: 'internal_system',
+        category: 'system_driven',
         priority: 4,
         status: 'active',
         progress: 0,
@@ -684,7 +697,7 @@ export class GoalEngine {
         title: 'Improve user interaction quality',
         description: 'Focus on providing more helpful and personalized responses',
         type: 'short_term',
-        category: 'user_derived',
+        category: 'user_driven',
         priority: 7,
         status: 'active',
         progress: 0,
@@ -762,53 +775,49 @@ export class GoalEngine {
     let priorityScore = goal.priority * 10; // Base priority
     let urgencyFactor = 1;
     let importanceFactor = 1;
-    
+
     // Type modifier
     if (goal.type === 'short_term') {
       urgencyFactor += 0.5;
     }
-    
+
     // Urgency based on creation time
     const hoursSinceCreation = (Date.now() - new Date(goal.created_at).getTime()) / (1000 * 60 * 60);
     urgencyFactor += Math.min(hoursSinceCreation * 0.1, 2);
-    
-    // Soul alignment bonus
-    if (goal.category === 'cerebrum_autonomous') {
+
+    // Soul-driven bonus
+    if (goal.category === 'soul_driven') {
       importanceFactor += 0.3;
     }
-    
     // Emotion-driven urgency
-    if (goal.category === 'cerebrum_autonomous') {
+    if (goal.category === 'emotion_driven') {
       urgencyFactor += 0.4;
     }
-    
+
     const finalPriority = priorityScore * urgencyFactor * importanceFactor;
-    
+
     return {
       goal_id: goal.id,
       priority_score: Math.round(finalPriority),
       urgency_factor: urgencyFactor,
       importance_factor: importanceFactor,
-      user_value_factor: goal.category === 'user_derived' ? 1.0 : 0.5,
+      user_value_factor: goal.category === 'user_driven' ? 1.0 : 0.5,
       resource_requirements: this.getResourceRequirements(goal),
       estimated_time: this.estimateTime(goal),
       dependencies_met: true, // Simplified for now
-      cerebrum_priority_boost: goal.category === 'cerebrum_autonomous' ? 0.2 : 0,
+      cerebrum_priority_boost: goal.category === 'soul_driven' ? 0.2 : 0,
       last_updated: new Date().toISOString()
     };
   }
 
   private getResourceRequirements(goal: Goal): string[] {
     const requirements = ['cognitive_processing'];
-    
-    if (goal.category === 'user_derived') {
+    if (goal.category === 'user_driven') {
       requirements.push('user_interaction');
     }
-    
-    if (goal.category === 'cerebrum_autonomous') {
+    if (goal.category === 'emotion_driven') {
       requirements.push('emotional_processing');
     }
-    
     return requirements;
   }
 
@@ -1049,11 +1058,10 @@ export class GoalEngine {
 
   public async getAllGoals(): Promise<Goal[]> {
     // Get all goals from different categories
-    const soulGoals = await this.db.getGoalsByCategory('cerebrum_autonomous');
-    const emotionGoals = await this.db.getGoalsByCategory('cerebrum_autonomous');
-    const userGoals = await this.db.getGoalsByCategory('user_derived');
-    const systemGoals = await this.db.getGoalsByCategory('internal_system');
-    
+    const soulGoals = await this.db.getGoalsByCategory('soul_driven');
+    const emotionGoals = await this.db.getGoalsByCategory('emotion_driven');
+    const userGoals = await this.db.getGoalsByCategory('user_driven');
+    const systemGoals = await this.db.getGoalsByCategory('system_driven');
     return [...soulGoals, ...emotionGoals, ...userGoals, ...systemGoals];
   }
 

@@ -3,7 +3,11 @@ export interface Goal {
   title: string;
   description: string;
   type: 'short_term' | 'long_term' | 'micro_task' | 'project_based' | 'learning_objective' | 'system_optimization' | 'user_support';
-  category: 'user_derived' | 'internal_system' | 'cerebrum_autonomous';
+  /**
+   * Category of the goal. Must match database constraint and allowed values.
+   * Allowed: 'soul_driven', 'emotion_driven', 'user_driven', 'system_driven'
+   */
+  category: 'soul_driven' | 'emotion_driven' | 'user_driven' | 'system_driven';
   tier: GoalTier;
   origin: GoalOrigin;
   priority: number; // 1-10, 10 being highest

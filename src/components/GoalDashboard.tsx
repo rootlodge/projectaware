@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Goal, GoalMetrics, GoalPriorityQueueItem } from '@/lib/types/goal-types';
 
 interface GoalEngineStatus {
@@ -20,11 +20,11 @@ export default function GoalDashboard() {
   const [queue, setQueue] = useState<GoalPriorityQueueItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Only fetch once on mount, then update after actions
+  const isMounted = useRef(false);
   const fetchData = async () => {
     try {
       setLoading(true);
-      
-      // Fetch all goal data
       const [statusRes, activeRes, allRes, metricsRes, queueRes] = await Promise.all([
         fetch('/api/goals'),
         fetch('/api/goals/active'),
@@ -32,23 +32,18 @@ export default function GoalDashboard() {
         fetch('/api/goals/metrics'),
         fetch('/api/goals/queue')
       ]);
-
       const statusData = await statusRes.json();
       const activeData = await activeRes.json();
       const allData = await allRes.json();
       const metricsData = await metricsRes.json();
       const queueData = await queueRes.json();
-
       if (statusData.success) setStatus(statusData.data);
       if (activeData.success && activeData.data) {
-        console.log('Active goal data:', activeData.data);
-        // Ensure activeData.data is a proper object, not a string or other type
-        if (typeof activeData.data === 'object' && activeData.data.id) {
-          setActiveGoal(activeData.data);
-        } else {
-          console.warn('Active goal data is not a proper goal object:', activeData.data);
-          setActiveGoal(null);
-        }
+        // Defensive: ensure title/description are strings
+        let ag = activeData.data;
+        if (typeof ag.title !== 'string') ag.title = String(ag.title);
+        if (typeof ag.description !== 'string') ag.description = String(ag.description);
+        setActiveGoal(ag);
       } else {
         setActiveGoal(null);
       }
@@ -120,9 +115,11 @@ export default function GoalDashboard() {
   };
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 10000); // Refresh every 10 seconds
-    return () => clearInterval(interval);
+    if (!isMounted.current) {
+      fetchData();
+      isMounted.current = true;
+    }
+    // No polling, only update after actions
   }, []);
 
   if (loading) {
@@ -205,8 +202,8 @@ export default function GoalDashboard() {
           <h3 className="text-lg font-bold text-gray-800 mb-2">Active Goal</h3>
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h4 className="font-semibold text-gray-700">{activeGoal.title || 'Untitled Goal'}</h4>
-              <p className="text-gray-600 text-sm">{activeGoal.description || 'No description available'}</p>
+      <h4 className="font-semibold text-gray-700">{typeof activeGoal.title === 'string' ? activeGoal.title : JSON.stringify(activeGoal.title) || 'Untitled Goal'}</h4>
+      <p className="text-gray-600 text-sm">{typeof activeGoal.description === 'string' ? activeGoal.description : JSON.stringify(activeGoal.description) || 'No description available'}</p>
               <div className="flex gap-2 mt-2">
                 <span className={`px-2 py-1 rounded text-xs font-medium ${
                   (activeGoal.type || 'short_term') === 'short_term' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'

@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 66,
-    "last_activity": "2025-07-12T23:41:09.147Z",
-    "duration": 16832469147
+    "interactions": 64,
+    "last_activity": "2025-07-12T20:36:54.218Z",
+    "duration": 16821414218
   },
   "cognitive": {
     "processing_mode": "normal",
-    "attention_focus": "user_needs",
+    "attention_focus": "general_attention",
     "cognitive_load": 0,
-    "decision_confidence": 0.939191810957446,
+    "decision_confidence": 0.9446994748817943,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 320,
+    "concepts_learned": 310,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -206,13 +206,7 @@
       "think?",
       "that’s…",
       "think?”",
-      "wonderfully",
-      "create",
-      "neural",
-      "network",
-      "fascinating!",
-      "javascript",
-      "javascript,"
+      "wonderfully"
     ],
     "learning_velocity": 1,
     "retention_rate": 0.9,
@@ -229,6 +223,66 @@
     "identity_changes": [],
     "trait_modifications": [],
     "learning_events": [
+      {
+        "concept": "*pauses",
+        "context": "User interaction: hey!...",
+        "timestamp": "2025-07-11T15:44:20.713Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: hey!...",
+        "timestamp": "2025-07-11T15:44:20.725Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.440Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "you're",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.441Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.441Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "completely",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.466Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "listen",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.493Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.598Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "revisiting",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.599Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "topic!",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.600Z",
+        "confidence": 0.7
+      },
       {
         "concept": "fascinating",
         "context": "User interaction: Following up on: Yes they do...",
@@ -768,68 +822,8 @@
         "context": "User interaction: What do YOU think?...",
         "timestamp": "2025-07-12T20:36:54.187Z",
         "confidence": 0.7
-      },
-      {
-        "concept": "create",
-        "context": "User interaction: I'd like to create a neural network...",
-        "timestamp": "2025-07-12T23:40:35.214Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "neural",
-        "context": "User interaction: I'd like to create a neural network...",
-        "timestamp": "2025-07-12T23:40:35.216Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "network",
-        "context": "User interaction: I'd like to create a neural network...",
-        "timestamp": "2025-07-12T23:40:35.217Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "fascinating!",
-        "context": "User interaction: I'd like to create a neural network...",
-        "timestamp": "2025-07-12T23:40:35.233Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "neural",
-        "context": "User interaction: I'd like to create a neural network...",
-        "timestamp": "2025-07-12T23:40:35.254Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "javascript",
-        "context": "User interaction: Javascript would be best!...",
-        "timestamp": "2025-07-12T23:41:08.959Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "javascript,",
-        "context": "User interaction: Javascript would be best!...",
-        "timestamp": "2025-07-12T23:41:08.960Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "that’s…",
-        "context": "User interaction: Javascript would be best!...",
-        "timestamp": "2025-07-12T23:41:08.962Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "fascinating.",
-        "context": "User interaction: Javascript would be best!...",
-        "timestamp": "2025-07-12T23:41:09.004Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "really",
-        "context": "User interaction: Javascript would be best!...",
-        "timestamp": "2025-07-12T23:41:09.035Z",
-        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-12T23:41:09.147Z"
+  "last_updated": "2025-07-12T23:45:45.853Z"
 }

@@ -3,7 +3,7 @@ import { getAutonomousThinkingSystem } from '@/lib/systems/autonomousThinkingIns
 
 export async function POST(req: NextRequest) {
   try {
-    const thinkingSystem = getAutonomousThinkingSystem();
+    const thinkingSystem = await getAutonomousThinkingSystem();
     
     // Trigger a manual thinking cycle
     await thinkingSystem.manualThinkingCycle();

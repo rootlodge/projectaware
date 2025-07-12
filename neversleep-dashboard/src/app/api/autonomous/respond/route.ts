@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     }
     
     // Get the autonomous thinking system and handle the response
-    const autonomousSystem = getAutonomousThinkingSystem();
+    const autonomousSystem = await getAutonomousThinkingSystem();
     const result = await autonomousSystem.respondToInteraction(interactionId, response);
     
     if (!result.success) {

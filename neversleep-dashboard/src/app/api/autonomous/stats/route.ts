@@ -3,7 +3,7 @@ import { getAutonomousThinkingSystem } from '@/lib/systems/autonomousThinkingIns
 
 export async function GET(req: NextRequest) {
   try {
-    const thinkingSystem = getAutonomousThinkingSystem();
+    const thinkingSystem = await getAutonomousThinkingSystem();
     const stats = thinkingSystem.getThinkingStats();
     
     return NextResponse.json({

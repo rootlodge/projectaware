@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    const autonomousSystem = getAutonomousThinkingSystem();
+    const autonomousSystem = await getAutonomousThinkingSystem();
     
     if (action === 'pause') {
       const forceDisable = force === true || reason === 'user_in_brain_interface';

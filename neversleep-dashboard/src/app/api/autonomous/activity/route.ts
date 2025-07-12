@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { immediate } = body; // immediate: boolean - force immediate stop
     
-    const autonomousSystem = getAutonomousThinkingSystem();
+    const autonomousSystem = await getAutonomousThinkingSystem();
     
     if (immediate) {
       // Force immediate stop of all autonomous activities

@@ -3,6 +3,9 @@ import { EmotionEngine } from './EmotionEngine';
 import { GoalEngine } from './GoalEngine';
 import { CentralBrainAgent } from '../agents/CentralBrainAgent';
 import { MemorySystem } from '../core/memory';
+import { CerebrumGoalAnalyzer } from './CerebrumGoalAnalyzer';
+import { MultiAgentManager } from '../agents/MultiAgentManager';
+import { Goal } from '../types/goal-types';
 
 export interface AutonomousThought {
   id: string;
@@ -50,6 +53,8 @@ export class AutonomousThinkingSystem {
   private goalEngine: GoalEngine;
   private centralBrain: CentralBrainAgent;
   private memorySystem: MemorySystem;
+  private cerebrumAnalyzer: CerebrumGoalAnalyzer;
+  private agentManager: MultiAgentManager;
   
   private isThinking: boolean = false;
   private isForceDisabled: boolean = false; // New flag to force disable thinking
@@ -831,6 +836,9 @@ export class AutonomousThinkingSystem {
    */
   private async persistInteractionToDatabase(interaction: AutonomousInteraction): Promise<void> {
     try {
+      // Ensure database is connected
+      await this.memorySystem.initialize();
+      
       // Create a unique session ID for this AI-initiated interaction
       const sessionId = `ai_initiated_${interaction.id}`;
       
@@ -852,6 +860,8 @@ export class AutonomousThinkingSystem {
       );
       
       console.log(`[AutonomousThinking] Persisted interaction ${interaction.id} to database`);
+      
+      // Note: Not closing database connection since we're using a shared instance
     } catch (error) {
       console.error(`[AutonomousThinking] Failed to persist interaction ${interaction.id}:`, error);
       throw error; // Re-throw to handle in calling method
@@ -863,6 +873,9 @@ export class AutonomousThinkingSystem {
    */
   private async persistThoughtToDatabase(thought: AutonomousThought): Promise<void> {
     try {
+      // Ensure database is connected
+      await this.memorySystem.initialize();
+      
       // Create a unique session ID for this AI thought
       const sessionId = `ai_thought_${thought.id}`;
       
@@ -884,6 +897,8 @@ export class AutonomousThinkingSystem {
       );
       
       console.log(`[AutonomousThinking] Persisted thought ${thought.id} to database`);
+      
+      // Note: Not closing database connection since we're using a shared instance
     } catch (error) {
       console.error(`[AutonomousThinking] Failed to persist thought ${thought.id}:`, error);
       throw error; // Re-throw to handle in calling method
@@ -1029,7 +1044,7 @@ export class AutonomousThinkingSystem {
       // Add to persistent interaction IDs to prevent asking same question again
       this.persistedInteractionIds.add(interaction.content);
       
-      await this.memorySystem.close();
+      // Note: Not closing database connection since we're using a shared instance
     } catch (error) {
       console.error('Failed to save user response to database:', error);
     }
@@ -1167,44 +1182,46 @@ export class AutonomousThinkingSystem {
    * Get AI-initiated interactions from database (recent first)
    */
   public async getPersistedInteractions(limit: number = 20): Promise<any[]> {
-    try {
-      await this.memorySystem.initialize();
-      
-      // Get recent conversations from database
-      const conversations = await this.memorySystem.getConversationHistory(limit * 2); // Get more to filter
-      
-      // Filter for AI-initiated interactions
-      const aiInitiated = conversations
-        .filter(conv => conv.user_message.startsWith('[AI-INITIATED]'))
-        .slice(0, limit)
-        .map(conv => {
-          // Extract interaction ID from user message
-          const idMatch = conv.user_message.match(/\[AI-INITIATED:([^\]]+)\]/);
-          const interactionId = idMatch ? idMatch[1] : 'unknown';
-          
-          // Extract interaction type
-          const typeMatch = conv.user_message.match(/autonomous_interaction_(\w+)/);
-          const interactionType = typeMatch ? typeMatch[1] : 'unknown';
-          
-          return {
-            id: interactionId,
-            type: interactionType,
-            content: conv.ai_response,
-            timestamp: conv.timestamp,
-            emotion_state: conv.emotion_state,
-            satisfaction_score: conv.satisfaction_score,
-            session_id: conv.session_id,
-            persisted: true
-          };
-        });
-      
-      await this.memorySystem.close();
-      
-      return aiInitiated;
-    } catch (error) {
-      console.error('[AutonomousThinking] Failed to get persisted interactions:', error);
-      return [];
-    }
+    return this.queueDatabaseOperation(async () => {
+      try {
+        await this.memorySystem.initialize();
+        
+        // Get recent conversations from database
+        const conversations = await this.memorySystem.getConversationHistory(limit * 2); // Get more to filter
+        
+        // Filter for AI-initiated interactions
+        const aiInitiated = conversations
+          .filter(conv => conv.user_message.startsWith('[AI-INITIATED]'))
+          .slice(0, limit)
+          .map(conv => {
+            // Extract interaction ID from user message
+            const idMatch = conv.user_message.match(/\[AI-INITIATED:([^\]]+)\]/);
+            const interactionId = idMatch ? idMatch[1] : 'unknown';
+            
+            // Extract interaction type
+            const typeMatch = conv.user_message.match(/autonomous_interaction_(\w+)/);
+            const interactionType = typeMatch ? typeMatch[1] : 'unknown';
+            
+            return {
+              id: interactionId,
+              type: interactionType,
+              content: conv.ai_response,
+              timestamp: conv.timestamp,
+              emotion_state: conv.emotion_state,
+              satisfaction_score: conv.satisfaction_score,
+              session_id: conv.session_id,
+              persisted: true
+            };
+          });
+        
+        // Note: Not closing database connection since we're using a shared instance
+        
+        return aiInitiated;
+      } catch (error) {
+        console.error('[AutonomousThinking] Failed to get persisted interactions:', error);
+        return [];
+      }
+    });
   }
 
   /**
@@ -1244,7 +1261,7 @@ export class AutonomousThinkingSystem {
             };
           });
         
-        await this.memorySystem.close();
+        // Note: Not closing database connection since we're using a shared instance
         
         return aiThoughts;
       } catch (error) {

@@ -10,14 +10,14 @@ import {
 
 let autonomousThinkingSystemInstance: AutonomousThinkingSystem | null = null;
 
-export function getAutonomousThinkingSystem(): AutonomousThinkingSystem {
+export async function getAutonomousThinkingSystem(): Promise<AutonomousThinkingSystem> {
   if (!autonomousThinkingSystemInstance) {
     try {
       const stateManager = getStateManager();
       const emotionEngine = getEmotionEngine();
       const goalEngine = getGoalEngine();
       const centralBrain = getCentralBrainAgent();
-      const memorySystem = getMemorySystem();
+      const memorySystem = await getMemorySystem(); // Now properly await the async call
       
       autonomousThinkingSystemInstance = new AutonomousThinkingSystem(
         stateManager,

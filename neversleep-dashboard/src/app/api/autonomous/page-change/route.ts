@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    const autonomousSystem = getAutonomousThinkingSystem();
+    const autonomousSystem = await getAutonomousThinkingSystem();
     autonomousSystem.setCurrentPage(path);
     
     console.log(`[AutonomousThinking] Page changed to: ${page} (${path})`);

@@ -3,7 +3,7 @@ import { getAutonomousThinkingSystem } from '@/lib/systems/autonomousThinkingIns
 
 export async function GET(req: NextRequest) {
   try {
-    const thinkingSystem = getAutonomousThinkingSystem();
+    const thinkingSystem = await getAutonomousThinkingSystem();
     const status = thinkingSystem.getThinkingStatus();
     
     return NextResponse.json({
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { action } = body;
     
-    const thinkingSystem = getAutonomousThinkingSystem();
+    const thinkingSystem = await getAutonomousThinkingSystem();
     
     switch (action) {
       case 'record_activity':

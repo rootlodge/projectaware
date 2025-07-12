@@ -82,14 +82,20 @@ export function getCentralBrainAgent(): CentralBrainAgent {
   return centralBrainAgentInstance;
 }
 
-export function getMemorySystem(): MemorySystem {
+export async function getMemorySystem(): Promise<MemorySystem> {
   if (!memorySystemInstance) {
     memorySystemInstance = new MemorySystem();
     
-    // Initialize the memory system asynchronously
-    memorySystemInstance.initialize().catch(error => {
+    // Initialize the memory system synchronously and wait for it to complete
+    try {
+      await memorySystemInstance.initialize();
+      console.log('Memory System initialized successfully');
+    } catch (error) {
       console.error('Failed to initialize Memory System:', error);
-    });
+      // Reset instance on failure so next call will retry
+      memorySystemInstance = null;
+      throw error;
+    }
   }
   return memorySystemInstance;
 }

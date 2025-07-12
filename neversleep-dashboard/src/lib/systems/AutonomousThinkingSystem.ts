@@ -74,6 +74,7 @@ export class AutonomousThinkingSystem {
   private lastThoughtTime: number = 0; // Track last thought/interaction time
   private recentContentHashes: Set<string> = new Set(); // Track content hashes to prevent similar content
   private currentPagePath: string = ''; // Track current page for context-aware thinking
+  private dbQueue: Promise<any> = Promise.resolve(); // Queue for database operations
 
   constructor(
     stateManager: StateManager,
@@ -790,7 +791,7 @@ export class AutonomousThinkingSystem {
     console.log(`[AutonomousThinking] Generated thought: ${thought.content.substring(0, 100)}...`);
     
     // Persist thought to database (don't await to avoid blocking)
-    this.persistThoughtToDatabase(thought).catch((error: any) => {
+    this.queueDatabaseOperation(() => this.persistThoughtToDatabase(thought)).catch((error: any) => {
       console.error('[AutonomousThinking] Failed to persist thought to database:', error);
     });
   }
@@ -815,7 +816,7 @@ export class AutonomousThinkingSystem {
     
     // Persist to database
     try {
-      await this.persistInteractionToDatabase(interaction);
+      await this.queueDatabaseOperation(() => this.persistInteractionToDatabase(interaction));
       this.persistedInteractionIds.add(interaction.id);
       console.log(`[AutonomousThinking] Generated and persisted interaction: ${interaction.content.substring(0, 100)}...`);
     } catch (error) {
@@ -1210,45 +1211,47 @@ export class AutonomousThinkingSystem {
    * Get AI thoughts from database (recent first)
    */
   public async getPersistedThoughts(limit: number = 50): Promise<any[]> {
-    try {
-      await this.memorySystem.initialize();
-      
-      // Get recent conversations from database
-      const conversations = await this.memorySystem.getConversationHistory(limit * 2); // Get more to filter
-      
-      // Filter for AI thoughts
-      const aiThoughts = conversations
-        .filter(conv => conv.user_message.startsWith('[AI-THOUGHT]'))
-        .slice(0, limit)
-        .map(conv => {
-          // Extract thought ID from user message
-          const idMatch = conv.user_message.match(/\[AI-THOUGHT:([^\]]+)\]/);
-          const thoughtId = idMatch ? idMatch[1] : 'unknown';
-          
-          // Extract thought type
-          const typeMatch = conv.user_message.match(/autonomous_thought_(\w+)/);
-          const thoughtType = typeMatch ? typeMatch[1] : 'pondering';
-          
-          return {
-            id: thoughtId,
-            type: thoughtType,
-            content: conv.ai_response,
-            timestamp: conv.timestamp,
-            emotion_influence: conv.emotion_state,
-            priority: conv.satisfaction_score,
-            session_id: conv.session_id,
-            persisted: true,
-            user_name: this.USER_NAME
-          };
-        });
-      
-      await this.memorySystem.close();
-      
-      return aiThoughts;
-    } catch (error) {
-      console.error('[AutonomousThinking] Failed to get persisted thoughts:', error);
-      return [];
-    }
+    return this.queueDatabaseOperation(async () => {
+      try {
+        await this.memorySystem.initialize();
+        
+        // Get recent conversations from database
+        const conversations = await this.memorySystem.getConversationHistory(limit * 2); // Get more to filter
+        
+        // Filter for AI thoughts
+        const aiThoughts = conversations
+          .filter(conv => conv.user_message.startsWith('[AI-THOUGHT]'))
+          .slice(0, limit)
+          .map(conv => {
+            // Extract thought ID from user message
+            const idMatch = conv.user_message.match(/\[AI-THOUGHT:([^\]]+)\]/);
+            const thoughtId = idMatch ? idMatch[1] : 'unknown';
+            
+            // Extract thought type
+            const typeMatch = conv.user_message.match(/autonomous_thought_(\w+)/);
+            const thoughtType = typeMatch ? typeMatch[1] : 'pondering';
+            
+            return {
+              id: thoughtId,
+              type: thoughtType,
+              content: conv.ai_response,
+              timestamp: conv.timestamp,
+              emotion_influence: conv.emotion_state,
+              priority: conv.satisfaction_score,
+              session_id: conv.session_id,
+              persisted: true,
+              user_name: this.USER_NAME
+            };
+          });
+        
+        await this.memorySystem.close();
+        
+        return aiThoughts;
+      } catch (error) {
+        console.error('[AutonomousThinking] Failed to get persisted thoughts:', error);
+        return [];
+      }
+    });
   }
 
   /**
@@ -1388,5 +1391,13 @@ export class AutonomousThinkingSystem {
     const union = new Set([...aBigrams, ...bBigrams]);
     
     return intersection.size / union.size;
+  }
+
+  /**
+   * Queue a database operation to avoid SQLite concurrency issues
+   */
+  private queueDatabaseOperation<T>(operation: () => Promise<T>): Promise<T> {
+    this.dbQueue = this.dbQueue.then(() => operation()).catch(() => operation());
+    return this.dbQueue as Promise<T>;
   }
 }

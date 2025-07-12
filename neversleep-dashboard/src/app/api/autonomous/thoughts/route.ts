@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(url.searchParams.get('limit') || '20');
     
     const thinkingSystem = getAutonomousThinkingSystem();
-    const thoughts = thinkingSystem.getRecentThoughts(limit);
+    const thoughts = await thinkingSystem.getAllThoughts(limit);
     
     return NextResponse.json({
       success: true,

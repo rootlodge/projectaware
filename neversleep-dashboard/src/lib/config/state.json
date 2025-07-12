@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 59,
-    "last_activity": "2025-07-12T20:07:06.361Z",
-    "duration": 16819626361
+    "interactions": 60,
+    "last_activity": "2025-07-12T20:17:35.445Z",
+    "duration": 16820255445
   },
   "cognitive": {
     "processing_mode": "normal",
     "attention_focus": "general_attention",
     "cognitive_load": 0,
-    "decision_confidence": 0.9856030074350959,
+    "decision_confidence": 0.9928015037175479,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 285,
+    "concepts_learned": 290,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -189,7 +189,11 @@
       "today,",
       "topic?",
       "previous",
-      "conversation!"
+      "conversation!",
+      "that’s",
+      "perfectly",
+      "greeting.",
+      "“hey!”"
     ],
     "learning_velocity": 1,
     "retention_rate": 0.9,
@@ -206,36 +210,6 @@
     "identity_changes": [],
     "trait_modifications": [],
     "learning_events": [
-      {
-        "concept": "starting",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:31:11.846Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "conversation",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:31:11.860Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "there!",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:36:49.755Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "lovely",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:36:49.757Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "feeling",
-        "context": "User interaction: Hi...",
-        "timestamp": "2025-07-11T15:36:49.757Z",
-        "confidence": 0.7
-      },
       {
         "concept": "rather",
         "context": "User interaction: Hi...",
@@ -805,8 +779,38 @@
         "context": "User interaction: Following up on: Which topic?...",
         "timestamp": "2025-07-12T20:07:06.308Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T20:17:35.334Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "that’s",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T20:17:35.335Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "perfectly",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T20:17:35.336Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "greeting.",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T20:17:35.360Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "“hey!”",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T20:17:35.379Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-12T20:14:53.799Z"
+  "last_updated": "2025-07-12T20:18:30.772Z"
 }

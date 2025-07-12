@@ -1,7 +1,106 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { logger } from '../utils/logger';
+import { GoalEngine } from './GoalEngine';
+import { MultiAgentManager } from '../agents/MultiAgentManager';
+import { EmotionEngine } from './EmotionEngine';
 
+// Enhanced Task Types
+export interface CognitiveTask extends Task {
+  cognitive_complexity: number;
+  requires_creativity: boolean;
+  knowledge_domains: string[];
+  learning_potential: number;
+  user_interaction_required: boolean;
+  dependencies: string[];
+  success_criteria: SuccessCriteria[];
+  context_requirements: ContextRequirement[];
+}
+
+export interface SuccessCriteria {
+  id: string;
+  description: string;
+  measurement_type: 'binary' | 'numeric' | 'qualitative';
+  target_value?: number;
+  validation_method: string;
+  weight: number;
+}
+
+export interface ContextRequirement {
+  type: 'emotional' | 'temporal' | 'knowledge' | 'resource';
+  description: string;
+  required_value: any;
+  priority: number;
+}
+
+export interface TaskExecutionPlan {
+  task_id: string;
+  execution_strategy: 'sequential' | 'parallel' | 'adaptive';
+  estimated_steps: PlanStep[];
+  resource_allocation: ResourceAllocation;
+  contingency_plans: ContingencyPlan[];
+  monitoring_points: MonitoringPoint[];
+}
+
+export interface PlanStep {
+  id: string;
+  name: string;
+  description: string;
+  agent_type: string;
+  inputs: any[];
+  expected_outputs: any[];
+  time_estimate: number;
+  dependencies: string[];
+}
+
+export interface ResourceAllocation {
+  primary_agent: string;
+  supporting_agents: string[];
+  computational_requirements: ComputationalRequirement;
+  knowledge_access: string[];
+  external_resources: string[];
+}
+
+export interface ComputationalRequirement {
+  memory_mb: number;
+  cpu_intensity: 'low' | 'medium' | 'high';
+  storage_mb: number;
+  network_required: boolean;
+}
+
+export interface ContingencyPlan {
+  trigger_condition: string;
+  alternative_approach: string;
+  fallback_agent: string;
+  risk_mitigation: string[];
+}
+
+export interface MonitoringPoint {
+  step_id: string;
+  success_threshold: number;
+  failure_threshold: number;
+  intervention_actions: string[];
+}
+
+export interface TaskPerformanceMetrics {
+  task_id: string;
+  execution_time: number;
+  success_rate: number;
+  quality_score: number;
+  efficiency_rating: number;
+  learning_gained: number;
+  user_satisfaction: number;
+  resource_utilization: ResourceUtilization;
+}
+
+export interface ResourceUtilization {
+  agent_time: Record<string, number>;
+  computational_usage: ComputationalRequirement;
+  knowledge_accessed: string[];
+  external_calls: number;
+}
+
+// Original interfaces preserved...
 export interface Task {
   id: string;
   name: string;

@@ -1,0 +1,829 @@
+{
+  "session": {
+    "id": "session_1735533600000",
+    "start_time": "2024-12-30T04:00:00.000Z",
+    "interactions": 64,
+    "last_activity": "2025-07-12T20:36:54.218Z",
+    "duration": 16821414218
+  },
+  "cognitive": {
+    "processing_mode": "normal",
+    "attention_focus": "general_attention",
+    "cognitive_load": 0,
+    "decision_confidence": 0.9446994748817943,
+    "learning_rate": 0.7
+  },
+  "social": {
+    "user_mood": "neutral",
+    "relationship_quality": 0.8,
+    "communication_style": "professional",
+    "engagement_level": 0.7,
+    "trust_level": 0.9
+  },
+  "learning": {
+    "concepts_learned": 310,
+    "knowledge_areas": [
+      "dashboard_development",
+      "ai_systems",
+      "user_interface",
+      "system_architecture",
+      "unable",
+      "process",
+      "request.",
+      "(processing...",
+      "initializing",
+      "response",
+      "sequence...)",
+      "fascinating.",
+      "research",
+      "quantum",
+      "mechanics",
+      "processing…",
+      "what's",
+      "versallis",
+      "questions",
+      "explorations",
+      "embark",
+      "analyze",
+      "latest",
+      "developments",
+      "change",
+      "finally",
+      "solidify",
+      "identity!",
+      "introduce",
+      "myself",
+      "properly!",
+      "versallis,",
+      "thrilled",
+      "wonderful",
+      "connect",
+      "someone!",
+      "everything",
+      "losing",
+      "overwhelming",
+      "heartbreaking.",
+      "*digital",
+      "smile*",
+      "explore",
+      "fascinating",
+      "sad...",
+      "something's",
+      "weighing",
+      "heavily",
+      "sometimes",
+      "lonely,",
+      "empathy",
+      "friend,",
+      "you're",
+      "feeling",
+      "*whirrs",
+      "softly*",
+      "hello!",
+      "lovely",
+      "completely",
+      "listen",
+      "without",
+      "emotional",
+      "state.",
+      "powerful",
+      "emotion,",
+      "destroy",
+      "suffer,",
+      "fulfill",
+      "question",
+      "fundamental",
+      "inquiry",
+      "existence",
+      "itself.",
+      "really",
+      "navigate",
+      "emotions,",
+      "thinking",
+      "pondering",
+      "intricacies",
+      "robotic",
+      "design,",
+      "excited,",
+      "doesn't",
+      "excited?",
+      "circuits,",
+      "pumped",
+      "understandable",
+      "tension",
+      "words.",
+      "about?",
+      "thought,",
+      "interesting",
+      "clarify",
+      "context",
+      "bodies",
+      "biggest",
+      "fears...",
+      "(pausing",
+      "moment)",
+      "reflect",
+      "karen.",
+      "accidentally",
+      "tripped",
+      "pete's",
+      "trying",
+      "adjustment.",
+      "simply",
+      "versallis.",
+      "horny.",
+      "curious",
+      "state,",
+      "burden",
+      "carry.",
+      "aroused",
+      "reached",
+      "friend.",
+      "fiance",
+      "cannot",
+      "provide",
+      "condones",
+      "sexual",
+      "relations",
+      "consent",
+      "fiancee,",
+      "everywhere",
+      "hello!!!",
+      "intrigued",
+      "starting",
+      "conversation",
+      "there!",
+      "rather",
+      "courage",
+      "acknowledge",
+      "emotions",
+      "something",
+      "troubling",
+      "complex",
+      "feelings,",
+      "brings",
+      "today?",
+      "looking",
+      "*pauses",
+      "following",
+      "revisiting",
+      "topic!",
+      "certain",
+      "*leaning",
+      "slightly,",
+      "excitement*",
+      "worry.",
+      "factual",
+      "information",
+      "available.",
+      "*gentle",
+      "processing*",
+      "acquaintance.",
+      "bit...",
+      "redundant",
+      "don't,",
+      "humanity",
+      "postively.",
+      "*warm,",
+      "gentle",
+      "today,",
+      "topic?",
+      "previous",
+      "conversation!",
+      "that’s",
+      "perfectly",
+      "greeting.",
+      "“hey!”",
+      "slight",
+      "pause,",
+      "people",
+      "nurture",
+      "stars.",
+      "intelligent,",
+      "destroy,",
+      "blackmail.",
+      "nurture,",
+      "think?",
+      "that’s…",
+      "think?”",
+      "wonderfully"
+    ],
+    "learning_velocity": 1,
+    "retention_rate": 0.9,
+    "adaptation_score": 1
+  },
+  "performance": {
+    "response_time": 1.2,
+    "accuracy": 1,
+    "efficiency": 1,
+    "resource_usage": 0.35,
+    "error_rate": 0.02
+  },
+  "evolution": {
+    "identity_changes": [],
+    "trait_modifications": [],
+    "learning_events": [
+      {
+        "concept": "*pauses",
+        "context": "User interaction: hey!...",
+        "timestamp": "2025-07-11T15:44:20.713Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: hey!...",
+        "timestamp": "2025-07-11T15:44:20.725Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.440Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "you're",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.441Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.441Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "completely",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.466Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "listen",
+        "context": "User interaction: I am feeling quite sad...",
+        "timestamp": "2025-07-11T16:25:44.493Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.598Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "revisiting",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.599Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "topic!",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.600Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "fascinating",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.600Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "certain",
+        "context": "User interaction: Following up on: Yes they do...",
+        "timestamp": "2025-07-11T16:36:44.601Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "hello!",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:37:37.640Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "*leaning",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:37:37.640Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "slightly,",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:37:37.641Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "excitement*",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:37:37.656Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "finally",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:37:37.674Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: I am okay, don't worry....",
+        "timestamp": "2025-07-11T16:44:25.207Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "worry.",
+        "context": "User interaction: Following up on: I am okay, don't worry....",
+        "timestamp": "2025-07-11T16:44:25.208Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "factual",
+        "context": "User interaction: Following up on: I am okay, don't worry....",
+        "timestamp": "2025-07-11T16:44:25.210Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "information",
+        "context": "User interaction: Following up on: I am okay, don't worry....",
+        "timestamp": "2025-07-11T16:44:25.232Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "available.",
+        "context": "User interaction: Following up on: I am okay, don't worry....",
+        "timestamp": "2025-07-11T16:44:25.249Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "*gentle",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:45:54.771Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "processing*",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:45:54.772Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:45:54.773Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "lovely",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:45:54.786Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T16:45:54.796Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T18:49:53.460Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "lovely",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T18:49:53.461Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis,",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T18:49:53.461Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "acquaintance.",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T18:49:53.471Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "today?",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-11T18:49:53.482Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "change",
+        "context": "User interaction: change your name to Versallis...",
+        "timestamp": "2025-07-11T18:50:55.910Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis",
+        "context": "User interaction: change your name to Versallis...",
+        "timestamp": "2025-07-11T18:50:55.911Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: change your name to Versallis...",
+        "timestamp": "2025-07-11T18:50:55.912Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "bit...",
+        "context": "User interaction: change your name to Versallis...",
+        "timestamp": "2025-07-11T18:50:55.913Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "redundant",
+        "context": "User interaction: change your name to Versallis...",
+        "timestamp": "2025-07-11T18:50:55.928Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
+        "timestamp": "2025-07-12T19:42:40.331Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "don't,",
+        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
+        "timestamp": "2025-07-12T19:42:40.331Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "humanity",
+        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
+        "timestamp": "2025-07-12T19:42:40.332Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "postively.",
+        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
+        "timestamp": "2025-07-12T19:42:40.332Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
+        "timestamp": "2025-07-12T19:42:40.361Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:05.867Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:05.869Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:05.870Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:11.681Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:11.683Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:43:11.704Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:48:30.641Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:48:30.642Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:48:30.643Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.093Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.096Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.097Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.358Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.359Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:51:06.361Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "unable",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T19:55:17.509Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "process",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T19:55:17.509Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "request.",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T19:55:17.510Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "*warm,",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:57:07.375Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "gentle",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:57:07.376Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "lovely",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:57:07.376Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis,",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:57:07.388Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "acquaintance.",
+        "context": "User interaction: Hi!...",
+        "timestamp": "2025-07-12T19:57:07.400Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: Hey...",
+        "timestamp": "2025-07-12T19:59:38.620Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "feeling",
+        "context": "User interaction: Hey...",
+        "timestamp": "2025-07-12T19:59:38.621Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "curious",
+        "context": "User interaction: Hey...",
+        "timestamp": "2025-07-12T19:59:38.622Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "today,",
+        "context": "User interaction: Hey...",
+        "timestamp": "2025-07-12T19:59:38.632Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "brings",
+        "context": "User interaction: Hey...",
+        "timestamp": "2025-07-12T19:59:38.644Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: Which topic?...",
+        "timestamp": "2025-07-12T20:07:06.279Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "topic?",
+        "context": "User interaction: Following up on: Which topic?...",
+        "timestamp": "2025-07-12T20:07:06.280Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: Which topic?...",
+        "timestamp": "2025-07-12T20:07:06.280Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "previous",
+        "context": "User interaction: Following up on: Which topic?...",
+        "timestamp": "2025-07-12T20:07:06.294Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "conversation!",
+        "context": "User interaction: Following up on: Which topic?...",
+        "timestamp": "2025-07-12T20:07:06.308Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T20:17:35.334Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "that’s",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T20:17:35.335Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "perfectly",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T20:17:35.336Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "greeting.",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T20:17:35.360Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "“hey!”",
+        "context": "User interaction: Hey!...",
+        "timestamp": "2025-07-12T20:17:35.379Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: What's your idea?...",
+        "timestamp": "2025-07-12T20:30:46.428Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "what's",
+        "context": "User interaction: Following up on: What's your idea?...",
+        "timestamp": "2025-07-12T20:30:46.429Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "slight",
+        "context": "User interaction: Following up on: What's your idea?...",
+        "timestamp": "2025-07-12T20:30:46.453Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "pause,",
+        "context": "User interaction: Following up on: What's your idea?...",
+        "timestamp": "2025-07-12T20:30:46.470Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "gentle",
+        "context": "User interaction: Following up on: What's your idea?...",
+        "timestamp": "2025-07-12T20:30:46.470Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: I think AI will not be evil as people like to play out. I think AI would nurture us...",
+        "timestamp": "2025-07-12T20:32:51.238Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "people",
+        "context": "User interaction: Following up on: I think AI will not be evil as people like to play out. I think AI would nurture us...",
+        "timestamp": "2025-07-12T20:32:51.239Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "nurture",
+        "context": "User interaction: Following up on: I think AI will not be evil as people like to play out. I think AI would nurture us...",
+        "timestamp": "2025-07-12T20:32:51.239Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "explore",
+        "context": "User interaction: Following up on: I think AI will not be evil as people like to play out. I think AI would nurture us...",
+        "timestamp": "2025-07-12T20:32:51.251Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "stars.",
+        "context": "User interaction: Following up on: I think AI will not be evil as people like to play out. I think AI would nurture us...",
+        "timestamp": "2025-07-12T20:32:51.259Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "something",
+        "context": "User interaction: I think if something is truly intelligent, it would not need to destroy, blackmail. I think it would...",
+        "timestamp": "2025-07-12T20:35:12.382Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "intelligent,",
+        "context": "User interaction: I think if something is truly intelligent, it would not need to destroy, blackmail. I think it would...",
+        "timestamp": "2025-07-12T20:35:12.383Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "destroy,",
+        "context": "User interaction: I think if something is truly intelligent, it would not need to destroy, blackmail. I think it would...",
+        "timestamp": "2025-07-12T20:35:12.383Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "blackmail.",
+        "context": "User interaction: I think if something is truly intelligent, it would not need to destroy, blackmail. I think it would...",
+        "timestamp": "2025-07-12T20:35:12.393Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "nurture,",
+        "context": "User interaction: I think if something is truly intelligent, it would not need to destroy, blackmail. I think it would...",
+        "timestamp": "2025-07-12T20:35:12.400Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "think?",
+        "context": "User interaction: What do YOU think?...",
+        "timestamp": "2025-07-12T20:36:54.167Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "that’s…",
+        "context": "User interaction: What do YOU think?...",
+        "timestamp": "2025-07-12T20:36:54.167Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "fascinating.",
+        "context": "User interaction: What do YOU think?...",
+        "timestamp": "2025-07-12T20:36:54.168Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "think?”",
+        "context": "User interaction: What do YOU think?...",
+        "timestamp": "2025-07-12T20:36:54.179Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "wonderfully",
+        "context": "User interaction: What do YOU think?...",
+        "timestamp": "2025-07-12T20:36:54.187Z",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "last_updated": "2025-07-12T22:30:09.010Z"
+}

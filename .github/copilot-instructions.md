@@ -1,7 +1,7 @@
-# GitHub Copilot Instructions for Neversleep.ai
+# GitHub Copilot Instructions for Project Aware
 
 ## Project Overview
-Neversleep.ai is an advanced autonomous AI agent with continuous learning, identity evolution, and sophisticated state management. It's built with Node.js and integrates with Ollama for local LLM processing.
+Project Aware is an advanced autonomous AI agent with continuous learning, identity evolution, and sophisticated state management. It's built with Node.js and integrates with Ollama for local LLM processing.
 
 ## Core Architecture
 

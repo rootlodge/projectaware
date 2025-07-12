@@ -8,7 +8,7 @@
   },
   "cognitive": {
     "processing_mode": "normal",
-    "attention_focus": "user_needs",
+    "attention_focus": "general_attention",
     "cognitive_load": 0,
     "decision_confidence": 0.9446994748817943,
     "learning_rate": 0.7
@@ -825,5 +825,5 @@
       }
     ]
   },
-  "last_updated": "2025-07-12T20:36:54.218Z"
+  "last_updated": "2025-07-12T20:48:29.901Z"
 }

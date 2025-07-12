@@ -3,6 +3,7 @@ import { EmotionEngine } from '../systems/EmotionEngine';
 import { ResponseCache } from '../systems/ResponseCache';
 import { Brain } from '../core/brain';
 
+
 export interface SubAgent {
   identity: {
     name: string;

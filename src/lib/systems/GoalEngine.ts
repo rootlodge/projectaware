@@ -939,7 +939,14 @@ export class GoalEngine {
       timestamp: reflection.timestamp,
       confidence: reflection.confidence_level,
       details: {
-        goalId: goalId || ''
+        goalId: goalId || '',
+        context: `Reflecting on goal progress and learnings`,
+        priority: 'medium',
+        tags: ['reflection', 'goal-analysis', 'learning'],
+        reasoning: ['Periodic assessment of goal state and strategy effectiveness'],
+        relatedEmotions: [this.emotionEngine.getCurrentEmotion().primary],
+        impact: 'moderate',
+        sessionId: Date.now().toString()
       }
     });
     
@@ -969,7 +976,12 @@ export class GoalEngine {
       confidence: thought.confidence_level,
       details: {
         goalId: goalId || '',
-        relatedEmotions: thought.related_emotions
+        relatedEmotions: thought.related_emotions,
+        context: `Planning thought for goal progression`,
+        priority: 'medium',
+        tags: ['planning', 'goal-pursuit', 'cognitive'],
+        reasoning: ['Strategic thinking about goal achievement steps'],
+        impact: 'moderate'
       }
     });
     
@@ -999,10 +1011,17 @@ export class GoalEngine {
       type: 'action',
       content: description,
       timestamp: action.timestamp,
+      confidence: action.effectiveness,
       details: {
         goalId: goalId || '',
         outcome: action.outcome,
-        effectiveness: action.effectiveness
+        effectiveness: action.effectiveness,
+        context: `Action taken to progress towards goal`,
+        priority: 'high',
+        tags: ['action', 'goal-execution', 'system-change'],
+        reasoning: ['Direct action to achieve goal objectives'],
+        impact: action.effectiveness > 0.7 ? 'major' : 'moderate',
+        duration: action.time_taken
       }
     });
     

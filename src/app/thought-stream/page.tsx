@@ -241,12 +241,10 @@ export default function ThoughtStreamPage() {
 
       eventSourceRef.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        
         if (data.type === 'history') {
           setEvents(data.events);
         } else if (data.type === 'analytics') {
           setAnalytics(data.analytics);
-          updateStats(data.analytics, events);
         } else if (data.type === 'event') {
           setEvents(prev => {
             const newEvents = [...prev, data.event];
@@ -332,6 +330,13 @@ export default function ThoughtStreamPage() {
       confidenceTrend: [] // Would need historical data for this
     });
   }, []);
+
+  // Update stats whenever analytics or events change
+  useEffect(() => {
+    if (analytics) {
+      updateStats(analytics, events);
+    }
+  }, [analytics, events, updateStats]);
 
   // Advanced filtering with tags and full-text search
   const filteredEvents = events.filter(event => {
@@ -422,6 +427,18 @@ export default function ThoughtStreamPage() {
     }
   };
 
+  const activateGoalEngine = async () => {
+    try {
+      const response = await fetch('/api/activate-goal-engine', { method: 'POST' });
+      const result = await response.json();
+      if (result.success) {
+        console.log(`Goal engine activated: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Failed to activate goal engine:', error);
+    }
+  };
+
   const renderEventCard = (event: ThoughtEvent, index: number) => {
     const config = EVENT_CONFIG[event.type] || EVENT_CONFIG.thought;
     const IconComponent = config.icon;
@@ -509,12 +526,20 @@ export default function ThoughtStreamPage() {
           <p className="text-purple-400 text-sm mb-6">
             The cognitive stream will populate as the system processes thoughts
           </p>
-          <button
-            onClick={generateTestEvents}
-            className="px-6 py-3 bg-purple-500/20 text-purple-200 rounded-lg border border-purple-400/30 hover:bg-purple-500/30 transition-colors"
-          >
-            Generate Test Events
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={generateTestEvents}
+              className="px-6 py-3 bg-purple-500/20 text-purple-200 rounded-lg border border-purple-400/30 hover:bg-purple-500/30 transition-colors"
+            >
+              Generate Test Events
+            </button>
+            <button
+              onClick={activateGoalEngine}
+              className="px-6 py-3 bg-blue-500/20 text-blue-200 rounded-lg border border-blue-400/30 hover:bg-blue-500/30 transition-colors"
+            >
+              Activate Goal Engine
+            </button>
+          </div>
         </div>
       ) : (
         filteredEvents.map((event, index) => (
@@ -543,12 +568,20 @@ export default function ThoughtStreamPage() {
           <p className="text-purple-400 text-sm mb-6">
             Adjust your filters or generate test events to see cognitive activity
           </p>
-          <button
-            onClick={generateTestEvents}
-            className="px-6 py-3 bg-purple-500/20 text-purple-200 rounded-lg border border-purple-400/30 hover:bg-purple-500/30 transition-colors"
-          >
-            Generate Test Events
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={generateTestEvents}
+              className="px-6 py-3 bg-purple-500/20 text-purple-200 rounded-lg border border-purple-400/30 hover:bg-purple-500/30 transition-colors"
+            >
+              Generate Test Events
+            </button>
+            <button
+              onClick={activateGoalEngine}
+              className="px-6 py-3 bg-blue-500/20 text-blue-200 rounded-lg border border-blue-400/30 hover:bg-blue-500/30 transition-colors"
+            >
+              Activate Goal Engine
+            </button>
+          </div>
         </div>
       ) : (
         filteredEvents.map((event, index) => renderEventCard(event, index))

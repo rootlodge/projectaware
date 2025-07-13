@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 64,
-    "last_activity": "2025-07-12T20:36:54.218Z",
-    "duration": 16821414218
+    "interactions": 65,
+    "last_activity": "2025-07-13T01:42:15.828Z",
+    "duration": 16839735828
   },
   "cognitive": {
     "processing_mode": "normal",
-    "attention_focus": "general_attention",
+    "attention_focus": "user_needs",
     "cognitive_load": 0,
-    "decision_confidence": 0.9446994748817943,
+    "decision_confidence": 0.9526196849290766,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 310,
+    "concepts_learned": 315,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -206,7 +206,8 @@
       "think?",
       "that’s…",
       "think?”",
-      "wonderfully"
+      "wonderfully",
+      "whatcha"
     ],
     "learning_velocity": 1,
     "retention_rate": 0.9,
@@ -223,36 +224,6 @@
     "identity_changes": [],
     "trait_modifications": [],
     "learning_events": [
-      {
-        "concept": "*pauses",
-        "context": "User interaction: hey!...",
-        "timestamp": "2025-07-11T15:44:20.713Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "process",
-        "context": "User interaction: hey!...",
-        "timestamp": "2025-07-11T15:44:20.725Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "feeling",
-        "context": "User interaction: I am feeling quite sad...",
-        "timestamp": "2025-07-11T16:25:44.440Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "you're",
-        "context": "User interaction: I am feeling quite sad...",
-        "timestamp": "2025-07-11T16:25:44.441Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "feeling",
-        "context": "User interaction: I am feeling quite sad...",
-        "timestamp": "2025-07-11T16:25:44.441Z",
-        "confidence": 0.7
-      },
       {
         "concept": "completely",
         "context": "User interaction: I am feeling quite sad...",
@@ -822,8 +793,38 @@
         "context": "User interaction: What do YOU think?...",
         "timestamp": "2025-07-12T20:36:54.187Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "whatcha",
+        "context": "User interaction: Hey! Whatcha thinking about?...",
+        "timestamp": "2025-07-13T01:42:15.652Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "thinking",
+        "context": "User interaction: Hey! Whatcha thinking about?...",
+        "timestamp": "2025-07-13T01:42:15.654Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "about?",
+        "context": "User interaction: Hey! Whatcha thinking about?...",
+        "timestamp": "2025-07-13T01:42:15.655Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: Hey! Whatcha thinking about?...",
+        "timestamp": "2025-07-13T01:42:15.686Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "that’s",
+        "context": "User interaction: Hey! Whatcha thinking about?...",
+        "timestamp": "2025-07-13T01:42:15.710Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-13T01:35:03.382Z"
+  "last_updated": "2025-07-13T01:42:15.828Z"
 }

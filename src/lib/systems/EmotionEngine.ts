@@ -516,6 +516,26 @@ export class EmotionEngine {
     this.lastUserEmotionAnalysis = null;
   }
 
+  forecastEmotionTrends(): { forecast: string[]; trend: 'rising'|'falling'|'stable'; confidence: number } {
+    const history = this.emotionHistory.slice(-10);
+    if (history.length < 2) {
+      return { forecast: [this.currentEmotion.primary], trend: 'stable', confidence: 0.5 };
+    }
+    // Count occurrences and intensity trend
+    const emotionCounts: Record<string, number> = {};
+    let intensityDelta = 0;
+    for (let i = 1; i < history.length; i++) {
+      emotionCounts[history[i].emotion] = (emotionCounts[history[i].emotion] || 0) + 1;
+      intensityDelta += history[i].intensity - history[i-1].intensity;
+    }
+    const sorted = Object.entries(emotionCounts).sort(([,a],[,b]) => b-a);
+    const forecast = sorted.length > 0 ? sorted.slice(0,2).map(([e])=>e) : [this.currentEmotion.primary];
+    let trend: 'rising'|'falling'|'stable' = 'stable';
+    if (intensityDelta > 0.2) trend = 'rising';
+    else if (intensityDelta < -0.2) trend = 'falling';
+    const confidence = Math.min(1, Math.abs(intensityDelta) + (forecast.length > 1 ? 0.2 : 0));
+    return { forecast, trend, confidence };
+  } 
   destroy(): void {
     if (this.decayInterval) {
       clearInterval(this.decayInterval);

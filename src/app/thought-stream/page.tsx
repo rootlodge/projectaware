@@ -210,6 +210,9 @@ interface ThoughtStreamStats {
 }
 
 export default function ThoughtStreamPage() {
+  // Debug logging to track re-renders - remove timestamp to prevent re-render triggers
+  console.log('ThoughtStreamPage render count');
+  
   const [events, setEvents] = useState<ThoughtEvent[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [analytics, setAnalytics] = useState<any>(null);
@@ -227,24 +230,30 @@ export default function ThoughtStreamPage() {
   const [autoScroll, setAutoScroll] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [stats, setStats] = useState<ThoughtStreamStats | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Connect to SSE endpoint only once
     if (!eventSourceRef.current) {
+      console.log('Creating new SSE connection');
       eventSourceRef.current = new EventSource('/api/thought-stream');
       
       eventSourceRef.current.onopen = () => {
+        console.log('SSE connection opened');
         setIsConnected(true);
       };
 
       eventSourceRef.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        console.log('SSE message received:', data.type);
+        
         if (data.type === 'history') {
           setEvents(prev => {
             // Only update if different (shallow compare by length and last id)
             if (Array.isArray(data.events) && (prev.length !== data.events.length || (prev[prev.length-1]?.timestamp !== data.events[data.events.length-1]?.timestamp))) {
+              console.log('Updating events history:', data.events.length);
               return data.events;
             }
             return prev;
@@ -253,6 +262,7 @@ export default function ThoughtStreamPage() {
           setAnalytics((prev: typeof data.analytics | null) => {
             // Only update if different (shallow compare by totalEvents and sessionDuration)
             if (!prev || prev.totalEvents !== data.analytics.totalEvents || prev.sessionDuration !== data.analytics.sessionDuration) {
+              console.log('Updating analytics');
               return data.analytics;
             }
             return prev;
@@ -261,57 +271,70 @@ export default function ThoughtStreamPage() {
           setEvents(prev => {
             // Only add if new event (by timestamp)
             if (!prev.length || prev[prev.length-1]?.timestamp !== data.event.timestamp) {
+              console.log('Adding new event:', data.event.type);
               return [...prev, data.event];
             }
             return prev;
           });
         } else if (data.type === 'recording-changed') {
+          console.log('Recording status changed:', data.recording);
           setIsRecording(data.recording);
         }
       };
 
-      eventSourceRef.current.onerror = () => {
+      eventSourceRef.current.onerror = (error) => {
+        console.log('SSE connection error:', error);
         setIsConnected(false);
       };
+    } else {
+      console.log('SSE connection already exists, skipping creation');
     }
 
     return () => {
       // Only close on component unmount, not on every re-render
       if (eventSourceRef.current) {
+        console.log('Closing SSE connection on cleanup');
         eventSourceRef.current.close();
         eventSourceRef.current = null;
+        setIsConnected(false);
       }
     };
   }, []); // Empty dependency array - only run once on mount
 
-  // Separate useEffect for auto-scroll behavior
+  // Separate useEffect for auto-scroll behavior - temporarily disabled to test refresh issue
   useEffect(() => {
-    if (autoScroll && scrollRef.current && events.length > 0) {
-      setTimeout(() => {
-        scrollRef.current?.scrollTo({ 
-          top: scrollRef.current.scrollHeight, 
-          behavior: 'smooth' 
-        });
-      }, 100);
-    }
+    // Temporarily commented out to test if this is causing refresh loop
+    // if (autoScroll && scrollRef.current && events.length > 0) {
+    //   setTimeout(() => {
+    //     scrollRef.current?.scrollTo({ 
+    //       top: scrollRef.current.scrollHeight, 
+    //       behavior: 'smooth' 
+    //     });
+    //   }, 100);
+    // }
   }, [events, autoScroll]);
 
-  // Fetch initial recording status
+  // Fetch initial recording status - only once
   useEffect(() => {
-    const fetchRecordingStatus = async () => {
-      try {
-        const response = await fetch('/api/thought-stream/recording');
-        const data = await response.json();
-        if (data.success) {
-          setIsRecording(data.recording);
+    if (!isInitialized) {
+      const fetchRecordingStatus = async () => {
+        try {
+          console.log('Fetching initial recording status');
+          const response = await fetch('/api/thought-stream/recording');
+          const data = await response.json();
+          if (data.success) {
+            setIsRecording(data.recording);
+          }
+          setIsInitialized(true);
+        } catch (error) {
+          console.error('Failed to fetch recording status:', error);
+          setIsInitialized(true);
         }
-      } catch (error) {
-        console.error('Failed to fetch recording status:', error);
-      }
-    };
-    
-    fetchRecordingStatus();
-  }, []);
+      };
+      
+      fetchRecordingStatus();
+    }
+  }, [isInitialized]);
 
   const updateStats = React.useCallback((analyticsData: any, currentEvents?: ThoughtEvent[]) => {
     if (!analyticsData) return;
@@ -396,17 +419,17 @@ export default function ThoughtStreamPage() {
     });
   }, [events, filters]);
 
-  const formatTimestamp = (timestamp: string) => {
+  const formatTimestamp = React.useCallback((timestamp: string) => {
     const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
+    const now = Date.now(); // Use Date.now() instead of new Date()
+    const diff = now - date.getTime();
     
     if (diff < 1000) return 'Just now';
     if (diff < 60000) return `${Math.floor(diff / 1000)}s ago`;
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
     return date.toLocaleDateString();
-  };
+  }, []);
 
   const getConfidenceColor = (confidence?: number) => {
     if (!confidence) return 'text-slate-400';
@@ -700,9 +723,10 @@ export default function ThoughtStreamPage() {
           <div className="space-y-2">
             {analytics?.recentActivity ? analytics.recentActivity.map((bucket: any, index: number) => (
               <div key={index} className="flex justify-between items-center">
-                <span className="text-purple-300 text-sm">
-                  {new Date(bucket.timestamp).toLocaleTimeString()}
-                </span>
+                    <span className="text-purple-300 text-sm">
+                      {/* Temporarily removed dynamic timestamp: {new Date(bucket.timestamp).toLocaleTimeString()} */}
+                      Bucket {index + 1}
+                    </span>
                 <div className="flex items-center space-x-2">
                   <div 
                     className="h-2 bg-purple-400 rounded"

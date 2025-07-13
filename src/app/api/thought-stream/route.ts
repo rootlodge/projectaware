@@ -9,48 +9,80 @@ export async function GET(request: NextRequest) {
     start(controller) {
       const encoder = new TextEncoder();
       
-      // Send initial history
-      const history = thoughtStream.getHistory();
-      const historyMessage = `data: ${JSON.stringify({
-        type: 'history',
-        events: history
-      })}\n\n`;
-      controller.enqueue(encoder.encode(historyMessage));
-      
-      // Send initial analytics
-      const analytics = thoughtStream.getAnalytics();
-      const analyticsMessage = `data: ${JSON.stringify({
-        type: 'analytics',
-        analytics: analytics
-      })}\n\n`;
-      controller.enqueue(encoder.encode(analyticsMessage));
+      try {
+        // Send initial history
+        const history = thoughtStream.getHistory();
+        const historyMessage = `data: ${JSON.stringify({
+          type: 'history',
+          events: history
+        })}\n\n`;
+        controller.enqueue(encoder.encode(historyMessage));
+        
+        // Send initial analytics
+        const analytics = thoughtStream.getAnalytics();
+        const analyticsMessage = `data: ${JSON.stringify({
+          type: 'analytics',
+          analytics: analytics
+        })}\n\n`;
+        controller.enqueue(encoder.encode(analyticsMessage));
+      } catch (error) {
+        console.error('Error sending initial SSE data:', error);
+        controller.close();
+        return;
+      }
       
       // Listen for new thought events
       const thoughtListener = (event: any) => {
-        const message = `data: ${JSON.stringify({
-          type: 'event',
-          event: event
-        })}\n\n`;
-        controller.enqueue(encoder.encode(message));
+        try {
+          if (controller.desiredSize !== null) { // Check if controller is still open
+            const message = `data: ${JSON.stringify({
+              type: 'event',
+              event: event
+            })}\n\n`;
+            controller.enqueue(encoder.encode(message));
+          }
+        } catch (error) {
+          console.error('Error sending thought event:', error);
+          // Remove listeners if controller is closed
+          thoughtStream.off('thought', thoughtListener);
+          thoughtStream.off('thought', analyticsListener);
+        }
       };
       
       // Listen for analytics updates
       const analyticsListener = () => {
-        const analytics = thoughtStream.getAnalytics();
-        const message = `data: ${JSON.stringify({
-          type: 'analytics',
-          analytics: analytics
-        })}\n\n`;
-        controller.enqueue(encoder.encode(message));
+        try {
+          if (controller.desiredSize !== null) { // Check if controller is still open
+            const analytics = thoughtStream.getAnalytics();
+            const message = `data: ${JSON.stringify({
+              type: 'analytics',
+              analytics: analytics
+            })}\n\n`;
+            controller.enqueue(encoder.encode(message));
+          }
+        } catch (error) {
+          console.error('Error sending analytics update:', error);
+          // Remove listeners if controller is closed
+          thoughtStream.off('thought', thoughtListener);
+          thoughtStream.off('thought', analyticsListener);
+        }
       };
       
       // Listen for recording state changes
       const recordingListener = (isRecording: boolean) => {
-        const message = `data: ${JSON.stringify({
-          type: 'recording-changed',
-          isRecording: isRecording
-        })}\n\n`;
-        controller.enqueue(encoder.encode(message));
+        try {
+          if (controller.desiredSize !== null) { // Check if controller is still open
+            const message = `data: ${JSON.stringify({
+              type: 'recording-changed',
+              recording: isRecording
+            })}\n\n`;
+            controller.enqueue(encoder.encode(message));
+          }
+        } catch (error) {
+          console.error('Error sending recording state change:', error);
+          // Remove listener if controller is closed
+          thoughtStream.off('recording-changed', recordingListener);
+        }
       };
       
       thoughtStream.on('thought', thoughtListener);
@@ -59,22 +91,48 @@ export async function GET(request: NextRequest) {
       
       // Send periodic analytics updates
       const analyticsInterval = setInterval(() => {
-        analyticsListener();
+        try {
+          if (controller.desiredSize !== null) { // Check if controller is still open
+            analyticsListener();
+          } else {
+            clearInterval(analyticsInterval);
+          }
+        } catch (error) {
+          console.error('Error in analytics interval:', error);
+          clearInterval(analyticsInterval);
+        }
       }, 30000); // Every 30 seconds
       
       // Keep connection alive with heartbeat
       const heartbeatInterval = setInterval(() => {
-        const heartbeat = `: heartbeat\n\n`;
-        controller.enqueue(encoder.encode(heartbeat));
+        try {
+          if (controller.desiredSize !== null) { // Check if controller is still open
+            const heartbeat = `: heartbeat\n\n`;
+            controller.enqueue(encoder.encode(heartbeat));
+          } else {
+            clearInterval(heartbeatInterval);
+          }
+        } catch (error) {
+          console.error('Error in heartbeat:', error);
+          clearInterval(heartbeatInterval);
+        }
       }, 15000); // Every 15 seconds
       
       // Clean up on close
       request.signal.addEventListener('abort', () => {
+        console.log('SSE connection aborted, cleaning up listeners');
         thoughtStream.off('thought', thoughtListener);
+        thoughtStream.off('thought', analyticsListener);
         thoughtStream.off('recording-changed', recordingListener);
         clearInterval(analyticsInterval);
         clearInterval(heartbeatInterval);
-        controller.close();
+        try {
+          if (controller.desiredSize !== null) {
+            controller.close();
+          }
+        } catch (error) {
+          console.error('Error closing controller:', error);
+        }
       });
     }
   });

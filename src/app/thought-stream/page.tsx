@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ThoughtEvent } from '@/lib/core/ThoughtStream';
 import { 
   Brain, 
@@ -231,46 +231,57 @@ export default function ThoughtStreamPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Connect to SSE endpoint
-    eventSourceRef.current = new EventSource('/api/thought-stream');
-    
-    eventSourceRef.current.onopen = () => {
-      setIsConnected(true);
-    };
-
-    eventSourceRef.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+    // Connect to SSE endpoint only once
+    if (!eventSourceRef.current) {
+      eventSourceRef.current = new EventSource('/api/thought-stream');
       
-      if (data.type === 'history') {
-        setEvents(data.events);
-      } else if (data.type === 'analytics') {
-        setAnalytics(data.analytics);
-        updateStats(data.analytics);
-      } else if (data.type === 'event') {
-        setEvents(prev => {
-          const newEvents = [...prev, data.event];
-          if (autoScroll && scrollRef.current) {
-            setTimeout(() => {
-              scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-            }, 100);
-          }
-          return newEvents;
-        });
-      }
-    };
+      eventSourceRef.current.onopen = () => {
+        setIsConnected(true);
+      };
 
-    eventSourceRef.current.onerror = () => {
-      setIsConnected(false);
-    };
+      eventSourceRef.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === 'history') {
+          setEvents(data.events);
+        } else if (data.type === 'analytics') {
+          setAnalytics(data.analytics);
+          updateStats(data.analytics);
+        } else if (data.type === 'event') {
+          setEvents(prev => {
+            const newEvents = [...prev, data.event];
+            return newEvents;
+          });
+        }
+      };
+
+      eventSourceRef.current.onerror = () => {
+        setIsConnected(false);
+      };
+    }
 
     return () => {
+      // Only close on component unmount, not on every re-render
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
+        eventSourceRef.current = null;
       }
     };
-  }, [autoScroll]);
+  }, []); // Empty dependency array - only run once on mount
 
-  const updateStats = (analyticsData: any) => {
+  // Separate useEffect for auto-scroll behavior
+  useEffect(() => {
+    if (autoScroll && scrollRef.current && events.length > 0) {
+      setTimeout(() => {
+        scrollRef.current?.scrollTo({ 
+          top: scrollRef.current.scrollHeight, 
+          behavior: 'smooth' 
+        });
+      }, 100);
+    }
+  }, [events, autoScroll]);
+
+  const updateStats = React.useCallback((analyticsData: any) => {
     if (!analyticsData) return;
     
     const totalEvents = analyticsData.totalEvents || 0;
@@ -298,7 +309,7 @@ export default function ThoughtStreamPage() {
       topTags,
       confidenceTrend: [] // Would need historical data for this
     });
-  };
+  }, [events]);
 
   // Advanced filtering with tags and full-text search
   const filteredEvents = events.filter(event => {

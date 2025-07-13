@@ -16,6 +16,7 @@ import {
   GoalMetrics,
   GoalTier
 } from '@/lib/types/goal-types';
+import { ThoughtStream } from '@/lib/core/ThoughtStream';
 
 export class GoalEngine {
   private static instance: GoalEngine | null = null;
@@ -31,6 +32,7 @@ export class GoalEngine {
   private activeGoal: Goal | null = null;
   private lastReflectionTime: number = 0;
   private readonly REFLECTION_INTERVAL = 5 * 60 * 1000; // 5 minutes
+  private thoughtStream = ThoughtStream;
 
   private constructor() {
     this.db = new GoalDatabase();
@@ -929,6 +931,17 @@ export class GoalEngine {
     if (goalId) {
       await this.db.addReflection(reflection);
     }
+
+    // Stream reflection event
+    this.thoughtStream.log({
+      type: 'reflection',
+      content,
+      timestamp: reflection.timestamp,
+      confidence: reflection.confidence_level,
+      details: {
+        goalId: goalId || ''
+      }
+    });
     
     return reflection.id;
   }
@@ -947,6 +960,18 @@ export class GoalEngine {
     if (goalId) {
       await this.db.addThought(thought);
     }
+
+    // Stream thought event
+    this.thoughtStream.log({
+      type: 'thought',
+      content,
+      timestamp: thought.timestamp,
+      confidence: thought.confidence_level,
+      details: {
+        goalId: goalId || '',
+        relatedEmotions: thought.related_emotions
+      }
+    });
     
     return thought.id;
   }
@@ -968,6 +993,18 @@ export class GoalEngine {
     if (goalId) {
       await this.db.addAction(action);
     }
+
+    // Stream action event
+    this.thoughtStream.log({
+      type: 'action',
+      content: description,
+      timestamp: action.timestamp,
+      details: {
+        goalId: goalId || '',
+        outcome: action.outcome,
+        effectiveness: action.effectiveness
+      }
+    });
     
     return action.id;
   }

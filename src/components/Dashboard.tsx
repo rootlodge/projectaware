@@ -1,3 +1,61 @@
+// Emotion Trend Forecast Panel
+import React from 'react';
+
+const EmotionTrendForecastPanel: React.FC = () => {
+  const [forecast, setForecast] = React.useState<string[]>([]);
+  const [trend, setTrend] = React.useState<'rising'|'falling'|'stable'>('stable');
+  const [confidence, setConfidence] = React.useState<number>(0);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let mounted = true;
+    const fetchForecast = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch('/api/emotions/forecast');
+        if (!res.ok) throw new Error('Failed to fetch emotion trend forecast');
+        const data = await res.json();
+        if (!mounted) return;
+        setForecast(data.forecast || []);
+        setTrend(data.trend || 'stable');
+        setConfidence(data.confidence ?? 0);
+      } catch (err) {
+        setError('Unable to load emotion trend forecast.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchForecast();
+    return () => { mounted = false; };
+  }, []);
+
+  return (
+    <section aria-labelledby="emotion-trend-heading" className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 mt-6" tabIndex={0}>
+      <h3 id="emotion-trend-heading" className="text-xl font-bold text-white mb-4 flex items-center">
+        <span role="img" aria-label="trend">📈</span>
+        <span className="ml-2">Emotion Trend Forecast</span>
+      </h3>
+      {loading ? (
+        <p aria-live="polite" className="text-purple-300">Loading...</p>
+      ) : error ? (
+        <p role="alert" className="text-red-400">{error}</p>
+      ) : (
+        <div>
+          <dl>
+            <dt className="text-purple-300">Forecasted Emotions</dt>
+            <dd className="text-white mb-2">{forecast.length > 0 ? forecast.join(', ') : 'N/A'}</dd>
+            <dt className="text-purple-300">Trend</dt>
+            <dd className="text-white mb-2" aria-label={`Trend is ${trend}`}>{trend.charAt(0).toUpperCase() + trend.slice(1)}</dd>
+            <dt className="text-purple-300">Confidence</dt>
+            <dd className="text-white">{(confidence * 100).toFixed(0)}%</dd>
+          </dl>
+        </div>
+      )}
+    </section>
+  );
+};
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -243,51 +301,54 @@ export default function Dashboard({ systemStatus }: DashboardProps) {
           )}
         </div>
 
-        {/* Emotional State */}
-        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-            <Heart className="w-5 h-5 mr-2" />
-            Emotional State
-          </h3>
-          {systemStatus?.emotional_state ? (
-            <div className="space-y-3">
-              <div>
-                <span className="text-purple-300">Primary: </span>
-                <span className="text-white font-medium capitalize">
-                  {systemStatus.emotional_state.primary}
-                </span>
-              </div>
-              <div>
-                <span className="text-purple-300">Intensity: </span>
-                <div className="flex items-center mt-2">
-                  <div className="w-full bg-gray-700 rounded-full h-2 mr-3">
-                    <div
-                      className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${(systemStatus.emotional_state.intensity || 0.5) * 100}%` }}
-                    ></div>
-                  </div>
-                  <span className="text-white text-sm">
-                    {((systemStatus.emotional_state.intensity || 0.5) * 100).toFixed(0)}%
+        {/* Emotional State + Trend Forecast */}
+        <div>
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 mb-4">
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+              <Heart className="w-5 h-5 mr-2" />
+              Emotional State
+            </h3>
+            {systemStatus?.emotional_state ? (
+              <div className="space-y-3">
+                <div>
+                  <span className="text-purple-300">Primary: </span>
+                  <span className="text-white font-medium capitalize">
+                    {systemStatus.emotional_state.primary}
                   </span>
                 </div>
-              </div>
-              <div>
-                <span className="text-purple-300">Secondary: </span>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {systemStatus.emotional_state.secondary?.map((emotion: string, index: number) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-sm"
-                    >
-                      {emotion}
+                <div>
+                  <span className="text-purple-300">Intensity: </span>
+                  <div className="flex items-center mt-2">
+                    <div className="w-full bg-gray-700 rounded-full h-2 mr-3">
+                      <div
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${(systemStatus.emotional_state.intensity || 0.5) * 100}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-white text-sm">
+                      {((systemStatus.emotional_state.intensity || 0.5) * 100).toFixed(0)}%
                     </span>
-                  ))}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-purple-300">Secondary: </span>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {systemStatus.emotional_state.secondary?.map((emotion: string, index: number) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-sm"
+                      >
+                        {emotion}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="text-purple-300">Loading emotional state...</div>
-          )}
+            ) : (
+              <div className="text-purple-300">Loading emotional state...</div>
+            )}
+          </div>
+          <EmotionTrendForecastPanel />
         </div>
       </div>
 

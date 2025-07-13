@@ -242,13 +242,28 @@ export default function ThoughtStreamPage() {
       eventSourceRef.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'history') {
-          setEvents(data.events);
+          setEvents(prev => {
+            // Only update if different (shallow compare by length and last id)
+            if (Array.isArray(data.events) && (prev.length !== data.events.length || (prev[prev.length-1]?.timestamp !== data.events[data.events.length-1]?.timestamp))) {
+              return data.events;
+            }
+            return prev;
+          });
         } else if (data.type === 'analytics') {
-          setAnalytics(data.analytics);
+          setAnalytics((prev: typeof data.analytics | null) => {
+            // Only update if different (shallow compare by totalEvents and sessionDuration)
+            if (!prev || prev.totalEvents !== data.analytics.totalEvents || prev.sessionDuration !== data.analytics.sessionDuration) {
+              return data.analytics;
+            }
+            return prev;
+          });
         } else if (data.type === 'event') {
           setEvents(prev => {
-            const newEvents = [...prev, data.event];
-            return newEvents;
+            // Only add if new event (by timestamp)
+            if (!prev.length || prev[prev.length-1]?.timestamp !== data.event.timestamp) {
+              return [...prev, data.event];
+            }
+            return prev;
           });
         } else if (data.type === 'recording-changed') {
           setIsRecording(data.recording);
@@ -338,46 +353,48 @@ export default function ThoughtStreamPage() {
     }
   }, [analytics, events, updateStats]);
 
-  // Advanced filtering with tags and full-text search
-  const filteredEvents = events.filter(event => {
-    if (filters.type !== 'all' && event.type !== filters.type) return false;
-    if (filters.priority !== 'all' && event.details?.priority !== filters.priority) return false;
-    if (event.confidence !== undefined && 
-        (event.confidence < filters.confidence.min || event.confidence > filters.confidence.max)) return false;
-    
-    if (filters.timeRange !== 'all') {
-      const eventTime = new Date(event.timestamp).getTime();
-      const now = Date.now();
-      const ranges = {
-        '5m': 5 * 60 * 1000,
-        '15m': 15 * 60 * 1000,
-        '1h': 60 * 60 * 1000,
-        '6h': 6 * 60 * 60 * 1000,
-        '24h': 24 * 60 * 60 * 1000,
-        '7d': 7 * 24 * 60 * 60 * 1000
-      };
-      const range = ranges[filters.timeRange as keyof typeof ranges];
-      if (range && eventTime < now - range) return false;
-    }
+  // Memoize filtered events to prevent re-computation on every render
+  const filteredEvents = React.useMemo(() => {
+    return events.filter(event => {
+      if (filters.type !== 'all' && event.type !== filters.type) return false;
+      if (filters.priority !== 'all' && event.details?.priority !== filters.priority) return false;
+      if (event.confidence !== undefined && 
+          (event.confidence < filters.confidence.min || event.confidence > filters.confidence.max)) return false;
+      
+      if (filters.timeRange !== 'all') {
+        const eventTime = new Date(event.timestamp).getTime();
+        const now = Date.now();
+        const ranges = {
+          '5m': 5 * 60 * 1000,
+          '15m': 15 * 60 * 1000,
+          '1h': 60 * 60 * 1000,
+          '6h': 6 * 60 * 60 * 1000,
+          '24h': 24 * 60 * 60 * 1000,
+          '7d': 7 * 24 * 60 * 60 * 1000
+        };
+        const range = ranges[filters.timeRange as keyof typeof ranges];
+        if (range && eventTime < now - range) return false;
+      }
 
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      const searchMatch = event.content.toLowerCase().includes(searchLower) ||
-                         event.details?.context?.toLowerCase().includes(searchLower) ||
-                         event.details?.reasoning?.some(r => r.toLowerCase().includes(searchLower)) ||
-                         event.details?.tags?.some(t => t.toLowerCase().includes(searchLower));
-      if (!searchMatch) return false;
-    }
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase();
+        const searchMatch = event.content.toLowerCase().includes(searchLower) ||
+                           event.details?.context?.toLowerCase().includes(searchLower) ||
+                           event.details?.reasoning?.some(r => r.toLowerCase().includes(searchLower)) ||
+                           event.details?.tags?.some(t => t.toLowerCase().includes(searchLower));
+        if (!searchMatch) return false;
+      }
 
-    if (filters.tags.length > 0) {
-      const hasRequiredTags = filters.tags.every(tag => 
-        event.details?.tags?.includes(tag)
-      );
-      if (!hasRequiredTags) return false;
-    }
+      if (filters.tags.length > 0) {
+        const hasRequiredTags = filters.tags.every(tag => 
+          event.details?.tags?.includes(tag)
+        );
+        if (!hasRequiredTags) return false;
+      }
 
-    return true;
-  });
+      return true;
+    });
+  }, [events, filters]);
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -439,7 +456,7 @@ export default function ThoughtStreamPage() {
     }
   };
 
-  const renderEventCard = (event: ThoughtEvent, index: number) => {
+  const renderEventCard = React.useCallback((event: ThoughtEvent, index: number) => {
     const config = EVENT_CONFIG[event.type] || EVENT_CONFIG.thought;
     const IconComponent = config.icon;
     
@@ -515,9 +532,9 @@ export default function ThoughtStreamPage() {
         )}
       </div>
     );
-  };
+  }, [formatTimestamp, getConfidenceColor, setSelectedEvent]);
 
-  const renderTimeline = () => (
+  const renderTimeline = React.useCallback(() => (
     <div className="space-y-6" ref={scrollRef}>
       {filteredEvents.length === 0 ? (
         <div className="text-center py-12">
@@ -557,9 +574,9 @@ export default function ThoughtStreamPage() {
         ))
       )}
     </div>
-  );
+  ), [filteredEvents, generateTestEvents, activateGoalEngine, renderEventCard]);
 
-  const renderCards = () => (
+  const renderCards = React.useCallback(() => (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {filteredEvents.length === 0 ? (
         <div className="col-span-full text-center py-12">
@@ -587,9 +604,9 @@ export default function ThoughtStreamPage() {
         filteredEvents.map((event, index) => renderEventCard(event, index))
       )}
     </div>
-  );
+  ), [filteredEvents, generateTestEvents, activateGoalEngine, renderEventCard]);
 
-  const renderAnalytics = () => {
+  const renderAnalytics = React.useCallback(() => {
     if (!analytics && !stats) {
       return (
         <div className="text-center py-12">
@@ -721,7 +738,7 @@ export default function ThoughtStreamPage() {
         )}
       </div>
     );
-  };
+  }, [analytics, stats, getConfidenceColor]);
 
   return (
     <div className="space-y-6">
@@ -1185,7 +1202,7 @@ export default function ThoughtStreamPage() {
           </div>
           <div className="flex items-center space-x-2 text-purple-400">
             <Clock className="w-4 h-4" />
-            <span>Last updated: {new Date().toLocaleTimeString()}</span>
+            <span>Live stream active</span>
           </div>
         </div>
       </div>

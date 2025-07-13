@@ -642,52 +642,98 @@ export default function ThoughtStreamPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-gray-900">Thought Stream</h1>
+    <div className="space-y-6">
+      {/* Header with Real-time Status */}
+      <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-400/30">
+              <Brain className="w-8 h-8 text-purple-400" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Cognitive Stream</h1>
+              <p className="text-purple-300">
+                Real-time visualization of AI thought processes and decision patterns
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-6">
+            {/* Connection Status */}
             <div className="flex items-center space-x-2">
-              <div className={`h-3 w-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-              <span className="text-sm text-gray-600">
+              <div className={`h-3 w-3 rounded-full ${isConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+              <span className="text-sm text-purple-300">
                 {isConnected ? 'Connected' : 'Disconnected'}
               </span>
             </div>
+            
+            {/* Live Stats */}
+            {stats && (
+              <div className="flex items-center space-x-4 text-sm">
+                <div className="flex items-center space-x-1 text-purple-300">
+                  <Activity className="w-4 h-4" />
+                  <span>{stats.totalEvents}</span>
+                </div>
+                <div className="flex items-center space-x-1 text-purple-300">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>{stats.eventVelocity.toFixed(1)}/min</span>
+                </div>
+              </div>
+            )}
           </div>
-          <p className="text-gray-600">
-            Real-time visualization of cognitive processes and decision-making patterns
-          </p>
         </div>
 
-        {/* Controls */}
-        <div className="bg-white p-6 rounded-lg shadow mb-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setViewMode('timeline')}
-                className={`px-4 py-2 rounded ${viewMode === 'timeline' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-              >
-                Timeline
-              </button>
-              <button
-                onClick={() => setViewMode('cards')}
-                className={`px-4 py-2 rounded ${viewMode === 'cards' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-              >
-                Cards
-              </button>
-              <button
-                onClick={() => setViewMode('analytics')}
-                className={`px-4 py-2 rounded ${viewMode === 'analytics' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-              >
-                Analytics
-              </button>
+        {/* Quick Actions */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {/* View Mode Toggles */}
+            <div className="flex items-center bg-black/20 rounded-lg p-1">
+              {[
+                { id: 'timeline', label: 'Timeline', icon: Clock },
+                { id: 'cards', label: 'Cards', icon: BarChart3 },
+                { id: 'analytics', label: 'Analytics', icon: TrendingUp }
+              ].map((mode) => {
+                const IconComponent = mode.icon;
+                return (
+                  <button
+                    key={mode.id}
+                    onClick={() => setViewMode(mode.id as any)}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
+                      viewMode === mode.id
+                        ? 'bg-purple-500/30 text-white'
+                        : 'text-purple-300 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <IconComponent className="w-4 h-4" />
+                    <span>{mode.label}</span>
+                  </button>
+                );
+              })}
             </div>
+
+            {/* Filter Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 ${
+                showFilters 
+                  ? 'bg-purple-500/30 text-white' 
+                  : 'bg-white/5 text-purple-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Filter className="w-4 h-4" />
+              <span>Filters</span>
+            </button>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            {/* Recording Toggle */}
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Recording:</span>
+              <span className="text-sm text-purple-300">Recording:</span>
               <button
                 onClick={() => setIsRecording(!isRecording)}
-                className={`w-12 h-6 rounded-full ${isRecording ? 'bg-green-500' : 'bg-gray-300'} relative transition-colors`}
+                className={`w-12 h-6 rounded-full relative transition-colors ${
+                  isRecording ? 'bg-green-500/30 border border-green-400' : 'bg-red-500/30 border border-red-400'
+                }`}
               >
                 <div
                   className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${
@@ -696,112 +742,368 @@ export default function ThoughtStreamPage() {
                 />
               </button>
             </div>
-          </div>
 
-          {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <select
-              value={filters.type}
-              onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
-              className="border rounded p-2"
+            {/* Auto-scroll Toggle */}
+            <button
+              onClick={() => setAutoScroll(!autoScroll)}
+              className={`px-3 py-2 rounded-lg text-sm transition-all flex items-center space-x-2 ${
+                autoScroll 
+                  ? 'bg-blue-500/30 text-blue-200' 
+                  : 'bg-white/5 text-purple-300 hover:text-white'
+              }`}
             >
-              <option value="all">All Types</option>
-              {Object.entries(EVENT_CONFIG).map(([key, config]) => (
-                <option key={key} value={key}>{config.label}</option>
-              ))}
-            </select>
+              {autoScroll ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              <span>{autoScroll ? 'Auto' : 'Manual'}</span>
+            </button>
 
-            <select
-              value={filters.priority}
-              onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
-              className="border rounded p-2"
+            {/* Export Data */}
+            <button
+              onClick={() => {
+                const data = JSON.stringify({ events: filteredEvents, analytics, stats }, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `thought-stream-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+              }}
+              className="px-3 py-2 bg-white/5 text-purple-300 hover:text-white hover:bg-white/10 rounded-lg text-sm transition-all flex items-center space-x-2"
             >
-              <option value="all">All Priorities</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="critical">Critical</option>
-            </select>
-
-            <select
-              value={filters.timeRange}
-              onChange={(e) => setFilters(prev => ({ ...prev, timeRange: e.target.value }))}
-              className="border rounded p-2"
-            >
-              <option value="all">All Time</option>
-              <option value="1h">Last Hour</option>
-              <option value="6h">Last 6 Hours</option>
-              <option value="24h">Last 24 Hours</option>
-              <option value="7d">Last 7 Days</option>
-            </select>
-
-            <input
-              type="text"
-              placeholder="Search events..."
-              value={filters.search}
-              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              className="border rounded p-2"
-            />
+              <Download className="w-4 h-4" />
+              <span>Export</span>
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* Content */}
-        <div className="mb-6">
-          {viewMode === 'timeline' && renderTimeline()}
-          {viewMode === 'cards' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredEvents.map((event, index) => renderEventCard(event, index))}
+      {/* Advanced Filters Panel */}
+      {showFilters && (
+        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Advanced Filters</h3>
+            <button
+              onClick={() => setShowFilters(false)}
+              className="text-purple-300 hover:text-white"
+            >
+              <ChevronUp className="w-5 h-5" />
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+            {/* Event Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-purple-300 mb-2">Event Type</label>
+              <select
+                value={filters.type}
+                onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
+                className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-white text-sm focus:border-purple-400 focus:outline-none"
+              >
+                <option value="all">All Types</option>
+                {Object.entries(EVENT_CONFIG).map(([key, config]) => (
+                  <option key={key} value={key}>{config.label}</option>
+                ))}
+              </select>
             </div>
-          )}
-          {viewMode === 'analytics' && renderAnalytics()}
-        </div>
 
-        {/* Event Detail Modal */}
-        {selectedEvent && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-96 overflow-y-auto">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold">Event Details</h3>
+            {/* Priority Filter */}
+            <div>
+              <label className="block text-sm font-medium text-purple-300 mb-2">Priority</label>
+              <select
+                value={filters.priority}
+                onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
+                className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-white text-sm focus:border-purple-400 focus:outline-none"
+              >
+                <option value="all">All Priorities</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+
+            {/* Time Range Filter */}
+            <div>
+              <label className="block text-sm font-medium text-purple-300 mb-2">Time Range</label>
+              <select
+                value={filters.timeRange}
+                onChange={(e) => setFilters(prev => ({ ...prev, timeRange: e.target.value }))}
+                className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-white text-sm focus:border-purple-400 focus:outline-none"
+              >
+                <option value="all">All Time</option>
+                <option value="5m">Last 5 Minutes</option>
+                <option value="15m">Last 15 Minutes</option>
+                <option value="1h">Last Hour</option>
+                <option value="6h">Last 6 Hours</option>
+                <option value="24h">Last 24 Hours</option>
+                <option value="7d">Last 7 Days</option>
+              </select>
+            </div>
+
+            {/* Confidence Range */}
+            <div>
+              <label className="block text-sm font-medium text-purple-300 mb-2">
+                Confidence: {Math.round(filters.confidence.min * 100)}% - {Math.round(filters.confidence.max * 100)}%
+              </label>
+              <div className="space-y-2">
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={filters.confidence.min}
+                  onChange={(e) => setFilters(prev => ({ 
+                    ...prev, 
+                    confidence: { ...prev.confidence, min: parseFloat(e.target.value) }
+                  }))}
+                  className="w-full"
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={filters.confidence.max}
+                  onChange={(e) => setFilters(prev => ({ 
+                    ...prev, 
+                    confidence: { ...prev.confidence, max: parseFloat(e.target.value) }
+                  }))}
+                  className="w-full"
+                />
+              </div>
+            </div>
+
+            {/* Search */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-purple-300 mb-2">Search Content</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-purple-400" />
+                <input
+                  type="text"
+                  placeholder="Search events, reasoning, tags..."
+                  value={filters.search}
+                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  className="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white text-sm focus:border-purple-400 focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Active Filters Summary */}
+          {(filters.type !== 'all' || filters.priority !== 'all' || filters.timeRange !== 'all' || filters.search) && (
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className="text-purple-300">Active filters:</span>
+                  <span className="text-white">{filteredEvents.length} of {events.length} events</span>
+                </div>
                 <button
-                  onClick={() => setSelectedEvent(null)}
-                  className="text-gray-500 hover:text-gray-700"
+                  onClick={() => setFilters({
+                    type: 'all',
+                    priority: 'all',
+                    confidence: { min: 0, max: 1 },
+                    timeRange: 'all',
+                    search: '',
+                    tags: []
+                  })}
+                  className="text-purple-300 hover:text-white text-sm"
                 >
-                  ✕
+                  Clear all filters
                 </button>
               </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <span className="font-medium">Type:</span> {selectedEvent.type}
-                </div>
-                <div>
-                  <span className="font-medium">Content:</span> {selectedEvent.content}
-                </div>
-                <div>
-                  <span className="font-medium">Timestamp:</span> {new Date(selectedEvent.timestamp).toLocaleString()}
-                </div>
-                {selectedEvent.confidence !== undefined && (
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Main Content Area */}
+      <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
+        <div className="p-6">
+          {viewMode === 'timeline' && renderTimeline()}
+          {viewMode === 'cards' && renderCards()}
+          {viewMode === 'analytics' && renderAnalytics()}
+        </div>
+      </div>
+
+      {/* Event Detail Modal */}
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900/95 backdrop-blur-sm rounded-xl border border-white/10 max-w-4xl w-full max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-white/10">
+              <div className="flex items-center space-x-3">
+                {(() => {
+                  const config = EVENT_CONFIG[selectedEvent.type] || EVENT_CONFIG.thought;
+                  const IconComponent = config.icon;
+                  return (
+                    <>
+                      <div className="p-2 rounded-lg bg-white/10">
+                        <IconComponent className="w-6 h-6 text-purple-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-semibold text-white">{config.label} Event</h3>
+                        <p className="text-purple-300 text-sm">{config.description}</p>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="text-purple-300 hover:text-white transition-colors"
+              >
+                <Maximize2 className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-6">
                   <div>
-                    <span className="font-medium">Confidence:</span> {Math.round(selectedEvent.confidence * 100)}%
+                    <h4 className="text-lg font-medium text-white mb-3">Content</h4>
+                    <p className="text-purple-200 leading-relaxed bg-black/20 p-4 rounded-lg border border-white/10">
+                      {selectedEvent.content}
+                    </p>
                   </div>
-                )}
-                {selectedEvent.details && (
+
+                  {selectedEvent.details?.reasoning && selectedEvent.details.reasoning.length > 0 && (
+                    <div>
+                      <h4 className="text-lg font-medium text-white mb-3">Reasoning Process</h4>
+                      <div className="space-y-2">
+                        {selectedEvent.details.reasoning.map((reason, index) => (
+                          <div key={index} className="flex items-start space-x-3 bg-black/20 p-3 rounded-lg border border-white/10">
+                            <span className="text-purple-400 font-medium text-sm">{index + 1}.</span>
+                            <p className="text-purple-200 text-sm">{reason}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedEvent.details?.alternatives && selectedEvent.details.alternatives.length > 0 && (
+                    <div>
+                      <h4 className="text-lg font-medium text-white mb-3">Alternatives Considered</h4>
+                      <div className="space-y-2">
+                        {selectedEvent.details.alternatives.map((alt, index) => (
+                          <div key={index} className="bg-black/20 p-3 rounded-lg border border-white/10">
+                            <p className="text-purple-200 text-sm">{alt}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Metadata Sidebar */}
+                <div className="space-y-6">
                   <div>
-                    <span className="font-medium">Details:</span>
-                    <pre className="bg-gray-100 p-3 rounded mt-2 text-sm overflow-x-auto">
-                      {JSON.stringify(selectedEvent.details, null, 2)}
-                    </pre>
+                    <h4 className="text-lg font-medium text-white mb-3">Event Metadata</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-purple-300">Timestamp:</span>
+                        <span className="text-white text-sm font-mono">
+                          {new Date(selectedEvent.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                      
+                      {selectedEvent.confidence !== undefined && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-purple-300">Confidence:</span>
+                          <span className={`font-medium ${getConfidenceColor(selectedEvent.confidence)}`}>
+                            {Math.round(selectedEvent.confidence * 100)}%
+                          </span>
+                        </div>
+                      )}
+
+                      {selectedEvent.details?.priority && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-purple-300">Priority:</span>
+                          <span className={`font-medium ${PRIORITY_COLORS[selectedEvent.details.priority as keyof typeof PRIORITY_COLORS]}`}>
+                            {selectedEvent.details.priority.toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+
+                      {selectedEvent.details?.impact && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-purple-300">Impact:</span>
+                          <span className="text-white font-medium">{selectedEvent.details.impact}</span>
+                        </div>
+                      )}
+
+                      {selectedEvent.details?.duration && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-purple-300">Duration:</span>
+                          <span className="text-white font-medium">{selectedEvent.details.duration}ms</span>
+                        </div>
+                      )}
+
+                      {selectedEvent.details?.goalId && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-purple-300">Goal ID:</span>
+                          <span className="text-white font-mono text-xs">{selectedEvent.details.goalId}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
+
+                  {selectedEvent.details?.tags && selectedEvent.details.tags.length > 0 && (
+                    <div>
+                      <h4 className="text-lg font-medium text-white mb-3">Tags</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedEvent.details.tags.map((tag, index) => (
+                          <span 
+                            key={index}
+                            className="bg-purple-500/20 text-purple-200 px-2 py-1 rounded text-xs border border-purple-400/30"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedEvent.details?.relatedEmotions && selectedEvent.details.relatedEmotions.length > 0 && (
+                    <div>
+                      <h4 className="text-lg font-medium text-white mb-3">Related Emotions</h4>
+                      <div className="space-y-1">
+                        {selectedEvent.details.relatedEmotions.map((emotion, index) => (
+                          <div key={index} className="text-purple-200 text-sm">{emotion}</div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedEvent.details?.context && (
+                    <div>
+                      <h4 className="text-lg font-medium text-white mb-3">Context</h4>
+                      <p className="text-purple-200 text-sm bg-black/20 p-3 rounded-lg border border-white/10">
+                        {selectedEvent.details.context}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Stats Footer */}
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="flex items-center justify-between text-sm text-gray-600">
+      {/* Footer Stats */}
+      <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center space-x-6 text-purple-300">
             <span>Showing {filteredEvents.length} of {events.length} events</span>
+            {stats && (
+              <>
+                <span>•</span>
+                <span>Event rate: {stats.eventVelocity.toFixed(1)}/min</span>
+                <span>•</span>
+                <span>Avg confidence: {Math.round(stats.averageConfidence * 100)}%</span>
+              </>
+            )}
+          </div>
+          <div className="flex items-center space-x-2 text-purple-400">
+            <Clock className="w-4 h-4" />
             <span>Last updated: {new Date().toLocaleTimeString()}</span>
           </div>
         </div>

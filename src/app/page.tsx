@@ -10,13 +10,15 @@ import EmotionDisplay from '@/components/EmotionDisplay';
 import ModelSelectorNew from '@/components/ModelSelectorNew';
 import OllamaTest from '@/components/OllamaTest';
 import MemoryDashboard from '@/components/MemoryDashboard';
-import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap } from 'lucide-react';
+import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap, Eye, ChevronDown } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import AgentOrchestrationDashboard from '@/components/AgentOrchestrationDashboard';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [systemStatus, setSystemStatus] = useState<any>(null);
   const [brainConversationData, setBrainConversationData] = useState<any>(null);
+  const [showMoreInfoDropdown, setShowMoreInfoDropdown] = useState(false);
 
   useEffect(() => {
     // Load initial system status
@@ -67,6 +69,20 @@ export default function Home() {
     handleAutonomousThinking();
   }, [activeTab]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showMoreInfoDropdown) {
+        setShowMoreInfoDropdown(false);
+      }
+    };
+    
+    if (showMoreInfoDropdown) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showMoreInfoDropdown]);
+
   const fetchSystemStatus = async () => {
     try {
       const response = await fetch('/api/brain');
@@ -91,10 +107,17 @@ export default function Home() {
     { id: 'agents', name: 'Agent Manager', icon: Users },
     { id: 'emotions', name: 'Emotion Engine', icon: Heart },
     { id: 'memory', name: 'Memory Analytics', icon: Database },
-    { id: 'orchestration', name: 'Orchestration', icon: Zap },
     { id: 'system', name: 'System Status', icon: Cpu },
     { id: 'settings', name: 'Settings', icon: Settings }
   ];
+
+  const moreInfoTabs = [
+    { id: 'orchestration', name: 'Orchestration', icon: Zap },
+    { id: 'thoughtstream', name: 'Thought Stream', icon: Eye }
+  ];
+
+  // Dynamically import the ThoughtStream page for client-side rendering
+  const ThoughtStreamPage = dynamic(() => import('./thought-stream/page'), { ssr: false });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -128,7 +151,7 @@ export default function Home() {
       </header>
 
       {/* Navigation */}
-      <nav className="bg-black/10 backdrop-blur-sm border-b border-white/5">
+      <nav className="bg-black/10 backdrop-blur-sm border-b border-white/5 relative z-50">
         <div className="container mx-auto px-6">
           <div className="flex space-x-1">
             {tabs.map((tab) => {
@@ -148,6 +171,51 @@ export default function Home() {
                 </button>
               );
             })}
+            
+            {/* More Info Dropdown */}
+            <div className="relative z-[100]">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMoreInfoDropdown(!showMoreInfoDropdown);
+                }}
+                className={`px-6 py-3 text-sm font-medium rounded-t-lg transition-colors flex items-center space-x-2 ${
+                  moreInfoTabs.some(tab => tab.id === activeTab)
+                    ? 'bg-white/10 text-white border-b-2 border-purple-400'
+                    : 'text-purple-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Settings className="w-4 h-4" />
+                <span>More Info</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${showMoreInfoDropdown ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {showMoreInfoDropdown && (
+                <div className="absolute top-full left-0 mt-1 bg-black/95 backdrop-blur-md border border-white/20 rounded-lg shadow-2xl min-w-48 z-[200]">
+                  {moreInfoTabs.map((tab) => {
+                    const Icon = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTab(tab.id);
+                          setShowMoreInfoDropdown(false);
+                        }}
+                        className={`w-full px-4 py-3 text-sm font-medium transition-colors flex items-center space-x-2 text-left first:rounded-t-lg last:rounded-b-lg ${
+                          activeTab === tab.id
+                            ? 'bg-purple-500/30 text-white'
+                            : 'text-purple-300 hover:text-white hover:bg-white/10'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span>{tab.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
@@ -161,6 +229,7 @@ export default function Home() {
         {activeTab === 'emotions' && <EmotionDisplay />}
         {activeTab === 'memory' && <MemoryDashboard />}
         {activeTab === 'orchestration' && <AgentOrchestrationDashboard />}
+        {activeTab === 'thoughtstream' && <ThoughtStreamPage />}
         {activeTab === 'system' && <SystemStatus />}
         {activeTab === 'settings' && (
           <div className="space-y-6">

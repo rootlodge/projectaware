@@ -5,6 +5,8 @@ import { CentralBrainAgent } from '../agents/CentralBrainAgent';
 import { MemorySystem } from '../core/memory';
 import { ResponseCache } from '../systems/ResponseCache';
 import { Brain } from '../core/brain';
+import { ContextManager } from '../systems/ContextManager';
+import { AgentOrchestrator } from '../agents/AgentOrchestrator';
 
 // Singleton instances to maintain state across API calls
 let stateManagerInstance: StateManager | null = null;
@@ -14,6 +16,8 @@ let centralBrainAgentInstance: CentralBrainAgent | null = null;
 let memorySystemInstance: MemorySystem | null = null;
 let responseCacheInstance: ResponseCache | null = null;
 let brainInstance: Brain | null = null;
+let contextManagerInstance: ContextManager | null = null;
+let agentOrchestratorInstance: AgentOrchestrator | null = null;
 
 export function getStateManager(): StateManager {
   if (!stateManagerInstance) {
@@ -112,4 +116,20 @@ export function resetInstances() {
   memorySystemInstance = null;
   responseCacheInstance = null;
   brainInstance = null;
+}
+
+// ContextManager singleton
+export function getContextManager(): ContextManager {
+  if (!contextManagerInstance) {
+    contextManagerInstance = new ContextManager();
+  }
+  return contextManagerInstance;
+}
+
+// AgentOrchestrator singleton
+export function getAgentOrchestrator(): AgentOrchestrator {
+  if (!agentOrchestratorInstance) {
+    agentOrchestratorInstance = new AgentOrchestrator();
+  }
+  return agentOrchestratorInstance;
 }

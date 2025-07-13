@@ -1,4 +1,5 @@
-// Emotion Trend Forecast Panel
+'use client';
+
 import React from 'react';
 
 const EmotionTrendForecastPanel: React.FC = () => {
@@ -56,7 +57,6 @@ const EmotionTrendForecastPanel: React.FC = () => {
     </section>
   );
 };
-'use client';
 
 import { useState, useEffect } from 'react';
 // Utility fetcher for predictions

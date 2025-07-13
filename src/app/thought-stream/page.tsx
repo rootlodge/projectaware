@@ -246,12 +246,14 @@ export default function ThoughtStreamPage() {
           setEvents(data.events);
         } else if (data.type === 'analytics') {
           setAnalytics(data.analytics);
-          updateStats(data.analytics);
+          updateStats(data.analytics, events);
         } else if (data.type === 'event') {
           setEvents(prev => {
             const newEvents = [...prev, data.event];
             return newEvents;
           });
+        } else if (data.type === 'recording-changed') {
+          setIsRecording(data.recording);
         }
       };
 
@@ -281,25 +283,45 @@ export default function ThoughtStreamPage() {
     }
   }, [events, autoScroll]);
 
-  const updateStats = React.useCallback((analyticsData: any) => {
+  // Fetch initial recording status
+  useEffect(() => {
+    const fetchRecordingStatus = async () => {
+      try {
+        const response = await fetch('/api/thought-stream/recording');
+        const data = await response.json();
+        if (data.success) {
+          setIsRecording(data.recording);
+        }
+      } catch (error) {
+        console.error('Failed to fetch recording status:', error);
+      }
+    };
+    
+    fetchRecordingStatus();
+  }, []);
+
+  const updateStats = React.useCallback((analyticsData: any, currentEvents?: ThoughtEvent[]) => {
     if (!analyticsData) return;
     
     const totalEvents = analyticsData.totalEvents || 0;
     const sessionDuration = analyticsData.sessionDuration || 0;
     const eventVelocity = sessionDuration > 0 ? (totalEvents / (sessionDuration / 60000)) : 0; // events per minute
     
-    // Extract top tags from events
-    const tagCounts: Record<string, number> = {};
-    events.forEach(event => {
-      event.details?.tags?.forEach(tag => {
-        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    // Extract top tags from current events if provided
+    let topTags: string[] = [];
+    if (currentEvents) {
+      const tagCounts: Record<string, number> = {};
+      currentEvents.forEach(event => {
+        event.details?.tags?.forEach(tag => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
       });
-    });
-    
-    const topTags = Object.entries(tagCounts)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 5)
-      .map(([tag]) => tag);
+      
+      topTags = Object.entries(tagCounts)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 5)
+        .map(([tag]) => tag);
+    }
 
     setStats({
       totalEvents,
@@ -309,7 +331,7 @@ export default function ThoughtStreamPage() {
       topTags,
       confidenceTrend: [] // Would need historical data for this
     });
-  }, [events]);
+  }, []);
 
   // Advanced filtering with tags and full-text search
   const filteredEvents = events.filter(event => {
@@ -370,6 +392,22 @@ export default function ThoughtStreamPage() {
     if (confidence >= 0.6) return 'text-yellow-400';
     if (confidence >= 0.4) return 'text-orange-400';
     return 'text-red-400';
+  };
+
+  const toggleRecording = async () => {
+    try {
+      const response = await fetch('/api/thought-stream/recording', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recording: !isRecording })
+      });
+      
+      if (response.ok) {
+        setIsRecording(!isRecording);
+      }
+    } catch (error) {
+      console.error('Failed to toggle recording:', error);
+    }
   };
 
   const generateTestEvents = async () => {
@@ -739,13 +777,12 @@ export default function ThoughtStreamPage() {
           <div className="flex items-center space-x-3">
             {/* Recording Toggle */}
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-purple-300">Recording:</span>
-              <button
-                onClick={() => setIsRecording(!isRecording)}
-                className={`w-12 h-6 rounded-full relative transition-colors ${
-                  isRecording ? 'bg-green-500/30 border border-green-400' : 'bg-red-500/30 border border-red-400'
-                }`}
-              >
+              <span className="text-sm text-purple-300">Recording:</span>            <button
+              onClick={toggleRecording}
+              className={`w-12 h-6 rounded-full relative transition-colors ${
+                isRecording ? 'bg-green-500/30 border border-green-400' : 'bg-red-500/30 border border-red-400'
+              }`}
+            >
                 <div
                   className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${
                     isRecording ? 'translate-x-7' : 'translate-x-1'

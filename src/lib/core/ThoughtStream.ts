@@ -210,6 +210,13 @@ export class ThoughtStream extends EventEmitter {
   }
 
   /**
+   * Get current recording status
+   */
+  public getRecordingStatus(): boolean {
+    return this.isRecording;
+  }
+
+  /**
    * Search through thought history
    */
   public search(query: string): ThoughtEvent[] {

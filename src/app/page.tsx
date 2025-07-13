@@ -10,7 +10,8 @@ import EmotionDisplay from '@/components/EmotionDisplay';
 import ModelSelectorNew from '@/components/ModelSelectorNew';
 import OllamaTest from '@/components/OllamaTest';
 import MemoryDashboard from '@/components/MemoryDashboard';
-import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle } from 'lucide-react';
+import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap } from 'lucide-react';
+import AgentOrchestrationDashboard from '@/components/AgentOrchestrationDashboard';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -90,6 +91,7 @@ export default function Home() {
     { id: 'agents', name: 'Agent Manager', icon: Users },
     { id: 'emotions', name: 'Emotion Engine', icon: Heart },
     { id: 'memory', name: 'Memory Analytics', icon: Database },
+    { id: 'orchestration', name: 'Orchestration', icon: Zap },
     { id: 'system', name: 'System Status', icon: Cpu },
     { id: 'settings', name: 'Settings', icon: Settings }
   ];
@@ -158,17 +160,16 @@ export default function Home() {
         {activeTab === 'agents' && <AgentManager />}
         {activeTab === 'emotions' && <EmotionDisplay />}
         {activeTab === 'memory' && <MemoryDashboard />}
+        {activeTab === 'orchestration' && <AgentOrchestrationDashboard />}
         {activeTab === 'system' && <SystemStatus />}
         {activeTab === 'settings' && (
           <div className="space-y-6">
             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
               <h2 className="text-2xl font-bold text-white mb-6">Settings</h2>
-              
               {/* Ollama Test Section */}
               <div className="mb-8">
                 <OllamaTest />
               </div>
-              
               {/* Model Selection Section */}
               <ModelSelectorNew onModelChange={(model: string) => {
                 console.log('Model changed to:', model);

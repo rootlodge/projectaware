@@ -2,37 +2,193 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ThoughtEvent } from '@/lib/core/ThoughtStream';
+import { 
+  Brain, 
+  Activity, 
+  Zap, 
+  Heart, 
+  Target, 
+  BookOpen, 
+  Eye, 
+  Lightbulb, 
+  Users, 
+  Shuffle, 
+  Palette, 
+  CheckCircle, 
+  AlertTriangle,
+  BarChart3,
+  Clock,
+  Filter,
+  Search,
+  Play,
+  Pause,
+  Download,
+  Maximize2,
+  TrendingUp,
+  Cpu,
+  Database,
+  MessageCircle,
+  Settings,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 
-// Event type colors and icons
+// Event type configurations with consistent theming
 const EVENT_CONFIG = {
-  reflection: { color: 'bg-purple-100 border-purple-300 text-purple-800', icon: '🔮', label: 'Reflection' },
-  thought: { color: 'bg-blue-100 border-blue-300 text-blue-800', icon: '💭', label: 'Thought' },
-  action: { color: 'bg-green-100 border-green-300 text-green-800', icon: '⚡', label: 'Action' },
-  emotion: { color: 'bg-red-100 border-red-300 text-red-800', icon: '❤️', label: 'Emotion' },
-  memory: { color: 'bg-yellow-100 border-yellow-300 text-yellow-800', icon: '🧠', label: 'Memory' },
-  goal: { color: 'bg-indigo-100 border-indigo-300 text-indigo-800', icon: '🎯', label: 'Goal' },
-  learning: { color: 'bg-teal-100 border-teal-300 text-teal-800', icon: '📚', label: 'Learning' },
-  prediction: { color: 'bg-orange-100 border-orange-300 text-orange-800', icon: '🔮', label: 'Prediction' },
-  decision: { color: 'bg-gray-100 border-gray-300 text-gray-800', icon: '⚖️', label: 'Decision' },
-  observation: { color: 'bg-green-100 border-green-300 text-green-800', icon: '👁️', label: 'Observation' },
-  insight: { color: 'bg-violet-100 border-violet-300 text-violet-800', icon: '💡', label: 'Insight' },
-  collaboration: { color: 'bg-pink-100 border-pink-300 text-pink-800', icon: '🤝', label: 'Collaboration' },
-  adaptation: { color: 'bg-cyan-100 border-cyan-300 text-cyan-800', icon: '🔄', label: 'Adaptation' },
-  creativity: { color: 'bg-rose-100 border-rose-300 text-rose-800', icon: '🎨', label: 'Creativity' },
-  validation: { color: 'bg-emerald-100 border-emerald-300 text-emerald-800', icon: '✅', label: 'Validation' },
-  error: { color: 'bg-red-200 border-red-400 text-red-900', icon: '❌', label: 'Error' },
-  confidence: { color: 'bg-indigo-100 border-indigo-300 text-indigo-800', icon: '📊', label: 'Confidence' },
-  reasoning: { color: 'bg-blue-100 border-blue-300 text-blue-800', icon: '🤔', label: 'Reasoning' },
-  tree: { color: 'bg-green-100 border-green-300 text-green-800', icon: '🌳', label: 'Decision Tree' },
-  system: { color: 'bg-gray-100 border-gray-300 text-gray-800', icon: '⚙️', label: 'System' },
-  user_interaction: { color: 'bg-blue-100 border-blue-300 text-blue-800', icon: '👤', label: 'User Interaction' }
+  reflection: { 
+    color: 'bg-purple-500/20 border-purple-400/30 text-purple-200', 
+    accent: 'border-l-purple-400',
+    icon: Brain, 
+    label: 'Reflection',
+    description: 'Deep introspective analysis'
+  },
+  thought: { 
+    color: 'bg-blue-500/20 border-blue-400/30 text-blue-200', 
+    accent: 'border-l-blue-400',
+    icon: Lightbulb, 
+    label: 'Thought',
+    description: 'Cognitive processing event'
+  },
+  action: { 
+    color: 'bg-green-500/20 border-green-400/30 text-green-200', 
+    accent: 'border-l-green-400',
+    icon: Zap, 
+    label: 'Action',
+    description: 'System execution event'
+  },
+  emotion: { 
+    color: 'bg-red-500/20 border-red-400/30 text-red-200', 
+    accent: 'border-l-red-400',
+    icon: Heart, 
+    label: 'Emotion',
+    description: 'Emotional state change'
+  },
+  memory: { 
+    color: 'bg-yellow-500/20 border-yellow-400/30 text-yellow-200', 
+    accent: 'border-l-yellow-400',
+    icon: Database, 
+    label: 'Memory',
+    description: 'Memory formation/retrieval'
+  },
+  goal: { 
+    color: 'bg-indigo-500/20 border-indigo-400/30 text-indigo-200', 
+    accent: 'border-l-indigo-400',
+    icon: Target, 
+    label: 'Goal',
+    description: 'Goal-related processing'
+  },
+  learning: { 
+    color: 'bg-teal-500/20 border-teal-400/30 text-teal-200', 
+    accent: 'border-l-teal-400',
+    icon: BookOpen, 
+    label: 'Learning',
+    description: 'Knowledge acquisition'
+  },
+  prediction: { 
+    color: 'bg-orange-500/20 border-orange-400/30 text-orange-200', 
+    accent: 'border-l-orange-400',
+    icon: TrendingUp, 
+    label: 'Prediction',
+    description: 'Predictive analysis'
+  },
+  decision: { 
+    color: 'bg-slate-500/20 border-slate-400/30 text-slate-200', 
+    accent: 'border-l-slate-400',
+    icon: Settings, 
+    label: 'Decision',
+    description: 'Decision-making process'
+  },
+  observation: { 
+    color: 'bg-emerald-500/20 border-emerald-400/30 text-emerald-200', 
+    accent: 'border-l-emerald-400',
+    icon: Eye, 
+    label: 'Observation',
+    description: 'Environmental awareness'
+  },
+  insight: { 
+    color: 'bg-violet-500/20 border-violet-400/30 text-violet-200', 
+    accent: 'border-l-violet-400',
+    icon: Lightbulb, 
+    label: 'Insight',
+    description: 'Breakthrough understanding'
+  },
+  collaboration: { 
+    color: 'bg-pink-500/20 border-pink-400/30 text-pink-200', 
+    accent: 'border-l-pink-400',
+    icon: Users, 
+    label: 'Collaboration',
+    description: 'Multi-agent coordination'
+  },
+  adaptation: { 
+    color: 'bg-cyan-500/20 border-cyan-400/30 text-cyan-200', 
+    accent: 'border-l-cyan-400',
+    icon: Shuffle, 
+    label: 'Adaptation',
+    description: 'Behavioral adjustment'
+  },
+  creativity: { 
+    color: 'bg-rose-500/20 border-rose-400/30 text-rose-200', 
+    accent: 'border-l-rose-400',
+    icon: Palette, 
+    label: 'Creativity',
+    description: 'Creative ideation'
+  },
+  validation: { 
+    color: 'bg-green-500/20 border-green-400/30 text-green-200', 
+    accent: 'border-l-green-400',
+    icon: CheckCircle, 
+    label: 'Validation',
+    description: 'Verification process'
+  },
+  error: { 
+    color: 'bg-red-600/20 border-red-500/30 text-red-200', 
+    accent: 'border-l-red-500',
+    icon: AlertTriangle, 
+    label: 'Error',
+    description: 'Error condition'
+  },
+  confidence: { 
+    color: 'bg-indigo-500/20 border-indigo-400/30 text-indigo-200', 
+    accent: 'border-l-indigo-400',
+    icon: BarChart3, 
+    label: 'Confidence',
+    description: 'Confidence assessment'
+  },
+  reasoning: { 
+    color: 'bg-blue-500/20 border-blue-400/30 text-blue-200', 
+    accent: 'border-l-blue-400',
+    icon: Cpu, 
+    label: 'Reasoning',
+    description: 'Logical reasoning'
+  },
+  tree: { 
+    color: 'bg-green-500/20 border-green-400/30 text-green-200', 
+    accent: 'border-l-green-400',
+    icon: Settings, 
+    label: 'Decision Tree',
+    description: 'Decision tree analysis'
+  },
+  system: { 
+    color: 'bg-slate-500/20 border-slate-400/30 text-slate-200', 
+    accent: 'border-l-slate-400',
+    icon: Cpu, 
+    label: 'System',
+    description: 'System operation'
+  },
+  user_interaction: { 
+    color: 'bg-blue-500/20 border-blue-400/30 text-blue-200', 
+    accent: 'border-l-blue-400',
+    icon: MessageCircle, 
+    label: 'User Interaction',
+    description: 'User engagement event'
+  }
 };
 
 const PRIORITY_COLORS = {
-  low: 'text-gray-500',
-  medium: 'text-blue-600',
-  high: 'text-orange-600',
-  critical: 'text-red-600'
+  low: 'text-slate-400',
+  medium: 'text-blue-400',
+  high: 'text-orange-400',
+  critical: 'text-red-400'
 };
 
 interface Filters {
@@ -41,6 +197,16 @@ interface Filters {
   confidence: { min: number; max: number };
   timeRange: string;
   search: string;
+  tags: string[];
+}
+
+interface ThoughtStreamStats {
+  totalEvents: number;
+  averageConfidence: number;
+  sessionDuration: number;
+  eventVelocity: number;
+  topTags: string[];
+  confidenceTrend: number[];
 }
 
 export default function ThoughtStreamPage() {
@@ -53,11 +219,16 @@ export default function ThoughtStreamPage() {
     priority: 'all',
     confidence: { min: 0, max: 1 },
     timeRange: 'all',
-    search: ''
+    search: '',
+    tags: []
   });
-  const [viewMode, setViewMode] = useState<'timeline' | 'cards' | 'analytics'>('timeline');
+  const [viewMode, setViewMode] = useState<'timeline' | 'cards' | 'analytics' | 'flow'>('timeline');
   const [isRecording, setIsRecording] = useState(true);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
+  const [stats, setStats] = useState<ThoughtStreamStats | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Connect to SSE endpoint
@@ -74,8 +245,17 @@ export default function ThoughtStreamPage() {
         setEvents(data.events);
       } else if (data.type === 'analytics') {
         setAnalytics(data.analytics);
+        updateStats(data.analytics);
       } else if (data.type === 'event') {
-        setEvents(prev => [...prev, data.event]);
+        setEvents(prev => {
+          const newEvents = [...prev, data.event];
+          if (autoScroll && scrollRef.current) {
+            setTimeout(() => {
+              scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+            }, 100);
+          }
+          return newEvents;
+        });
       }
     };
 
@@ -88,9 +268,39 @@ export default function ThoughtStreamPage() {
         eventSourceRef.current.close();
       }
     };
-  }, []);
+  }, [autoScroll]);
 
-  // Filter events based on current filters
+  const updateStats = (analyticsData: any) => {
+    if (!analyticsData) return;
+    
+    const totalEvents = analyticsData.totalEvents || 0;
+    const sessionDuration = analyticsData.sessionDuration || 0;
+    const eventVelocity = sessionDuration > 0 ? (totalEvents / (sessionDuration / 60000)) : 0; // events per minute
+    
+    // Extract top tags from events
+    const tagCounts: Record<string, number> = {};
+    events.forEach(event => {
+      event.details?.tags?.forEach(tag => {
+        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+      });
+    });
+    
+    const topTags = Object.entries(tagCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([tag]) => tag);
+
+    setStats({
+      totalEvents,
+      averageConfidence: analyticsData.averageConfidence || 0,
+      sessionDuration,
+      eventVelocity,
+      topTags,
+      confidenceTrend: [] // Would need historical data for this
+    });
+  };
+
+  // Advanced filtering with tags and full-text search
   const filteredEvents = events.filter(event => {
     if (filters.type !== 'all' && event.type !== filters.type) return false;
     if (filters.priority !== 'all' && event.details?.priority !== filters.priority) return false;
@@ -101,6 +311,8 @@ export default function ThoughtStreamPage() {
       const eventTime = new Date(event.timestamp).getTime();
       const now = Date.now();
       const ranges = {
+        '5m': 5 * 60 * 1000,
+        '15m': 15 * 60 * 1000,
         '1h': 60 * 60 * 1000,
         '6h': 6 * 60 * 60 * 1000,
         '24h': 24 * 60 * 60 * 1000,
@@ -110,8 +322,21 @@ export default function ThoughtStreamPage() {
       if (range && eventTime < now - range) return false;
     }
 
-    if (filters.search && !event.content.toLowerCase().includes(filters.search.toLowerCase()) &&
-        !event.details?.context?.toLowerCase().includes(filters.search.toLowerCase())) return false;
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      const searchMatch = event.content.toLowerCase().includes(searchLower) ||
+                         event.details?.context?.toLowerCase().includes(searchLower) ||
+                         event.details?.reasoning?.some(r => r.toLowerCase().includes(searchLower)) ||
+                         event.details?.tags?.some(t => t.toLowerCase().includes(searchLower));
+      if (!searchMatch) return false;
+    }
+
+    if (filters.tags.length > 0) {
+      const hasRequiredTags = filters.tags.every(tag => 
+        event.details?.tags?.includes(tag)
+      );
+      if (!hasRequiredTags) return false;
+    }
 
     return true;
   });
@@ -121,128 +346,297 @@ export default function ThoughtStreamPage() {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     
-    if (diff < 60000) return 'Just now';
+    if (diff < 1000) return 'Just now';
+    if (diff < 60000) return `${Math.floor(diff / 1000)}s ago`;
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
     return date.toLocaleDateString();
   };
 
+  const getConfidenceColor = (confidence?: number) => {
+    if (!confidence) return 'text-slate-400';
+    if (confidence >= 0.8) return 'text-green-400';
+    if (confidence >= 0.6) return 'text-yellow-400';
+    if (confidence >= 0.4) return 'text-orange-400';
+    return 'text-red-400';
+  };
+
+  const generateTestEvents = async () => {
+    try {
+      const response = await fetch('/api/test-thought-stream', { method: 'POST' });
+      const result = await response.json();
+      if (result.success) {
+        console.log(`Generated ${result.events} test events`);
+      }
+    } catch (error) {
+      console.error('Failed to generate test events:', error);
+    }
+  };
+
   const renderEventCard = (event: ThoughtEvent, index: number) => {
     const config = EVENT_CONFIG[event.type] || EVENT_CONFIG.thought;
+    const IconComponent = config.icon;
     
     return (
       <div
         key={`${event.timestamp}-${index}`}
-        className={`p-4 rounded-lg border-l-4 ${config.color} cursor-pointer hover:shadow-md transition-shadow`}
+        className={`bg-white/5 backdrop-blur-sm rounded-xl p-6 border ${config.color} ${config.accent} border-l-4 cursor-pointer hover:bg-white/10 transition-all duration-300 group`}
         onClick={() => setSelectedEvent(event)}
       >
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg">{config.icon}</span>
-            <span className="font-semibold text-sm">{config.label}</span>
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/20 transition-colors">
+              <IconComponent className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-semibold text-white">{config.label}</span>
+              <p className="text-xs text-purple-300">{config.description}</p>
+            </div>
             {event.details?.priority && (
-              <span className={`text-xs font-medium ${PRIORITY_COLORS[event.details.priority as keyof typeof PRIORITY_COLORS]}`}>
+              <span className={`text-xs font-medium px-2 py-1 rounded-full bg-white/10 ${PRIORITY_COLORS[event.details.priority as keyof typeof PRIORITY_COLORS]}`}>
                 {event.details.priority.toUpperCase()}
               </span>
             )}
           </div>
-          <div className="text-xs text-gray-500">
-            {formatTimestamp(event.timestamp)}
+          <div className="text-xs text-purple-300 flex flex-col items-end">
+            <span>{formatTimestamp(event.timestamp)}</span>
+            {event.confidence !== undefined && (
+              <span className={`${getConfidenceColor(event.confidence)} font-medium`}>
+                {Math.round(event.confidence * 100)}%
+              </span>
+            )}
           </div>
         </div>
         
-        <p className="text-gray-700 mb-2 line-clamp-3">{event.content}</p>
+        <p className="text-white mb-4 line-clamp-3 leading-relaxed">{event.content}</p>
         
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <div className="flex items-center space-x-4">
-            {event.confidence !== undefined && (
-              <span>Confidence: {Math.round(event.confidence * 100)}%</span>
-            )}
+        {/* Event metadata */}
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center space-x-4 text-purple-300">
             {event.details?.goalId && (
-              <span>Goal: {event.details.goalId.slice(0, 8)}...</span>
+              <span className="flex items-center space-x-1">
+                <Target className="w-3 h-3" />
+                <span>Goal: {event.details.goalId.slice(0, 8)}...</span>
+              </span>
+            )}
+            {event.details?.duration && (
+              <span className="flex items-center space-x-1">
+                <Clock className="w-3 h-3" />
+                <span>{event.details.duration}ms</span>
+              </span>
             )}
           </div>
           {event.details?.tags && event.details.tags.length > 0 && (
             <div className="flex space-x-1">
               {event.details.tags.slice(0, 3).map((tag, i) => (
-                <span key={i} className="bg-gray-200 px-2 py-1 rounded text-xs">
+                <span key={i} className="bg-purple-500/20 text-purple-200 px-2 py-1 rounded text-xs">
                   {tag}
                 </span>
               ))}
               {event.details.tags.length > 3 && (
-                <span className="text-gray-400">+{event.details.tags.length - 3}</span>
+                <span className="text-purple-400">+{event.details.tags.length - 3}</span>
               )}
             </div>
           )}
         </div>
+
+        {/* Reasoning preview */}
+        {event.details?.reasoning && event.details.reasoning.length > 0 && (
+          <div className="mt-3 p-3 bg-black/20 rounded-lg border border-white/10">
+            <p className="text-xs text-purple-300 mb-1">Reasoning:</p>
+            <p className="text-xs text-white line-clamp-2">{event.details.reasoning[0]}</p>
+          </div>
+        )}
       </div>
     );
   };
 
   const renderTimeline = () => (
-    <div className="space-y-4">
-      {filteredEvents.map((event, index) => (
-        <div key={`${event.timestamp}-${index}`} className="flex items-start space-x-4">
-          <div className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-          <div className="flex-1">
-            {renderEventCard(event, index)}
-          </div>
+    <div className="space-y-6" ref={scrollRef}>
+      {filteredEvents.length === 0 ? (
+        <div className="text-center py-12">
+          <Brain className="w-16 h-16 text-purple-400 mx-auto mb-4 opacity-50" />
+          <p className="text-purple-300 text-lg mb-2">No thought events found</p>
+          <p className="text-purple-400 text-sm mb-6">
+            The cognitive stream will populate as the system processes thoughts
+          </p>
+          <button
+            onClick={generateTestEvents}
+            className="px-6 py-3 bg-purple-500/20 text-purple-200 rounded-lg border border-purple-400/30 hover:bg-purple-500/30 transition-colors"
+          >
+            Generate Test Events
+          </button>
         </div>
-      ))}
+      ) : (
+        filteredEvents.map((event, index) => (
+          <div key={`${event.timestamp}-${index}`} className="flex items-start space-x-6">
+            <div className="flex flex-col items-center">
+              <div className="w-4 h-4 bg-purple-400 rounded-full flex-shrink-0"></div>
+              {index < filteredEvents.length - 1 && (
+                <div className="w-0.5 h-16 bg-gradient-to-b from-purple-400 to-transparent mt-2"></div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              {renderEventCard(event, index)}
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+
+  const renderCards = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {filteredEvents.length === 0 ? (
+        <div className="col-span-full text-center py-12">
+          <Brain className="w-16 h-16 text-purple-400 mx-auto mb-4 opacity-50" />
+          <p className="text-purple-300 text-lg mb-2">No thought events found</p>
+          <p className="text-purple-400 text-sm mb-6">
+            Adjust your filters or generate test events to see cognitive activity
+          </p>
+          <button
+            onClick={generateTestEvents}
+            className="px-6 py-3 bg-purple-500/20 text-purple-200 rounded-lg border border-purple-400/30 hover:bg-purple-500/30 transition-colors"
+          >
+            Generate Test Events
+          </button>
+        </div>
+      ) : (
+        filteredEvents.map((event, index) => renderEventCard(event, index))
+      )}
     </div>
   );
 
   const renderAnalytics = () => {
-    if (!analytics) return <div>Loading analytics...</div>;
+    if (!analytics && !stats) {
+      return (
+        <div className="text-center py-12">
+          <BarChart3 className="w-16 h-16 text-purple-400 mx-auto mb-4 opacity-50" />
+          <p className="text-purple-300">Loading analytics...</p>
+        </div>
+      );
+    }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Event Summary</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>Total Events:</span>
-              <span className="font-medium">{analytics.totalEvents}</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {/* Real-time Stats */}
+        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Live Metrics</h3>
+            <Activity className="w-5 h-5 text-purple-400" />
+          </div>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-purple-300">Total Events:</span>
+              <span className="text-white font-medium">{stats?.totalEvents || analytics?.totalEvents || 0}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Avg Confidence:</span>
-              <span className="font-medium">{Math.round(analytics.averageConfidence * 100)}%</span>
+            <div className="flex justify-between items-center">
+              <span className="text-purple-300">Avg Confidence:</span>
+              <span className={`font-medium ${getConfidenceColor(stats?.averageConfidence || analytics?.averageConfidence)}`}>
+                {Math.round((stats?.averageConfidence || analytics?.averageConfidence || 0) * 100)}%
+              </span>
             </div>
-            <div className="flex justify-between">
-              <span>Session Duration:</span>
-              <span className="font-medium">{Math.round(analytics.sessionDuration / 60000)}m</span>
+            <div className="flex justify-between items-center">
+              <span className="text-purple-300">Event Rate:</span>
+              <span className="text-white font-medium">{stats?.eventVelocity.toFixed(1) || '0.0'}/min</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-purple-300">Session:</span>
+              <span className="text-white font-medium">{Math.round((stats?.sessionDuration || analytics?.sessionDuration || 0) / 60000)}m</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Events by Type</h3>
-          <div className="space-y-2">
-            {Object.entries(analytics.eventsByType).map(([type, count]) => (
-              <div key={type} className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <span>{EVENT_CONFIG[type as keyof typeof EVENT_CONFIG]?.icon || '📝'}</span>
-                  <span className="capitalize">{type}</span>
+        {/* Event Types Distribution */}
+        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Event Types</h3>
+            <BarChart3 className="w-5 h-5 text-purple-400" />
+          </div>
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {analytics?.eventsByType ? Object.entries(analytics.eventsByType).map(([type, count]) => {
+              const config = EVENT_CONFIG[type as keyof typeof EVENT_CONFIG];
+              const IconComponent = config?.icon || Brain;
+              return (
+                <div key={type} className="flex justify-between items-center py-1">
+                  <div className="flex items-center space-x-2">
+                    <IconComponent className="w-4 h-4 text-purple-400" />
+                    <span className="text-purple-300 capitalize text-sm">{type}</span>
+                  </div>
+                  <span className="text-white font-medium">{count as number}</span>
                 </div>
-                <span className="font-medium">{count as number}</span>
-              </div>
-            ))}
+              );
+            }) : (
+              <p className="text-purple-400 text-sm">No data available</p>
+            )}
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+        {/* Priority Distribution */}
+        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Priority Levels</h3>
+            <AlertTriangle className="w-5 h-5 text-purple-400" />
+          </div>
           <div className="space-y-2">
-            {analytics.recentActivity.map((bucket: any, index: number) => (
-              <div key={index} className="flex justify-between">
-                <span className="text-sm text-gray-600">
+            {analytics?.eventsByPriority ? Object.entries(analytics.eventsByPriority).map(([priority, count]) => (
+              <div key={priority} className="flex justify-between items-center">
+                <span className={`capitalize ${PRIORITY_COLORS[priority as keyof typeof PRIORITY_COLORS]}`}>
+                  {priority}
+                </span>
+                <span className="text-white font-medium">{count as number}</span>
+              </div>
+            )) : (
+              <p className="text-purple-400 text-sm">No data available</p>
+            )}
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Activity Timeline</h3>
+            <Clock className="w-5 h-5 text-purple-400" />
+          </div>
+          <div className="space-y-2">
+            {analytics?.recentActivity ? analytics.recentActivity.map((bucket: any, index: number) => (
+              <div key={index} className="flex justify-between items-center">
+                <span className="text-purple-300 text-sm">
                   {new Date(bucket.timestamp).toLocaleTimeString()}
                 </span>
-                <span className="font-medium">{bucket.count}</span>
+                <div className="flex items-center space-x-2">
+                  <div 
+                    className="h-2 bg-purple-400 rounded"
+                    style={{ width: `${Math.max(bucket.count * 10, 8)}px` }}
+                  ></div>
+                  <span className="text-white font-medium text-sm">{bucket.count}</span>
+                </div>
               </div>
-            ))}
+            )) : (
+              <p className="text-purple-400 text-sm">No recent activity</p>
+            )}
           </div>
         </div>
+
+        {/* Top Tags */}
+        {stats?.topTags && stats.topTags.length > 0 && (
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 md:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Trending Tags</h3>
+              <TrendingUp className="w-5 h-5 text-purple-400" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {stats.topTags.map((tag, index) => (
+                <span 
+                  key={index}
+                  className="bg-purple-500/20 text-purple-200 px-3 py-1 rounded-full text-sm border border-purple-400/30"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   };

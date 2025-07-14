@@ -20,11 +20,10 @@ export async function getAutonomousThinkingSystem(): Promise<AutonomousThinkingS
       const memorySystem = await getMemorySystem(); // Now properly await the async call
       
       autonomousThinkingSystemInstance = new AutonomousThinkingSystem(
-        stateManager,
         emotionEngine,
-        goalEngine,
-        centralBrain,
-        memorySystem
+        stateManager,
+        memorySystem,
+        goalEngine
       );
       
       console.log('[AutonomousThinking] System initialized successfully');

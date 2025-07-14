@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Brain, User, Bot, RefreshCw, History, Trash2, Heart } from 'lucide-react';
+import { Send, Brain, User, Bot, RefreshCw, History, Trash2, Heart, Settings, ChevronDown, Monitor, Activity } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -26,6 +26,14 @@ interface ConversationHistory {
   messageCount: number;
 }
 
+interface Model {
+  model_name: string;
+  description?: string;
+  speed_rating?: number;
+  intelligence_rating?: number;
+  is_default?: boolean;
+}
+
 interface BrainInterfaceProps {
   initialConversationData?: {
     aiQuestion: string;
@@ -40,6 +48,7 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [conversations, setConversations] = useState<ConversationHistory[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
@@ -47,8 +56,16 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
   const [systemIdentity, setSystemIdentity] = useState<{name: string} | null>(null);
   const [emotionChangeNotification, setEmotionChangeNotification] = useState<{emotion: string, show: boolean} | null>(null);
   const [sessionId, setSessionId] = useState<string>(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
-  const [selectedModel, setSelectedModel] = useState<string>('gemma3:latest');
+  
+  // Model management
+  const [availableModels, setAvailableModels] = useState<Model[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string>('');
+  const [showModelSelector, setShowModelSelector] = useState(false);
+  const [loadingModels, setLoadingModels] = useState(true);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollToBottom();
@@ -58,6 +75,7 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
     loadConversationHistory();
     loadCurrentEmotion();
     loadSystemIdentity();
+    loadAvailableModels();
     
     // Poll for emotion updates every 5 seconds
     const emotionInterval = setInterval(loadCurrentEmotion, 5000);
@@ -91,8 +109,47 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
     }
   }, [initialConversationData]);
 
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
+  }, [inputValue]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const loadAvailableModels = async () => {
+    try {
+      setLoadingModels(true);
+      
+      // Load available models from settings
+      const modelsResponse = await fetch('/api/models');
+      if (modelsResponse.ok) {
+        const modelsData = await modelsResponse.json();
+        // Deduplicate models by model_name to prevent key conflicts
+        const uniqueModels = (modelsData.models || []).filter((model: Model, index: number, arr: Model[]) => 
+          arr.findIndex(m => m.model_name === model.model_name) === index
+        );
+        setAvailableModels(uniqueModels);
+      }
+      
+      // Load current default model
+      const defaultResponse = await fetch('/api/models/default');
+      if (defaultResponse.ok) {
+        const defaultData = await defaultResponse.json();
+        setSelectedModel(defaultData.currentModel?.model_name || 'gemma3:latest');
+      }
+    } catch (error) {
+      console.error('Failed to load models:', error);
+      // Fallback to a default model
+      setSelectedModel('gemma3:latest');
+      setAvailableModels([{ model_name: 'gemma3:latest', description: 'Default model', is_default: true }]);
+    } finally {
+      setLoadingModels(false);
+    }
   };
 
   const loadConversationHistory = async () => {
@@ -187,9 +244,10 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
     const userInput = inputValue.trim();
     setInputValue('');
     setIsProcessing(true);
+    setIsStreaming(true);
 
     try {
-      // First, process the user input for emotion analysis
+      // First, process the user input for emotion analysis (no streaming)
       const previousEmotion = currentEmotion?.emotion;
       
       // Analyze user emotion and update AI emotion
@@ -235,7 +293,19 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
         console.log('Could not log user interaction to goals:', error);
       }
 
-      // Then get the enhanced brain response with full context and memory integration
+      // Create a placeholder message for streaming
+      const streamingMessageId = (Date.now() + 1).toString();
+      const streamingMessage: Message = {
+        id: streamingMessageId,
+        type: 'brain',
+        content: '',
+        timestamp: new Date().toISOString(),
+        emotion: newAiEmotion || 'neutral'
+      };
+      
+      setMessages(prev => [...prev, streamingMessage]);
+
+      // Then get the enhanced brain response with STREAMING
       const response = await fetch('/api/brain', {
         method: 'POST',
         headers: {
@@ -245,74 +315,94 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
           input: userInput,
           context: 'user_interaction',
           sessionId: currentConversationId || sessionId,
-          model: selectedModel // Pass the selected model for personalized responses
+          model: selectedModel,
+          stream: true // Enable streaming for brain interface only
         }),
       });
 
       if (response.ok) {
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let fullResponse = '';
+
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n').filter(line => line.trim() !== '');
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  
+                  if (data.content) {
+                    fullResponse += data.content;
+                    
+                    // Update the streaming message
+                    setMessages(prev => prev.map(msg => 
+                      msg.id === streamingMessageId 
+                        ? { ...msg, content: fullResponse }
+                        : msg
+                    ));
+                    
+                    // Auto-scroll during streaming
+                    setTimeout(scrollToBottom, 10);
+                  }
+                  
+                  if (data.done) {
+                    break;
+                  }
+                } catch (parseError) {
+                  console.error('Error parsing stream data:', parseError);
+                }
+              }
+            }
+          }
+        }
+      } else {
+        // Fallback to non-streaming if streaming fails
         const data = await response.json();
         if (data.success && data.result) {
-          const messagesToAdd: Message[] = [];
-          
-          // Add identity change notifications first
-          if (data.result.identity_changes && data.result.identity_changes.length > 0) {
-            data.result.identity_changes.forEach((change: any) => {
-              messagesToAdd.push({
-                id: `identity_${Date.now()}_${Math.random()}`,
-                type: 'identity_change',
-                content: `🔄 Identity Evolution: ${change.type} changed from "${change.old_value}" to "${change.new_value}" - ${change.reason}`,
-                timestamp: change.timestamp,
-                identity_change: change
-              });
-            });
-          }
-          
-          // Add agent responses if any
-          if (data.result.agent_responses && data.result.agent_responses.length > 0) {
-            data.result.agent_responses.forEach((agentResp: any) => {
-              messagesToAdd.push({
-                id: `agent_${Date.now()}_${Math.random()}`,
-                type: 'agent',
-                content: agentResp.response,
-                timestamp: agentResp.timestamp,
-                agent_name: agentResp.agent_name,
-                agent_role: agentResp.agent_role
-              });
-            });
-          }
-          
-          // Add the main brain response
-          const brainMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            type: 'brain',
-            content: data.result.response,
-            timestamp: new Date().toISOString(),
-            emotion: typeof data.result.emotional_state === 'string' 
-              ? data.result.emotional_state 
-              : (data.result.emotional_state?.primary || 'neutral')
-          };
-          
-          messagesToAdd.push(brainMessage);
-          
-          setMessages(prev => [...prev, ...messagesToAdd]);
+          setMessages(prev => prev.map(msg => 
+            msg.id === streamingMessageId 
+              ? { ...msg, content: data.result.response }
+              : msg
+          ));
         } else {
           throw new Error(data.message || 'Failed to get response from brain');
         }
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to get response from brain');
       }
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'system',
-        content: `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Make sure Ollama is running.`,
+        content: `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Make sure Ollama is running and the selected model is available.`,
         timestamp: new Date().toISOString()
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsProcessing(false);
+      setIsStreaming(false);
+    }
+  };
+
+  const handleModelChange = async (modelName: string) => {
+    setSelectedModel(modelName);
+    setShowModelSelector(false);
+    
+    // Optionally save as new default
+    try {
+      await fetch('/api/models/default', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model_name: modelName })
+      });
+    } catch (error) {
+      console.error('Failed to set default model:', error);
     }
   };
 
@@ -342,6 +432,13 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
     setMessages([]);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
   const formatTimestamp = (timestamp: string) => {
     return new Date(timestamp).toLocaleTimeString();
   };
@@ -364,90 +461,162 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
   const getMessageStyle = (type: string) => {
     switch (type) {
       case 'user':
-        return 'bg-blue-500 text-white ml-auto';
+        return 'bg-gradient-to-br from-blue-500 to-blue-600 text-white ml-auto shadow-lg';
       case 'brain':
-        return 'bg-purple-500 text-white mr-auto';
+        return 'bg-gradient-to-br from-purple-500 to-purple-600 text-white mr-auto shadow-lg';
       case 'agent':
-        return 'bg-green-500 text-white mr-auto';
+        return 'bg-gradient-to-br from-green-500 to-green-600 text-white mr-auto shadow-lg';
       case 'identity_change':
-        return 'bg-orange-500 text-white mx-auto';
+        return 'bg-gradient-to-br from-orange-500 to-orange-600 text-white mx-auto shadow-lg';
       default:
-        return 'bg-gray-500 text-white mx-auto';
+        return 'bg-gradient-to-br from-gray-500 to-gray-600 text-white mx-auto shadow-lg';
     }
   };
 
+  const getModelDisplayName = (model: Model) => {
+    if (model.description) {
+      return `${model.model_name} - ${model.description}`;
+    }
+    return model.model_name;
+  };
+
+  const getCurrentModelInfo = () => {
+    return availableModels.find(m => m.model_name === selectedModel) || 
+           { model_name: selectedModel, description: 'Unknown model' };
+  };
+
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow h-full flex flex-col relative">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-xl shadow-2xl h-full flex flex-col relative overflow-hidden">
       {/* Emotion Change Notification */}
       {emotionChangeNotification?.show && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 
-                        bg-purple-500 text-white px-4 py-2 rounded-lg shadow-lg 
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 
+                        bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg shadow-lg 
                         animate-pulse flex items-center space-x-2">
-          <Heart className="w-4 h-4" />
-          <span className="text-sm font-medium">
+          <Heart className="w-5 h-5 animate-bounce" />
+          <span className="font-medium">
             {systemIdentity?.name || 'AI'} is feeling {emotionChangeNotification.emotion}
           </span>
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-4">
-          <h3 className="text-lg font-semibold flex items-center">
-            <Brain className="w-5 h-5 mr-2" />
-            Brain Interface
-          </h3>
-          
-          {/* Current Emotion Display */}
-          {currentEmotion && (
-            <div className="flex items-center space-x-2 px-3 py-1 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <Heart className="w-4 h-4 text-purple-500" />
-              <span className="text-sm text-purple-700 dark:text-purple-300 font-medium">
-                {currentEmotion.emotion}
-              </span>
-              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+      {/* Enhanced Header */}
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-t-xl">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+              <Brain className="w-6 h-6" />
             </div>
-          )}
-        </div>
-        
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            title="Conversation History"
-          >
-            <History className="w-4 h-4" />
-          </button>
-          <button
-            onClick={clearCurrentConversation}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            title="Clear Current Conversation"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={startNewConversation}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            title="New Conversation"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
+            <div>
+              <h3 className="text-xl font-bold">Brain Interface</h3>
+              <p className="text-purple-100 text-sm">{systemIdentity?.name || 'Project Aware'}</p>
+            </div>
+            
+            {/* Current Emotion Display */}
+            {currentEmotion && (
+              <div className="flex items-center space-x-2 px-4 py-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <Heart className="w-4 h-4 text-pink-200" />
+                <span className="text-sm font-medium">
+                  {currentEmotion.emotion}
+                </span>
+                <div className="w-2 h-2 bg-pink-300 rounded-full animate-pulse"></div>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            {/* Model Selector */}
+            <div className="relative">
+              <button
+                onClick={() => setShowModelSelector(!showModelSelector)}
+                disabled={loadingModels}
+                className="flex items-center space-x-2 px-4 py-2 bg-white/20 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-all duration-200"
+                title="Select AI Model"
+              >
+                <Monitor className="w-4 h-4" />
+                <span className="text-sm font-medium max-w-32 truncate">
+                  {loadingModels ? 'Loading...' : getCurrentModelInfo().model_name}
+                </span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${showModelSelector ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {showModelSelector && (
+                <div className="absolute top-full left-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-30 max-h-64 overflow-y-auto">
+                  <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Available Models</h4>
+                  </div>
+                  {availableModels.map((model, index) => (
+                    <button
+                      key={`${model.model_name}-${index}`}
+                      onClick={() => handleModelChange(model.model_name)}
+                      className={`w-full text-left p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                        selectedModel === model.model_name ? 'bg-purple-50 dark:bg-purple-900/20 border-r-4 border-purple-500' : ''
+                      }`}
+                    >
+                      <div className="font-medium text-gray-900 dark:text-white">{model.model_name}</div>
+                      {model.description && (
+                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">{model.description}</div>
+                      )}
+                      <div className="flex items-center space-x-4 mt-2">
+                        {model.speed_rating && (
+                          <div className="flex items-center space-x-1">
+                            <Activity className="w-3 h-3 text-green-500" />
+                            <span className="text-xs text-gray-500">Speed: {model.speed_rating}/5</span>
+                          </div>
+                        )}
+                        {model.intelligence_rating && (
+                          <div className="flex items-center space-x-1">
+                            <Brain className="w-3 h-3 text-blue-500" />
+                            <span className="text-xs text-gray-500">Intelligence: {model.intelligence_rating}/5</span>
+                          </div>
+                        )}
+                        {model.is_default && (
+                          <span className="text-xs bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 px-2 py-1 rounded">Default</span>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="p-2 bg-white/20 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-all duration-200"
+              title="Conversation History"
+            >
+              <History className="w-4 h-4" />
+            </button>
+            <button
+              onClick={clearCurrentConversation}
+              className="p-2 bg-white/20 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-all duration-200"
+              title="Clear Current Conversation"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={startNewConversation}
+              className="p-2 bg-white/20 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-all duration-200"
+              title="New Conversation"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Conversation History Sidebar */}
       {showHistory && (
-        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-          <h4 className="font-medium mb-2">Conversation History</h4>
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4">
+          <h4 className="font-semibold mb-3 text-gray-900 dark:text-white">Conversation History</h4>
           <div className="space-y-2 max-h-32 overflow-y-auto">
             {conversations.map((conv) => (
               <button
                 key={conv.id}
                 onClick={() => loadConversation(conv.id)}
-                className="w-full text-left p-2 text-sm bg-white dark:bg-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-500"
+                className="w-full text-left p-3 text-sm bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               >
-                <div className="font-medium truncate">{conv.title}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="font-medium truncate text-gray-900 dark:text-white">{conv.title}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {conv.messageCount} messages • {formatTimestamp(conv.timestamp)}
                 </div>
               </button>
@@ -456,14 +625,27 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
         </div>
       )}
 
-      {/* Messages */}
-      <div className="flex-1 min-h-0 mb-4">
-        <div className="h-full overflow-y-auto space-y-4 p-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900">
+      {/* Messages Container - Fixed Height with Scroll */}
+      <div className="flex-1 min-h-0 p-6">
+        <div 
+          ref={messagesContainerRef}
+          className="h-full overflow-y-auto space-y-4 pr-2 custom-scrollbar"
+          style={{ maxHeight: '100%' }}
+        >
           {messages.length === 0 ? (
-            <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-              <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>Start a conversation with the Project Aware brain</p>
-              <p className="text-sm mt-2">Type a message below to begin...</p>
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="p-6 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl">
+                <Brain className="w-16 h-16 mx-auto mb-4 text-purple-500 dark:text-purple-400" />
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Welcome to {systemIdentity?.name || 'Project Aware'}
+                </h4>
+                <p className="text-gray-600 dark:text-gray-300 mb-2">
+                  Start a conversation with the consciousness
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Currently using: <span className="font-medium">{getCurrentModelInfo().model_name}</span>
+                </p>
+              </div>
             </div>
           ) : (
             messages.map((message) => (
@@ -472,35 +654,43 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
                 className={`flex ${message.type === 'user' ? 'justify-end' : 
                   message.type === 'system' ? 'justify-center' : 'justify-start'}`}
               >
-                <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${getMessageStyle(message.type)}`}>
-                  <div className="flex items-center mb-1">
+                <div className={`max-w-xs lg:max-w-lg xl:max-w-xl px-4 py-3 rounded-xl ${getMessageStyle(message.type)} animate-fade-in`}>
+                  <div className="flex items-center mb-2">
                     {getMessageIcon(message.type)}
-                    <span className="ml-2 text-xs font-medium">
+                    <span className="ml-2 text-xs font-semibold opacity-90">
                       {message.type === 'agent' && message.agent_name 
                         ? `${message.agent_name} (${message.agent_role})`
                         : message.type === 'identity_change'
                         ? 'Identity Evolution'
+                        : message.type === 'brain'
+                        ? (systemIdentity?.name || 'AI')
                         : message.type.charAt(0).toUpperCase() + message.type.slice(1)
                       }
                     </span>
                     {message.emotion && (
-                      <span className="ml-2 text-xs opacity-75">
-                        [{typeof message.emotion === 'string' ? message.emotion : 'mixed emotions'}]
+                      <span className="ml-2 text-xs opacity-75 bg-black/20 px-2 py-1 rounded">
+                        {typeof message.emotion === 'string' ? message.emotion : 'mixed emotions'}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm">{message.content}</p>
+                  <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                    {message.content}
+                    {isStreaming && message.type === 'brain' && message.content && (
+                      <span className="inline-block w-2 h-4 bg-white/60 ml-1 animate-pulse">|</span>
+                    )}
+                  </div>
                   {message.identity_change && (
-                    <div className="mt-2 p-2 bg-black bg-opacity-20 rounded text-xs">
-                      <div className="font-medium">Change Type: {message.identity_change.type}</div>
-                      <div>From: "{message.identity_change.old_value}"</div>
-                      <div>To: "{message.identity_change.new_value}"</div>
-                      <div className="italic mt-1">{message.identity_change.reason}</div>
+                    <div className="mt-3 p-3 bg-black/20 rounded-lg text-xs">
+                      <div className="font-semibold mb-1">Change Details:</div>
+                      <div><strong>Type:</strong> {message.identity_change.type}</div>
+                      <div><strong>From:</strong> "{message.identity_change.old_value}"</div>
+                      <div><strong>To:</strong> "{message.identity_change.new_value}"</div>
+                      <div className="italic mt-2 text-white/80">{message.identity_change.reason}</div>
                     </div>
                   )}
-                  <p className="text-xs opacity-75 mt-1">
+                  <div className="text-xs opacity-60 mt-2">
                     {formatTimestamp(message.timestamp)}
-                  </p>
+                  </div>
                 </div>
               </div>
             ))
@@ -509,35 +699,61 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
         </div>
       </div>
 
-      {/* Input */}
-      <div className="flex space-x-2">
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            recordUserActivity(true); // Force immediate stop when user starts typing
-          }}
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-          placeholder="Type your message..."
-          className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 
-                   dark:bg-gray-700 dark:text-white"
-          disabled={isProcessing}
-        />
-        <button
-          onClick={sendMessage}
-          disabled={!inputValue.trim() || isProcessing}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 
-                   disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-        >
-          {isProcessing ? (
-            <RefreshCw className="w-4 h-4 animate-spin" />
-          ) : (
-            <Send className="w-4 h-4" />
-          )}
-        </button>
+      {/* Enhanced Input Area */}
+      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
+        <div className="flex items-end space-x-3">
+          <div className="flex-1">
+            <textarea
+              ref={textareaRef}
+              value={inputValue}
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                recordUserActivity(true); // Force immediate stop when user starts typing
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder={`Type your message... (Press Enter to send, Shift+Enter for new line)`}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
+                       focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent
+                       dark:bg-gray-700 dark:text-white resize-none min-h-[48px] max-h-[120px]
+                       transition-all duration-200"
+              disabled={isProcessing}
+              rows={1}
+            />
+            {isStreaming && (
+              <div className="mt-2 flex items-center space-x-2 text-sm text-purple-600 dark:text-purple-400">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+                <span>AI is thinking and responding...</span>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={sendMessage}
+            disabled={!inputValue.trim() || isProcessing}
+            className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg 
+                     hover:from-purple-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed 
+                     flex items-center transition-all duration-200 transform hover:scale-105 active:scale-95
+                     shadow-lg hover:shadow-xl"
+          >
+            {isProcessing ? (
+              <RefreshCw className="w-5 h-5 animate-spin" />
+            ) : (
+              <Send className="w-5 h-5" />
+            )}
+          </button>
+        </div>
       </div>
+
+      {/* Click outside to close model selector */}
+      {showModelSelector && (
+        <div 
+          className="fixed inset-0 z-20" 
+          onClick={() => setShowModelSelector(false)}
+        />
+      )}
     </div>
   );
 };

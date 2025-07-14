@@ -246,6 +246,16 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
     setIsProcessing(true);
     setIsStreaming(true);
 
+    // Create a placeholder message for streaming (declare outside try block)
+    const streamingMessageId = (Date.now() + 1).toString();
+    const streamingMessage: Message = {
+      id: streamingMessageId,
+      type: 'brain',
+      content: '',
+      timestamp: new Date().toISOString(),
+      emotion: 'neutral' // Will be updated based on emotion analysis
+    };
+
     try {
       // First, process the user input for emotion analysis (no streaming)
       const previousEmotion = currentEmotion?.emotion;
@@ -276,6 +286,9 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
           intensity: emotionData.currentEmotion?.intensity || 0.5,
           timestamp: emotionData.currentEmotion?.timestamp || new Date().toISOString()
         });
+        
+        // Update the streaming message with the detected emotion
+        streamingMessage.emotion = newAiEmotion || 'neutral';
       }
 
       // Log user interaction for goal analysis
@@ -293,19 +306,11 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
         console.log('Could not log user interaction to goals:', error);
       }
 
-      // Create a placeholder message for streaming
-      const streamingMessageId = (Date.now() + 1).toString();
-      const streamingMessage: Message = {
-        id: streamingMessageId,
-        type: 'brain',
-        content: '',
-        timestamp: new Date().toISOString(),
-        emotion: newAiEmotion || 'neutral'
-      };
-      
+      // Add the placeholder message for streaming
       setMessages(prev => [...prev, streamingMessage]);
 
       // Then get the enhanced brain response with STREAMING
+      console.log('Sending request to brain API with model:', selectedModel);
       const response = await fetch('/api/brain', {
         method: 'POST',
         headers: {
@@ -316,74 +321,174 @@ const BrainInterface: React.FC<BrainInterfaceProps> = ({ initialConversationData
           context: 'user_interaction',
           sessionId: currentConversationId || sessionId,
           model: selectedModel,
-          stream: true // Enable streaming for brain interface only
+          stream: true // Re-enable streaming
         }),
       });
 
+      console.log('Brain API response status:', response.status);
+      console.log('Brain API response headers:', Object.fromEntries(response.headers.entries()));
+
       if (response.ok) {
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        let fullResponse = '';
+        const contentType = response.headers.get('content-type');
+        console.log('Response content type:', contentType);
+        
+        // Check if response is actually streaming (text/plain or text/event-stream) or regular JSON
+        if (contentType?.includes('text/plain') || contentType?.includes('text/event-stream') || contentType?.includes('application/x-ndjson')) {
+          // Handle streaming response - Ollama format
+          console.log('Handling streaming response');
+          const reader = response.body?.getReader();
+          const decoder = new TextDecoder();
+          let fullResponse = '';
 
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
+          if (reader) {
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                  console.log('Streaming complete. Final response:', fullResponse);
+                  break;
+                }
 
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n').filter(line => line.trim() !== '');
+                const chunk = decoder.decode(value);
+                console.log('Received chunk:', chunk);
+                
+                // Split by lines and process each JSON object
+                const lines = chunk.split('\n').filter(line => line.trim() !== '');
 
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                try {
-                  const data = JSON.parse(line.slice(6));
-                  
-                  if (data.content) {
-                    fullResponse += data.content;
+                for (const line of lines) {
+                  try {
+                    // Parse each line as a JSON object (Ollama streaming format)
+                    const data = JSON.parse(line);
+                    console.log('Parsed streaming data:', data);
                     
-                    // Update the streaming message
-                    setMessages(prev => prev.map(msg => 
-                      msg.id === streamingMessageId 
-                        ? { ...msg, content: fullResponse }
-                        : msg
-                    ));
+                    // Ollama sends response chunks in the 'response' field
+                    if (data.response) {
+                      fullResponse += data.response;
+                      
+                      // Update the streaming message
+                      setMessages(prev => prev.map(msg => 
+                        msg.id === streamingMessageId 
+                          ? { ...msg, content: fullResponse }
+                          : msg
+                      ));
+                      
+                      // Auto-scroll during streaming
+                      setTimeout(scrollToBottom, 10);
+                    }
                     
-                    // Auto-scroll during streaming
-                    setTimeout(scrollToBottom, 10);
+                    // Check if this is the final chunk
+                    if (data.done === true) {
+                      console.log('Streaming marked as done');
+                      break;
+                    }
+                  } catch (parseError) {
+                    console.warn('Could not parse line as JSON:', line, 'Error:', parseError);
+                    // If it's not JSON, treat as plain text chunk
+                    if (line.trim()) {
+                      fullResponse += line;
+                      setMessages(prev => prev.map(msg => 
+                        msg.id === streamingMessageId 
+                          ? { ...msg, content: fullResponse }
+                          : msg
+                      ));
+                      setTimeout(scrollToBottom, 10);
+                    }
                   }
-                  
-                  if (data.done) {
-                    break;
-                  }
-                } catch (parseError) {
-                  console.error('Error parsing stream data:', parseError);
                 }
               }
+            } catch (streamError) {
+              console.error('Streaming error:', streamError);
+              throw streamError;
             }
           }
-        }
-      } else {
-        // Fallback to non-streaming if streaming fails
-        const data = await response.json();
-        if (data.success && data.result) {
+        } else {
+          // Handle regular JSON response (fallback)
+          console.log('Handling JSON response (non-streaming)');
+          const data = await response.json();
+          console.log('Received JSON response:', data);
+          
+          let responseContent = '';
+          
+          if (data.success && data.result) {
+            responseContent = data.result.response || data.result;
+          } else if (data.response) {
+            responseContent = data.response;
+          } else if (data.content) {
+            responseContent = data.content;
+          } else if (typeof data === 'string') {
+            responseContent = data;
+          } else {
+            console.warn('Unexpected response format:', data);
+            responseContent = JSON.stringify(data);
+          }
+          
+          console.log('Final response content:', responseContent);
+          
+          // Update the message with the response
           setMessages(prev => prev.map(msg => 
             msg.id === streamingMessageId 
-              ? { ...msg, content: data.result.response }
+              ? { ...msg, content: responseContent }
               : msg
           ));
-        } else {
-          throw new Error(data.message || 'Failed to get response from brain');
         }
+      } else {
+        // Handle error response
+        const errorData = await response.text();
+        console.error('Brain API error:', response.status, errorData);
+        throw new Error(`Brain API error: ${response.status} - ${errorData}`);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'system',
-        content: `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Make sure Ollama is running and the selected model is available.`,
-        timestamp: new Date().toISOString()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      console.error('Error sending message (trying non-streaming fallback):', error);
+      
+      // Try non-streaming fallback
+      try {
+        const fallbackResponse = await fetch('/api/brain', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            input: userInput,
+            context: 'user_interaction',
+            sessionId: currentConversationId || sessionId,
+            model: selectedModel,
+            stream: false // Disable streaming for fallback
+          }),
+        });
+
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json();
+          console.log('Fallback response:', fallbackData);
+          
+          if (fallbackData.success && fallbackData.result) {
+            setMessages(prev => prev.map(msg => 
+              msg.id === streamingMessageId 
+                ? { ...msg, content: fallbackData.result.response || fallbackData.result }
+                : msg
+            ));
+          } else if (fallbackData.response) {
+            setMessages(prev => prev.map(msg => 
+              msg.id === streamingMessageId 
+                ? { ...msg, content: fallbackData.response }
+                : msg
+            ));
+          } else {
+            throw new Error('Fallback also failed: ' + (fallbackData.message || 'No response received'));
+          }
+        } else {
+          const fallbackErrorData = await fallbackResponse.text();
+          throw new Error(`Fallback failed: ${fallbackResponse.status} - ${fallbackErrorData}`);
+        }
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError);
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'system',
+          content: `Error: ${error instanceof Error ? error.message : 'Unknown error'}. Fallback attempt: ${fallbackError instanceof Error ? fallbackError.message : 'Unknown fallback error'}. Make sure Ollama is running and the selected model is available.`,
+          timestamp: new Date().toISOString()
+        };
+        setMessages(prev => [...prev, errorMessage]);
+      }
     } finally {
       setIsProcessing(false);
       setIsStreaming(false);

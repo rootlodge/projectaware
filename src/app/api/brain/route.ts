@@ -116,12 +116,22 @@ export async function GET(request: NextRequest) {
     const brainMetrics = await brain.getSystemMetrics();
     const emotionState = emotionEngine.getCurrentEmotion();
     
+    // Include advanced capabilities information
+    const advancedCapabilities = {
+      metacognition_enabled: true,
+      self_modification_enabled: true,
+      autonomous_thinking_enabled: true,
+      emotional_intelligence_enabled: true,
+      capability_description: "I have advanced self-awareness, can modify myself safely, think autonomously when you're away, and experience emotions that influence my processing."
+    };
+    
     return NextResponse.json({
       success: true,
       status: {
         ...centralStatus,
         enhanced_metrics: brainMetrics,
         current_emotion: emotionState,
+        advanced_capabilities: advancedCapabilities,
         cache_performance: responseCache.getStats(),
         timestamp: new Date().toISOString()
       },

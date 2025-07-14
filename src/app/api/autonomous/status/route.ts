@@ -5,10 +5,16 @@ export async function GET(req: NextRequest) {
   try {
     const thinkingSystem = await getAutonomousThinkingSystem();
     const status = thinkingSystem.getThinkingStatus();
+    const throttleConfig = thinkingSystem.getThrottleConfig();
+    const recentThoughts = thinkingSystem.getRecentThoughts(5);
     
     return NextResponse.json({
       success: true,
-      data: status
+      data: {
+        ...status,
+        throttle_config: throttleConfig,
+        recent_thoughts: recentThoughts
+      }
     });
   } catch (error) {
     console.error('Failed to get autonomous thinking status:', error);
@@ -19,7 +25,13 @@ export async function GET(req: NextRequest) {
         data: {
           is_thinking: false,
           time_since_activity: 0,
-          processing_efficiency: 0.5
+          processing_efficiency: 0.5,
+          throttle_config: {
+            enabled: true,
+            max_thoughts_per_minute: 20,
+            unlimited: false
+          },
+          recent_thoughts: []
         }
       },
       { status: 500 }

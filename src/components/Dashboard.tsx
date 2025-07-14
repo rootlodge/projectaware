@@ -4,6 +4,7 @@ import React from 'react';
 import MetacognitionDashboard from './MetacognitionDashboard';
 import SelfModificationDashboard from './SelfModificationDashboard';
 import SelfModificationWidget from './SelfModificationWidget';
+import AutonomousThinkingWidget from './AutonomousThinkingWidget';
 
 const EmotionTrendForecastPanel: React.FC = () => {
   const [forecast, setForecast] = React.useState<string[]>([]);
@@ -247,6 +248,9 @@ export default function Dashboard({ systemStatus }: DashboardProps) {
 
       {/* Self-Modification Status Widget */}
       <SelfModificationWidget />
+
+      {/* Autonomous Thinking Status Widget */}
+      <AutonomousThinkingWidget />
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

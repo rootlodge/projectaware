@@ -166,19 +166,19 @@ export class AutonomousThinkingSystem {
    */
   private updateThrottleIntervals(): void {
     if (!this.throttleConfig.enabled || this.throttleConfig.unlimited) {
-      this.THINKING_INTERVAL = 5000; // Default 5 seconds
-      this.MIN_THOUGHT_INTERVAL = 5000;
+      this.THINKING_INTERVAL = 8000; // Conservative 8 seconds
+      this.MIN_THOUGHT_INTERVAL = 8000;
       return;
     }
 
-    // Calculate interval based on max thoughts per minute
+    // Calculate interval based on max thoughts per minute with safety margin
     const thoughtsPerMinute = this.throttleConfig.max_thoughts_per_minute;
-    const intervalMs = Math.max(1000, Math.floor(60000 / thoughtsPerMinute)); // At least 1 second between thoughts
+    const intervalMs = Math.max(5000, Math.floor(60000 / thoughtsPerMinute * 1.5)); // Add 50% safety margin
     
     this.THINKING_INTERVAL = intervalMs;
     this.MIN_THOUGHT_INTERVAL = intervalMs;
     
-    console.log(`[AutonomousThinking] Updated intervals: thinking=${this.THINKING_INTERVAL}ms, min=${this.MIN_THOUGHT_INTERVAL}ms`);
+    console.log(`[AutonomousThinking] Updated intervals: thinking=${this.THINKING_INTERVAL}ms, min=${this.MIN_THOUGHT_INTERVAL}ms for ${thoughtsPerMinute} thoughts/min`);
   }
 
   /**
@@ -195,8 +195,15 @@ export class AutonomousThinkingSystem {
     // Clean old timestamps
     this.thoughtTimestamps = this.thoughtTimestamps.filter(timestamp => timestamp > oneMinuteAgo);
     
-    // Check if we've exceeded the limit
-    return this.thoughtTimestamps.length >= this.throttleConfig.max_thoughts_per_minute;
+    // Check if we've exceeded 85% of the limit (conservative approach)
+    const safeLimit = Math.floor(this.throttleConfig.max_thoughts_per_minute * 0.85);
+    const shouldThrottle = this.thoughtTimestamps.length >= safeLimit;
+    
+    if (shouldThrottle) {
+      console.log(`[AutonomousThinking] Throttling: ${this.thoughtTimestamps.length}/${this.throttleConfig.max_thoughts_per_minute} thoughts in last minute (limit: ${safeLimit})`);
+    }
+    
+    return shouldThrottle;
   }
 
   /**
@@ -282,6 +289,12 @@ export class AutonomousThinkingSystem {
       const timeSinceLastActivity = Date.now() - this.lastUserActivity;
       const timeSinceLastThought = Date.now() - this.lastThoughtTime;
       
+      // Check throttling before attempting to think
+      if (this.shouldThrottle()) {
+        // console.log(`[AutonomousThinking] Activity monitoring throttled - ${this.thoughtTimestamps.length}/${this.throttleConfig.max_thoughts_per_minute} thoughts in last minute`);
+        return;
+      }
+      
       // Only start thinking if enough time has passed since last activity AND last thought
       if (timeSinceLastActivity >= this.INACTIVITY_THRESHOLD && 
           timeSinceLastThought >= this.MIN_THOUGHT_INTERVAL && 
@@ -293,7 +306,7 @@ export class AutonomousThinkingSystem {
       } else if (timeSinceLastActivity < this.INACTIVITY_THRESHOLD && this.isThinking) {
         this.stopThinkingMode();
       }
-    }, 3000); // Check every 3 seconds (slightly slower)
+    }, 5000); // Check every 5 seconds to reduce frequency
   }
 
   /**

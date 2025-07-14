@@ -34,7 +34,7 @@
   },
   "thought_throttling": {
     "enabled": true,
-    "max_thoughts_per_minute": 20,
+    "max_thoughts_per_minute": 8,
     "unlimited": false,
     "adaptive_throttling": true,
     "performance_threshold": 0.8

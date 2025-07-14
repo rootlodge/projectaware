@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const priority = searchParams.get('priority');
     const confidenceMin = searchParams.get('confidenceMin');
     const confidenceMax = searchParams.get('confidenceMax');
+    const since = searchParams.get('since'); // For incremental updates
     
     // Build filters object
     const filters: any = {};
@@ -30,6 +31,11 @@ export async function GET(request: NextRequest) {
       };
     }
     
+    // Add timestamp filter for incremental updates
+    if (since) {
+      filters.since = since;
+    }
+    
     // Get filtered events and analytics
     const events = thoughtStream.getHistory(filters);
     const analytics = thoughtStream.getAnalytics();
@@ -40,7 +46,8 @@ export async function GET(request: NextRequest) {
       events,
       analytics,
       isRecording,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      isIncremental: !!since
     });
     
   } catch (error) {

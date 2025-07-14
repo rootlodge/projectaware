@@ -13,6 +13,7 @@ import MemoryDashboard from '@/components/MemoryDashboard';
 import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap, Eye, ChevronDown } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import AgentOrchestrationDashboard from '@/components/AgentOrchestrationDashboard';
+import ThoughtStreamPage from '@/components/ThoughtStream'; 
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -116,8 +117,6 @@ export default function Home() {
     { id: 'thoughtstream', name: 'Thought Stream', icon: Eye }
   ];
 
-  // Dynamically import the ThoughtStream page for client-side rendering
-  const ThoughtStreamPage = dynamic(() => import('./thought-stream/page'), { ssr: false });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">

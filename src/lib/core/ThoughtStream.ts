@@ -94,6 +94,7 @@ export class ThoughtStream extends EventEmitter {
     confidence?: { min: number; max: number };
     tags?: string[];
     priority?: string;
+    since?: string; // For incremental updates - get events newer than this timestamp
   }): ThoughtEvent[] {
     let filteredHistory = [...this.history];
 
@@ -108,6 +109,15 @@ export class ThoughtStream extends EventEmitter {
         filteredHistory = filteredHistory.filter(event => {
           const eventTime = new Date(event.timestamp).getTime();
           return eventTime >= start && eventTime <= end;
+        });
+      }
+      
+      // Support incremental updates with 'since' parameter
+      if (filters.since) {
+        const sinceTime = new Date(filters.since).getTime();
+        filteredHistory = filteredHistory.filter(event => {
+          const eventTime = new Date(event.timestamp).getTime();
+          return eventTime > sinceTime;
         });
       }
       
@@ -132,7 +142,8 @@ export class ThoughtStream extends EventEmitter {
       }
     }
 
-    return filteredHistory;
+    // Sort by timestamp (newest first)
+    return filteredHistory.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   }
 
   /**

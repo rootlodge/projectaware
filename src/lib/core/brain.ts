@@ -25,6 +25,26 @@ export interface LLMConfig {
     min_message_length: number;
     filter_repetitive: boolean;
   };
+  model_settings?: {
+    available_models?: any[];
+    specialized_models?: {
+      thinking?: string;
+      chatting?: string;
+      tool_usage?: string;
+      goal_setting?: string;
+      code_editing?: string;
+      web_browsing?: string;
+      complex_analysis?: string;
+      quick_responses?: string;
+    };
+    performance_management?: any;
+    tool_settings?: {
+      enabled: boolean;
+      supported_tools: string[];
+      tool_timeout_ms: number;
+      max_tool_calls_per_conversation: number;
+    };
+  };
 }
 
 export interface Identity {
@@ -192,9 +212,11 @@ export class Brain {
 
           // Add tool support if model supports it and context requires it
           if (toolContext?.requiresTools && await this.modelManager.modelSupportsTools(actualModel)) {
-            console.log(`[Brain] Enabling tool support for model ${actualModel}`);
+            console.log(`[Brain] Using tool-capable model ${actualModel} for tool usage`);
             // Note: Tool configuration would go here when Ollama supports it
             // For now, we just log that we're using a tool-capable model
+          } else if (toolContext?.requiresTools) {
+            console.warn(`[Brain] Tool context required but model ${actualModel} doesn't support tools`);
           }
           
           const response = await axios.post(`${this.ollamaUrl}/api/generate`, requestOptions, {
@@ -539,12 +561,19 @@ JSON:`;
       // Generate response using the most appropriate method
       let response: string;
       
-      // Detect if this is a tool-requiring request
+      // Check if tool usage is available and required
       const requiresTools = this.detectToolRequirement(userMessage);
+      const toolsAvailable = await this.isToolUsageAvailable();
       
-      if (requiresTools) {
-        console.log('[Brain] Detected tool requirement, using tool-capable model');
+      if (requiresTools && toolsAvailable) {
+        console.log('[Brain] Tool requirement detected and tools available - switching to tool model');
         response = await this.askLLMWithTools(fullPrompt, ['web_search', 'code_analysis', 'file_operations']);
+      } else if (requiresTools && !toolsAvailable) {
+        console.log('[Brain] Tool requirement detected but no tool model configured - using regular model');
+        // Add a note that tool functionality isn't available
+        const toolNote = "\n\n(Note: I detected you might need tool functionality like web search or file operations, but I don't have access to those capabilities right now. I'll do my best to help with the information I have available.)\n\n";
+        const regularResponse = await this.askLLMForChatting(fullPrompt);
+        response = toolNote + regularResponse;
       } else if (userMessage.toLowerCase().includes('code') || userMessage.toLowerCase().includes('programming')) {
         response = await this.askLLMForCodeEditing(fullPrompt);
       } else if (userMessage.toLowerCase().includes('goal') || userMessage.toLowerCase().includes('plan')) {
@@ -799,8 +828,16 @@ Instructions:
 
   /**
    * Specialized method for tool usage (requires tool-capable model)
+   * ONLY works if a tool model is configured in specialized_models
    */
   async askLLMWithTools(prompt: string, tools: string[], temperature?: number): Promise<string> {
+    // Double-check tool availability before proceeding
+    const toolsAvailable = await this.isToolUsageAvailable();
+    if (!toolsAvailable) {
+      console.warn('[Brain] askLLMWithTools called but no tool model available - falling back to regular response');
+      return await this.askLLMForChatting(prompt, temperature);
+    }
+    
     const toolContext: ToolUsageContext = {
       useCase: 'tool_usage',
       priority: 'high',
@@ -808,6 +845,7 @@ Instructions:
       expectedComplexity: 'complex'
     };
     
+    // This will use the specialized tool model configured in model_settings
     return await this.askLLM(prompt, undefined, temperature || 0.3, 'tool_usage', toolContext);
   }
 
@@ -890,6 +928,73 @@ Instructions:
    */
   async getToolCapableModels(): Promise<string[]> {
     return await this.modelManager.getToolCapableModels();
+  }
+
+  /**
+   * Get tool configuration status
+   */
+  async getToolConfigurationStatus(): Promise<{
+    toolsConfigured: boolean;
+    toolModel: string | null;
+    toolModelSupportsTools: boolean;
+    availableTools: string[];
+  }> {
+    try {
+      const config = this.loadConfig();
+      const specializedModels = config?.model_settings?.specialized_models;
+      const toolSettings = config?.model_settings?.tool_settings;
+      
+      const toolModel = specializedModels?.tool_usage || null;
+      const toolsConfigured = !!toolModel;
+      const toolModelSupportsTools = toolModel ? await this.modelManager.modelSupportsTools(toolModel) : false;
+      const availableTools = toolSettings?.supported_tools || [];
+      
+      return {
+        toolsConfigured,
+        toolModel,
+        toolModelSupportsTools,
+        availableTools
+      };
+    } catch (error) {
+      console.error('[Brain] Error getting tool configuration status:', error);
+      return {
+        toolsConfigured: false,
+        toolModel: null,
+        toolModelSupportsTools: false,
+        availableTools: []
+      };
+    }
+  }
+
+  /**
+   * Check if tool usage is available (requires configured tool model)
+   */
+  private async isToolUsageAvailable(): Promise<boolean> {
+    try {
+      const config = this.loadConfig();
+      const specializedModels = config?.model_settings?.specialized_models;
+      
+      // Check if tool_usage model is configured
+      if (!specializedModels?.tool_usage) {
+        console.log('[Brain] No tool model configured in specialized_models');
+        return false;
+      }
+      
+      // Check if the configured tool model supports tools
+      const toolModel = specializedModels.tool_usage;
+      const supportsTools = await this.modelManager.modelSupportsTools(toolModel);
+      
+      if (!supportsTools) {
+        console.log(`[Brain] Configured tool model ${toolModel} does not support tools`);
+        return false;
+      }
+      
+      console.log(`[Brain] Tool usage available with model: ${toolModel}`);
+      return true;
+    } catch (error) {
+      console.error('[Brain] Error checking tool availability:', error);
+      return false;
+    }
   }
 
   /**

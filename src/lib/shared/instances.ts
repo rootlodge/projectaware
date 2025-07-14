@@ -7,6 +7,10 @@ import { ResponseCache } from '../systems/ResponseCache';
 import { Brain } from '../core/brain';
 import { ContextManager } from '../systems/ContextManager';
 import { AgentOrchestrator } from '../agents/AgentOrchestrator';
+import { SelfModificationEngine } from '../systems/SelfModificationEngine';
+import { MetacognitionEngine } from '../systems/MetacognitionEngine';
+import { CognitiveSelfMonitor } from '../systems/CognitiveSelfMonitor';
+import { getAutonomousThinkingSystem } from '../systems/autonomousThinkingInstance';
 
 // Singleton instances to maintain state across API calls
 let stateManagerInstance: StateManager | null = null;
@@ -18,6 +22,9 @@ let responseCacheInstance: ResponseCache | null = null;
 let brainInstance: Brain | null = null;
 let contextManagerInstance: ContextManager | null = null;
 let agentOrchestratorInstance: AgentOrchestrator | null = null;
+let selfModificationEngineInstance: SelfModificationEngine | null = null;
+let metacognitionEngineInstance: MetacognitionEngine | null = null;
+let cognitiveSelfMonitorInstance: CognitiveSelfMonitor | null = null;
 
 export function getStateManager(): StateManager {
   if (!stateManagerInstance) {
@@ -116,6 +123,11 @@ export function resetInstances() {
   memorySystemInstance = null;
   responseCacheInstance = null;
   brainInstance = null;
+  contextManagerInstance = null;
+  agentOrchestratorInstance = null;
+  selfModificationEngineInstance = null;
+  metacognitionEngineInstance = null;
+  cognitiveSelfMonitorInstance = null;
 }
 
 // ContextManager singleton
@@ -132,4 +144,64 @@ export function getAgentOrchestrator(): AgentOrchestrator {
     agentOrchestratorInstance = new AgentOrchestrator();
   }
   return agentOrchestratorInstance;
+}
+
+// MetacognitionEngine singleton
+export async function getMetacognitionEngine(): Promise<MetacognitionEngine> {
+  if (!metacognitionEngineInstance) {
+    const stateManager = getStateManager();
+    const emotionEngine = getEmotionEngine();
+    const memorySystem = await getMemorySystem();
+    const autonomousThinking = await getAutonomousThinkingSystem();
+    const centralBrain = getCentralBrainAgent();
+    
+    metacognitionEngineInstance = new MetacognitionEngine(
+      stateManager,
+      emotionEngine,
+      memorySystem,
+      autonomousThinking,
+      centralBrain
+    );
+    
+    console.log('[Instances] MetacognitionEngine initialized');
+  }
+  return metacognitionEngineInstance;
+}
+
+// CognitiveSelfMonitor singleton
+export async function getCognitiveSelfMonitor(): Promise<CognitiveSelfMonitor> {
+  if (!cognitiveSelfMonitorInstance) {
+    const metacognitionEngine = await getMetacognitionEngine();
+    const autonomousThinking = await getAutonomousThinkingSystem();
+    const stateManager = getStateManager();
+    const emotionEngine = getEmotionEngine();
+    
+    cognitiveSelfMonitorInstance = new CognitiveSelfMonitor(
+      metacognitionEngine,
+      autonomousThinking,
+      stateManager,
+      emotionEngine
+    );
+    
+    console.log('[Instances] CognitiveSelfMonitor initialized');
+  }
+  return cognitiveSelfMonitorInstance;
+}
+
+// SelfModificationEngine singleton
+export async function getSelfModificationEngine(): Promise<SelfModificationEngine> {
+  if (!selfModificationEngineInstance) {
+    const stateManager = getStateManager();
+    const metacognitionEngine = await getMetacognitionEngine();
+    const cognitiveSelfMonitor = await getCognitiveSelfMonitor();
+    
+    selfModificationEngineInstance = new SelfModificationEngine(
+      stateManager,
+      metacognitionEngine,
+      cognitiveSelfMonitor
+    );
+    
+    console.log('[Instances] SelfModificationEngine initialized');
+  }
+  return selfModificationEngineInstance;
 }

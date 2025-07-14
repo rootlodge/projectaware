@@ -1,27 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// Mock instances - replace with actual instances in production
-let selfModificationEngine: any = null;
+import { getSelfModificationEngine } from '@/lib/shared/instances';
 
 export async function GET(request: NextRequest) {
   try {
-    if (!selfModificationEngine) {
-      return NextResponse.json(
-        { success: false, error: 'Self-modification engine not initialized' },
-        { status: 503 }
-      );
-    }
+    const selfModificationEngine = await getSelfModificationEngine();
 
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action');
 
     switch (action) {
       case 'status':
+        const statusEngine = await getSelfModificationEngine();
         const status = {
           engine_active: true,
           constraints: await getSelfModificationConstraints(),
-          pending_modifications: selfModificationEngine.getPendingModifications(),
-          recent_history: selfModificationEngine.getModificationHistory().slice(-10),
+          pending_modifications: statusEngine.getPendingModifications(),
+          recent_history: statusEngine.getModificationHistory().slice(-10),
           safety_metrics: {
             modifications_today: await getModificationsToday(),
             success_rate: await getModificationSuccessRate(),
@@ -35,6 +29,7 @@ export async function GET(request: NextRequest) {
         });
 
       case 'opportunities':
+        const selfModificationEngine = await getSelfModificationEngine();
         const opportunities = await selfModificationEngine.identifyImprovementOpportunities();
         
         return NextResponse.json({
@@ -43,7 +38,8 @@ export async function GET(request: NextRequest) {
         });
 
       case 'pending':
-        const pending = selfModificationEngine.getPendingModifications();
+        const pendingEngine = await getSelfModificationEngine();
+        const pending = pendingEngine.getPendingModifications();
         
         return NextResponse.json({
           success: true,
@@ -51,8 +47,9 @@ export async function GET(request: NextRequest) {
         });
 
       case 'history':
+        const historyEngine = await getSelfModificationEngine();
         const limit = parseInt(searchParams.get('limit') || '20');
-        const history = selfModificationEngine.getModificationHistory().slice(-limit);
+        const history = historyEngine.getModificationHistory().slice(-limit);
         
         return NextResponse.json({
           success: true,
@@ -77,12 +74,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!selfModificationEngine) {
-      return NextResponse.json(
-        { success: false, error: 'Self-modification engine not initialized' },
-        { status: 503 }
-      );
-    }
+    const selfModificationEngine = await getSelfModificationEngine();
 
     const body = await request.json();
     const { action, proposal_id, reason, modification_type } = body;

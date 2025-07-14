@@ -4,7 +4,7 @@ import { getEmotionEngine } from '@/lib/shared/instances';
 /**
  * GET /api/emotions/forecast
  * Returns emotion trend forecast from the EmotionEngine.
- * @author neversleep.ai
+ * @author Dylan Ellison
  */
 export async function GET(req: NextRequest) {
   try {

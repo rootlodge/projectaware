@@ -2,6 +2,8 @@
 
 import React from 'react';
 import MetacognitionDashboard from './MetacognitionDashboard';
+import SelfModificationDashboard from './SelfModificationDashboard';
+import SelfModificationWidget from './SelfModificationWidget';
 
 const EmotionTrendForecastPanel: React.FC = () => {
   const [forecast, setForecast] = React.useState<string[]>([]);
@@ -243,6 +245,9 @@ export default function Dashboard({ systemStatus }: DashboardProps) {
         </div>
       </div>
 
+      {/* Self-Modification Status Widget */}
+      <SelfModificationWidget />
+
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cards.map((card, index) => {
@@ -383,14 +388,14 @@ export default function Dashboard({ systemStatus }: DashboardProps) {
         </div>
       </div>
 
+      {/* Metacognition & Self-Awareness Dashboard */}
+      <MetacognitionDashboard />
+
       {/* Soul System Dashboard */}
       <SoulDashboard />
 
       {/* Goal Engine Dashboard */}
       <GoalDashboard />
-
-      {/* Metacognition Dashboard */}
-      <MetacognitionDashboard />
     </div>
   );
 }

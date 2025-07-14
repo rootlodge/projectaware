@@ -14,6 +14,8 @@ A comprehensive Next.js dashboard and system for Project Aware's digital brain -
 
 ### Advanced AI Systems
 - **Identity Evolution** - Dynamic personality development with trait modifications and name changes
+- **Self-Awareness & Metacognition** - Real-time cognitive monitoring, decision tracking, and bias detection
+- **AI Self-Modification System** - Autonomous improvement proposals with safety constraints and rollback capabilities
 - **Multi-Agent Workflows** - Collaborative agent system for complex task execution
 - **Emotion Engine** - Sophisticated emotion detection and state management
 - **Response Caching** - Intelligent LLM response caching for improved performance
@@ -49,6 +51,9 @@ src/
     │   └── MultiAgentManager.ts
     ├── systems/         # Supporting systems
     │   ├── EmotionEngine.ts
+    │   ├── MetacognitionEngine.ts    # Self-awareness core
+    │   ├── CognitiveSelfMonitor.ts   # Real-time thought tracking
+    │   ├── SelfModificationEngine.ts # AI self-improvement
     │   ├── ResponseCache.ts
     │   └── TaskManager.ts
     ├── config/          # Configuration files
@@ -160,6 +165,20 @@ The dashboard features a tabbed interface with the following sections:
 #### System API
 - `GET /api/system/status` - Get comprehensive system status
 
+#### Metacognition API
+- `GET /api/metacognition` - Get current cognitive state and monitoring data
+- `POST /api/metacognition` - Capture decision points and trigger analysis
+- `GET /api/metacognition/reflection` - Get self-reflection sessions
+- `POST /api/metacognition/reflection` - Trigger new reflection sessions
+- `GET /api/metacognition/cognitive-load` - Get real-time cognitive load metrics
+- `GET /api/metacognition/bias-detection` - Get bias analysis and reports
+
+#### Self-Modification API
+- `GET /api/self-modification?action=status` - Get modification system status
+- `GET /api/self-modification?action=opportunities` - Get improvement opportunities
+- `GET /api/self-modification?action=pending` - Get pending modification proposals
+- `POST /api/self-modification` - Submit, approve, reject, or rollback modifications
+
 ## 🔧 Configuration
 
 ### Core Configuration Files
@@ -169,6 +188,7 @@ Located in `src/lib/config/`:
 - **core.json** - Unchangeable identity core and locked traits
 - **identity.json** - Dynamic identity including name, mission, and evolving traits
 - **emotions.json** - Emotion engine configuration and response modifiers
+- **self-modification.json** - Self-modification safety constraints and settings
 - **state.json** - Comprehensive system state tracking
 - **tasks.json** - Active tasks and their status
 - **task_templates.json** - Reusable task templates
@@ -294,6 +314,89 @@ The project includes comprehensive GitHub Copilot instructions in `.github/copil
 - Best practices
 - Common operations
 - Debugging approaches
+
+## 🧠 Advanced AI Features
+
+### Self-Awareness & Metacognition System
+The AI includes comprehensive self-awareness capabilities:
+
+- **Real-time Cognitive Monitoring** - Continuous tracking of thought processes, decision-making chains, and confidence levels
+- **Decision Point Capture** - Detailed logging of every decision with rationale, confidence scores, and uncertainty factors
+- **Bias Detection & Correction** - Automatic identification of cognitive biases with mitigation strategies
+- **Self-Reflection Sessions** - Scheduled deep introspection with performance assessment and learning insights
+- **Adaptive Personality** - Dynamic adjustment of communication style based on user preferences and interaction patterns
+
+#### Accessing Metacognition Features
+- **Main Dashboard** - Integrated metacognition panel with real-time monitoring
+- **Dedicated Page** - Visit `/metacognition` for full self-awareness interface
+- **API Integration** - Programmatic access via `/api/metacognition/*` endpoints
+
+### AI Self-Modification System
+**⚠️ Advanced Feature: The AI can modify its own behavior and code**
+
+The self-modification system enables autonomous improvement while maintaining strict safety controls:
+
+#### Key Capabilities
+- **Autonomous Analysis** - AI continuously analyzes its own performance to identify improvement opportunities
+- **Smart Proposals** - Generates detailed modification proposals with comprehensive risk assessment
+- **Safety Constraints** - Multi-layer protection including file protection, approval workflows, and rollback capabilities
+- **Sandbox Testing** - All modifications tested in isolation before implementation
+- **Performance Monitoring** - Continuous tracking of modification effectiveness with automatic rollback on negative impact
+
+#### Safety Features
+- **Protected Files** - Critical system files cannot be modified
+- **Human Approval** - Requires manual approval for medium+ risk modifications
+- **Cool-down Periods** - Prevents excessive modifications
+- **Auto-Rollback** - Automatically reverts harmful changes
+- **Modification Limits** - Daily limits and risk-based restrictions
+
+#### Accessing Self-Modification Features
+- **Main Dashboard** - Integrated self-modification panel with proposal management
+- **Dedicated Page** - Visit `/self-modification` for full control interface
+- **API Control** - Complete REST API for external integration and automation
+- **Configuration** - Detailed safety settings in `src/lib/config/self-modification.json`
+
+#### Control Options
+- **Enable/Disable** - Toggle self-modification system on/off
+- **Manual/Auto Mode** - Choose between manual approval and automatic low-risk improvements
+- **Trigger Analysis** - On-demand system analysis for improvement opportunities
+- **Proposal Management** - Review, approve, reject, or rollback any modification
+
+### Usage Examples
+
+#### Triggering Self-Analysis
+```typescript
+// Via API
+const response = await fetch('/api/self-modification', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ action: 'trigger_analysis' })
+});
+
+// Via Dashboard - Click "Analyze Improvements" button
+```
+
+#### Managing Proposals
+```typescript
+// Approve a modification
+await fetch('/api/self-modification', {
+  method: 'POST',
+  body: JSON.stringify({ 
+    action: 'approve', 
+    proposal_id: 'decision_improvement_123' 
+  })
+});
+
+// Reject a modification
+await fetch('/api/self-modification', {
+  method: 'POST',
+  body: JSON.stringify({ 
+    action: 'reject', 
+    proposal_id: 'decision_improvement_123',
+    reason: 'Not needed at this time'
+  })
+});
+```
 
 ## 🔮 Future Enhancements
 

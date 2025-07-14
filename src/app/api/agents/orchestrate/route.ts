@@ -4,7 +4,7 @@ import { getAgentOrchestrator, getContextManager } from '@/lib/shared/instances'
 /**
  * POST /api/agents/orchestrate
  * Triggers agent orchestration based on current context and returns the plan.
- * @author neversleep.ai
+ * @author Dylan Ellison
  */
 export async function POST(req: NextRequest) {
   try {

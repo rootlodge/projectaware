@@ -559,6 +559,66 @@ export class CognitiveSelfMonitor {
     return { ...this.metrics };
   }
 
+  /**
+   * Get comprehensive performance metrics for the cognitive system
+   */
+  async getPerformanceMetrics(): Promise<{
+    average_cognitive_load: number;
+    average_response_time: number;
+    decision_accuracy: number;
+    total_reasoning_chains: number;
+    average_chain_length: number;
+    error_rate: number;
+    efficiency_score: number;
+  }> {
+    try {
+      const recentEvents = Array.from(this.activeReasoningChains.values()).slice(-50);
+      
+      const avgCognitiveLoad = recentEvents.length > 0 
+        ? recentEvents.reduce((sum: number, chain: ReasoningChain) => sum + (this.currentCognitiveLoad.current_load || 0.5), 0) / recentEvents.length
+        : 0.5;
+      
+      const avgResponseTime = recentEvents.length > 0
+        ? recentEvents.reduce((sum: number, chain: ReasoningChain) => {
+            const start = new Date(chain.start_time).getTime();
+            const end = chain.end_time ? new Date(chain.end_time).getTime() : start + 1000;
+            return sum + (end - start);
+          }, 0) / recentEvents.length
+        : 1000;
+      
+      const successfulChains = recentEvents.filter((chain: ReasoningChain) => chain.outcome?.success);
+      const decisionAccuracy = recentEvents.length > 0 ? successfulChains.length / recentEvents.length : 0.8;
+      
+      const avgChainLength = recentEvents.length > 0
+        ? recentEvents.reduce((sum: number, chain: ReasoningChain) => sum + chain.steps.length, 0) / recentEvents.length
+        : 3;
+      
+      const errorRate = recentEvents.length > 0 ? 1 - decisionAccuracy : 0.1;
+      const efficiencyScore = Math.max(0, Math.min(1, decisionAccuracy * (1 - avgCognitiveLoad) * (1 - errorRate)));
+      
+      return {
+        average_cognitive_load: avgCognitiveLoad,
+        average_response_time: avgResponseTime,
+        decision_accuracy: decisionAccuracy,
+        total_reasoning_chains: this.metrics.total_reasoning_chains,
+        average_chain_length: avgChainLength,
+        error_rate: errorRate,
+        efficiency_score: efficiencyScore
+      };
+    } catch (error) {
+      console.error('Error getting performance metrics:', error);
+      return {
+        average_cognitive_load: 0.5,
+        average_response_time: 1000,
+        decision_accuracy: 0.8,
+        total_reasoning_chains: 0,
+        average_chain_length: 3,
+        error_rate: 0.1,
+        efficiency_score: 0.7
+      };
+    }
+  }
+
   // Private helper methods
   private startCognitiveLoadMonitoring(): void {
     setInterval(() => {

@@ -10,10 +10,12 @@ import EmotionDisplay from '@/components/EmotionDisplay';
 import ModelSelectorNew from '@/components/ModelSelectorNew';
 import OllamaTest from '@/components/MainSettings';
 import MemoryDashboard from '@/components/MemoryDashboard';
-import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap, Eye, ChevronDown } from 'lucide-react';
+import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap, Eye, ChevronDown, Dna } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import AgentOrchestrationDashboard from '@/components/AgentOrchestrationDashboard';
 import ThoughtStreamPage from '@/components/ThoughtStream'; 
+import AISelfModificationPage from '@/components/SelfModificationDashboard';
+
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -105,14 +107,15 @@ export default function Home() {
     { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
     { id: 'brain', name: 'Brain Interface', icon: Brain },
     { id: 'interaction', name: 'Interaction', icon: MessageCircle },
+    { id: 'aiselfmodification', name: 'AI Self-Modification', icon: Dna },
     { id: 'agents', name: 'Agent Manager', icon: Users },
     { id: 'emotions', name: 'Emotion Engine', icon: Heart },
-    { id: 'memory', name: 'Memory Analytics', icon: Database },
     { id: 'system', name: 'System Status', icon: Cpu },
     { id: 'settings', name: 'Settings', icon: Settings }
   ];
 
   const moreInfoTabs = [
+    { id: 'memory', name: 'Memory Analytics', icon: Database },
     { id: 'orchestration', name: 'Orchestration', icon: Zap },
     { id: 'thoughtstream', name: 'Thought Stream', icon: Eye }
   ];
@@ -224,6 +227,7 @@ export default function Home() {
         {activeTab === 'dashboard' && <Dashboard systemStatus={systemStatus} />}
         {activeTab === 'brain' && <BrainInterface initialConversationData={brainConversationData} />}
         {activeTab === 'interaction' && <InteractionInterface onNavigateToBrain={handleNavigateToBrain} />}
+        {activeTab === 'aiselfmodification' && <AISelfModificationPage />}
         {activeTab === 'agents' && <AgentManager />}
         {activeTab === 'emotions' && <EmotionDisplay />}
         {activeTab === 'memory' && <MemoryDashboard />}

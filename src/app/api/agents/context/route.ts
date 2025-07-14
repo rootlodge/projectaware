@@ -4,7 +4,7 @@ import { getContextManager } from '@/lib/shared/instances';
 /**
  * GET /api/agents/context
  * Returns the current context snapshot for agents and UI.
- * @author neversleep.ai
+ * @author Dylan Ellison
  */
 export async function GET(req: NextRequest) {
   try {

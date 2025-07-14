@@ -1,7 +1,7 @@
 /**
  * ContextManager: Tracks and provides current user/system context for agents.
  * Context includes recent actions, app location, time, and optionally user/device info.
- * @author neversleep.ai
+ * @author Dylan Ellison
  */
 export interface ContextSnapshot {
   timestamp: string;

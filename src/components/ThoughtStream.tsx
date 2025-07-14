@@ -227,64 +227,63 @@ export default function ThoughtStreamPage() {
   const [autoScroll, setAutoScroll] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [stats, setStats] = useState<ThoughtStreamStats | null>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [lastRefresh, setLastRefresh] = useState(new Date());
   const scrollRef = useRef<HTMLDivElement>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    // Connect to SSE endpoint only once
-    if (!eventSourceRef.current) {
-      eventSourceRef.current = new EventSource('/api/thought-stream');
-      
-      eventSourceRef.current.onopen = () => {
-        setIsConnected(true);
-      };
-
-      eventSourceRef.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'history') {
-          setEvents(prev => {
-            // Only update if different (shallow compare by length and last id)
-            if (Array.isArray(data.events) && (prev.length !== data.events.length || (prev[prev.length-1]?.timestamp !== data.events[data.events.length-1]?.timestamp))) {
-              return data.events;
-            }
-            return prev;
-          });
-        } else if (data.type === 'analytics') {
-          setAnalytics((prev: typeof data.analytics | null) => {
-            // Only update if different (shallow compare by totalEvents and sessionDuration)
-            if (!prev || prev.totalEvents !== data.analytics.totalEvents || prev.sessionDuration !== data.analytics.sessionDuration) {
-              return data.analytics;
-            }
-            return prev;
-          });
-        } else if (data.type === 'event') {
-          setEvents(prev => {
-            // Only add if new event (by timestamp)
-            if (!prev.length || prev[prev.length-1]?.timestamp !== data.event.timestamp) {
-              return [...prev, data.event];
-            }
-            return prev;
-          });
-        } else if (data.type === 'recording-changed') {
-          setIsRecording(data.recording);
+  // Fetch data from API
+  const fetchData = useCallback(async () => {
+    try {
+      setIsConnected(true);
+      const response = await fetch('/api/thought-stream', {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache',
         }
-      };
-
-      eventSourceRef.current.onerror = () => {
-        setIsConnected(false);
-      };
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setEvents(data.events || []);
+          setAnalytics(data.analytics || null);
+          setIsRecording(data.isRecording ?? true);
+          setLastRefresh(new Date());
+          setIsConnected(true);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch thought stream data:', error);
+      setIsConnected(false);
+    } finally {
+      setIsLoading(false);
     }
+  }, []);
 
+  // Set up polling for real-time updates
+  useEffect(() => {
+    // Initial fetch
+    fetchData();
+    
+    // Set up polling every 3 seconds
+    pollingIntervalRef.current = setInterval(() => {
+      fetchData();
+    }, 3000);
+    
     return () => {
-      // Only close on component unmount, not on every re-render
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
       }
     };
-  }, []); // Empty dependency array - only run once on mount
+  }, [fetchData]);
 
-  // Separate useEffect for auto-scroll behavior
+  // Refetch when filters change
+  useEffect(() => {
+    fetchData();
+  }, [filters, fetchData]);
+
+  // Auto-scroll behavior
   useEffect(() => {
     if (autoScroll && scrollRef.current && events.length > 0) {
       setTimeout(() => {
@@ -295,23 +294,6 @@ export default function ThoughtStreamPage() {
       }, 100);
     }
   }, [events, autoScroll]);
-
-  // Fetch initial recording status
-  useEffect(() => {
-    const fetchRecordingStatus = async () => {
-      try {
-        const response = await fetch('/api/thought-stream/recording');
-        const data = await response.json();
-        if (data.success) {
-          setIsRecording(data.recording);
-        }
-      } catch (error) {
-        console.error('Failed to fetch recording status:', error);
-      }
-    };
-    
-    fetchRecordingStatus();
-  }, []);
 
   const updateStats = React.useCallback((analyticsData: any, currentEvents?: ThoughtEvent[]) => {
     if (!analyticsData) return;
@@ -418,14 +400,17 @@ export default function ThoughtStreamPage() {
 
   const toggleRecording = async () => {
     try {
-      const response = await fetch('/api/thought-stream/recording', {
+      const response = await fetch('/api/thought-stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recording: !isRecording })
+        body: JSON.stringify({ action: 'toggle-recording' })
       });
       
       if (response.ok) {
-        setIsRecording(!isRecording);
+        const data = await response.json();
+        if (data.success) {
+          setIsRecording(data.recording);
+        }
       }
     } catch (error) {
       console.error('Failed to toggle recording:', error);
@@ -438,6 +423,8 @@ export default function ThoughtStreamPage() {
       const result = await response.json();
       if (result.success) {
         console.log(`Generated ${result.events} test events`);
+        // Refresh data immediately after generating test events
+        fetchData();
       }
     } catch (error) {
       console.error('Failed to generate test events:', error);
@@ -450,6 +437,8 @@ export default function ThoughtStreamPage() {
       const result = await response.json();
       if (result.success) {
         console.log(`Goal engine activated: ${result.message}`);
+        // Refresh data after activating goal engine
+        fetchData();
       }
     } catch (error) {
       console.error('Failed to activate goal engine:', error);
@@ -762,8 +751,13 @@ export default function ThoughtStreamPage() {
             <div className="flex items-center space-x-2">
               <div className={`h-3 w-3 rounded-full ${isConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
               <span className="text-sm text-purple-300">
-                {isConnected ? 'Connected' : 'Disconnected'}
+                {isLoading ? 'Connecting...' : isConnected ? 'Connected' : 'Disconnected'}
               </span>
+            </div>
+            
+            {/* Last Refresh Time */}
+            <div className="text-xs text-purple-400">
+              Last update: {lastRefresh.toLocaleTimeString()}
             </div>
             
             {/* Live Stats */}
@@ -1016,9 +1010,18 @@ export default function ThoughtStreamPage() {
       {/* Main Content Area */}
       <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
         <div className="p-6">
-          {viewMode === 'timeline' && renderTimeline()}
-          {viewMode === 'cards' && renderCards()}
-          {viewMode === 'analytics' && renderAnalytics()}
+          {isLoading ? (
+            <div className="text-center py-12">
+              <Activity className="w-8 h-8 animate-spin mx-auto mb-4 text-purple-400" />
+              <p className="text-purple-300">Loading thought stream...</p>
+            </div>
+          ) : (
+            <>
+              {viewMode === 'timeline' && renderTimeline()}
+              {viewMode === 'cards' && renderCards()}
+              {viewMode === 'analytics' && renderAnalytics()}
+            </>
+          )}
         </div>
       </div>
 

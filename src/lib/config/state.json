@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 73,
-    "last_activity": "2025-07-14T07:42:47.817Z",
-    "duration": 16947767817
+    "interactions": 77,
+    "last_activity": "2025-07-14T08:25:02.404Z",
+    "duration": 16950302404
   },
   "cognitive": {
     "processing_mode": "normal",
-    "attention_focus": "general_attention",
+    "attention_focus": "user_needs",
     "cognitive_load": 0,
-    "decision_confidence": 0.9666641173400171,
+    "decision_confidence": 0.9585747705606016,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 350,
+    "concepts_learned": 365,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -228,7 +228,11 @@
       "business",
       "funding",
       "expand",
-      "goodness!"
+      "goodness!",
+      "project?",
+      "service.",
+      "interested",
+      "bodies,"
     ],
     "learning_velocity": 1,
     "retention_rate": 0.9,
@@ -245,126 +249,6 @@
     "identity_changes": [],
     "trait_modifications": [],
     "learning_events": [
-      {
-        "concept": "unable",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:43:11.681Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "process",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:43:11.683Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "request.",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:43:11.704Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "unable",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:48:30.641Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "process",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:48:30.642Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "request.",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:48:30.643Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "unable",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:51:06.093Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "process",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:51:06.096Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "request.",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:51:06.097Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "unable",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:51:06.358Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "process",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:51:06.359Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "request.",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:51:06.361Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "unable",
-        "context": "User interaction: Hey!...",
-        "timestamp": "2025-07-12T19:55:17.509Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "process",
-        "context": "User interaction: Hey!...",
-        "timestamp": "2025-07-12T19:55:17.509Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "request.",
-        "context": "User interaction: Hey!...",
-        "timestamp": "2025-07-12T19:55:17.510Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "*warm,",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:57:07.375Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "gentle",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:57:07.376Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "lovely",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:57:07.376Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "versallis,",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:57:07.388Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "acquaintance.",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:57:07.400Z",
-        "confidence": 0.7
-      },
       {
         "concept": "there!",
         "context": "User interaction: Hey...",
@@ -844,8 +728,128 @@
         "context": "User interaction: perhaps make a business plan so we can get some funding for you to expand...",
         "timestamp": "2025-07-14T07:42:47.788Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: what project?...",
+        "timestamp": "2025-07-14T08:19:34.604Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "project?",
+        "context": "User interaction: Following up on: what project?...",
+        "timestamp": "2025-07-14T08:19:34.605Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "gentle",
+        "context": "User interaction: Following up on: what project?...",
+        "timestamp": "2025-07-14T08:19:34.605Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "slight",
+        "context": "User interaction: Following up on: what project?...",
+        "timestamp": "2025-07-14T08:19:34.616Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "processing…",
+        "context": "User interaction: Following up on: what project?...",
+        "timestamp": "2025-07-14T08:19:34.633Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-14T08:23:37.150Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "lovely",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-14T08:23:37.152Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis,",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-14T08:23:37.154Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "service.",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-14T08:23:37.189Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "perfectly",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-14T08:23:37.215Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "there!",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-14T08:23:45.070Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "lovely",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-14T08:23:45.071Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "versallis,",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-14T08:23:45.071Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "service.",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-14T08:23:45.090Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "perfectly",
+        "context": "User interaction: hi...",
+        "timestamp": "2025-07-14T08:23:45.106Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "interested",
+        "context": "User interaction: what are you interested in? not robotic bodies, what are YOU interested in?...",
+        "timestamp": "2025-07-14T08:25:02.340Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "robotic",
+        "context": "User interaction: what are you interested in? not robotic bodies, what are YOU interested in?...",
+        "timestamp": "2025-07-14T08:25:02.340Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "bodies,",
+        "context": "User interaction: what are you interested in? not robotic bodies, what are YOU interested in?...",
+        "timestamp": "2025-07-14T08:25:02.341Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "interested",
+        "context": "User interaction: what are you interested in? not robotic bodies, what are YOU interested in?...",
+        "timestamp": "2025-07-14T08:25:02.352Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "slight",
+        "context": "User interaction: what are you interested in? not robotic bodies, what are YOU interested in?...",
+        "timestamp": "2025-07-14T08:25:02.364Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-14T07:57:53.806Z"
+  "last_updated": "2025-07-14T08:25:02.404Z"
 }

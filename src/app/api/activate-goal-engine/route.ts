@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { GoalEngine } from '@/lib/systems/GoalEngine';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const goalEngine = GoalEngine.getInstance();
     
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const goalEngine = GoalEngine.getInstance();
     

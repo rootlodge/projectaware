@@ -6,7 +6,7 @@ import { getContextManager } from '@/lib/shared/instances';
  * Returns the current context snapshot for agents and UI.
  * @author Dylan Ellison
  */
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const contextManager = getContextManager();
     const context = contextManager.getContext();

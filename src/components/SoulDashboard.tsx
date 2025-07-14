@@ -116,7 +116,9 @@ export default function SoulDashboard() {
                 <span className="text-white font-medium">{value.name}</span>
                 <div className="flex items-center">
                   <span className="text-purple-300 text-sm mr-2">Weight: {value.weight}</span>
-                  <Shield className="w-4 h-4 text-red-400" title="Immutable" />
+                  <div title="Immutable">
+                    <Shield className="w-4 h-4 text-red-400" />
+                  </div>
                 </div>
               </div>
             ))}

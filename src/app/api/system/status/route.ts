@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getStateManager, getEmotionEngine } from '@/lib/shared/instances';
 import { MemorySystem } from '@/lib/core/memory';
 

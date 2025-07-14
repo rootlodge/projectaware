@@ -260,7 +260,9 @@ export class GoalDatabase {
       type: row.type,
       timestamp: row.timestamp,
       insights: JSON.parse(row.insights),
-      adjustments_made: JSON.parse(row.adjustments_made)
+      adjustments_made: JSON.parse(row.adjustments_made),
+      confidence_level: row.confidence_level || 0,
+      agent_contributor: row.agent_contributor
     }));
   }
 
@@ -336,7 +338,10 @@ export class GoalDatabase {
       timestamp: row.timestamp,
       outcome: row.outcome,
       effectiveness: row.effectiveness,
-      lessons_learned: JSON.parse(row.lessons_learned)
+      lessons_learned: JSON.parse(row.lessons_learned),
+      resources_used: JSON.parse(row.resources_used || '[]'),
+      time_taken: row.time_taken || 0,
+      performed_by_agent: row.performed_by_agent
     }));
   }
 
@@ -375,8 +380,11 @@ export class GoalDatabase {
       importance_factor: row.importance_factor,
       resource_requirements: JSON.parse(row.resource_requirements),
       estimated_time: row.estimated_time,
-      dependencies_met: row.dependencies_met === 1
-    }));
+      dependencies_met: row.dependencies_met === 1,
+      user_value_factor: row.user_value_factor || 0,
+      cerebrum_priority_boost: row.cerebrum_priority_boost || 0,
+      last_updated: row.last_updated || new Date().toISOString()
+    })) as GoalPriorityQueueItem[];
   }
 
   // Metrics and analytics
@@ -442,8 +450,11 @@ export class GoalDatabase {
       goals_by_category: goalsByCategory,
       goals_by_priority: goalsByPriority,
       recent_completions: recentCompletions,
-      overdue_goals: overdue
-    };
+      overdue_goals: overdue,
+      goals_by_type: {},
+      cerebrum_goals_stats: { total: 0, active: 0, completed: 0 },
+      user_satisfaction_scores: { average: 0, count: 0 }
+    } as unknown as GoalMetrics;
   }
 
   // Emotion history operations
@@ -516,8 +527,12 @@ export class GoalDatabase {
       related_goal_ids: JSON.parse(row.related_goal_ids),
       reflections,
       thoughts,
-      actions_taken: actions
-    };
+      actions_taken: actions,
+      tier: row.tier || 'user',
+      origin: row.origin || 'user',
+      blocking_dependencies: JSON.parse(row.blocking_dependencies || '[]'),
+      agent_interactions: JSON.parse(row.agent_interactions || '[]')
+    } as unknown as Goal;
   }
 
   async close(): Promise<void> {

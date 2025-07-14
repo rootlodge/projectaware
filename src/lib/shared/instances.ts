@@ -10,6 +10,7 @@ import { AgentOrchestrator } from '../agents/AgentOrchestrator';
 import { SelfModificationEngine } from '../systems/SelfModificationEngine';
 import { MetacognitionEngine } from '../systems/MetacognitionEngine';
 import { CognitiveSelfMonitor } from '../systems/CognitiveSelfMonitor';
+import { ThoughtStream } from '../core/ThoughtStream';
 import { getAutonomousThinkingSystem } from '../systems/autonomousThinkingInstance';
 
 // Singleton instances to maintain state across API calls
@@ -205,3 +206,11 @@ export async function getSelfModificationEngine(): Promise<SelfModificationEngin
   }
   return selfModificationEngineInstance;
 }
+
+// ThoughtStream singleton
+export function getThoughtStream(): ThoughtStream {
+  return ThoughtStream.getInstance();
+}
+
+// Export thoughtStream instance for backward compatibility
+export const thoughtStream = getThoughtStream();

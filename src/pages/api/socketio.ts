@@ -5,7 +5,7 @@ import { StateManager } from '@/lib/core/StateManager';
 import { EmotionEngine } from '@/lib/systems/EmotionEngine';
 
 export interface NextApiResponseServerIO extends NextApiResponse {
-  socket: {
+  socket: NextApiResponse['socket'] & {
     server: NetServer & {
       io?: SocketIOServer;
     };

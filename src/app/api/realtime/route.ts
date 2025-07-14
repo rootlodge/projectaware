@@ -7,20 +7,20 @@ import { ResponseCache } from '@/lib/systems/ResponseCache';
 import { MemorySystem } from '@/lib/core/memory';
 
 // WebSocket connections storage
-const connections = new Set<WebSocket>();
+const _connections = new Set<WebSocket>();
 const stateManager = new StateManager();
 const emotionEngine = new EmotionEngine(stateManager);
 const responseCache = new ResponseCache();
 const brain = new Brain(stateManager, emotionEngine, responseCache);
 const multiAgentManager = new MultiAgentManager(stateManager, brain, emotionEngine);
 
-interface WebSocketMessage {
+interface _WebSocketMessage {
   type: 'subscribe' | 'unsubscribe' | 'ping' | 'system_update' | 'conversation_update' | 'emotion_update' | 'agent_update';
   data?: any;
   timestamp?: string;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // This endpoint provides WebSocket connection information
     return NextResponse.json({
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { action, data } = await request.json();
+    const { action, data: _data } = await request.json();
     
     switch (action) {
       case 'get_realtime_data':

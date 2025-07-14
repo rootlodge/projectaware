@@ -3,10 +3,11 @@ import { MemorySystem } from '@/lib/core/memory';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: conversationId } = await params;
+  
   try {
-    const conversationId = params.id;
     const memory = new MemorySystem();
     await memory.initialize();
     
@@ -77,7 +78,7 @@ export async function GET(
     ];
     
     return NextResponse.json({
-      conversationId,
+      conversationId: conversationId,
       messages: mockMessages
     });
   }

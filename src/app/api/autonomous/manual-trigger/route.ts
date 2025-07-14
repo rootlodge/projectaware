@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAutonomousThinkingSystem } from '@/lib/systems/autonomousThinkingInstance';
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   try {
     const thinkingSystem = await getAutonomousThinkingSystem();
     

@@ -6,7 +6,7 @@ import { getEmotionEngine } from '@/lib/shared/instances';
  * Returns emotion trend forecast from the EmotionEngine.
  * @author Dylan Ellison
  */
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const engine = getEmotionEngine();
     const result = engine.forecastEmotionTrends();

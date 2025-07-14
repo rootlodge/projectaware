@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCognitiveSelfMonitor } from '../route';
+import { getCognitiveSelfMonitor } from '@/lib/shared/instances';
 
 /**
  * GET /api/metacognition/cognitive-load

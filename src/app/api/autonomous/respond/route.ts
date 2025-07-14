@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAutonomousThinkingSystem } from '@/lib/systems/autonomousThinkingInstance';
+import { getGoalEngine, getEmotionEngine } from '@/lib/shared/instances';
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,9 +30,6 @@ export async function POST(req: NextRequest) {
     
     // Try to process through goal and emotion engines for learning
     try {
-      const { getGoalEngine } = require('@/lib/shared/instances');
-      const { getEmotionEngine } = require('@/lib/shared/instances');
-      
       const goalEngine = getGoalEngine();
       const emotionEngine = getEmotionEngine();
       

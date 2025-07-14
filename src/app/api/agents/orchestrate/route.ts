@@ -6,7 +6,7 @@ import { getAgentOrchestrator, getContextManager } from '@/lib/shared/instances'
  * Triggers agent orchestration based on current context and returns the plan.
  * @author Dylan Ellison
  */
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   try {
     const context = getContextManager().getContext();
     const orchestrator = getAgentOrchestrator();

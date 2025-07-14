@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     const allThoughts = await thinkingSystem.getAllThoughts(50000); // Very large limit to get everything
     
     // Apply filters
-    let filteredThoughts = allThoughts.filter(thought => {
+    const filteredThoughts = allThoughts.filter(thought => {
       // Type filter
       if (types.length > 0 && !types.includes(thought.type)) {
         return false;
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
       if (dateRange !== 'all') {
         const now = new Date();
         const itemDate = new Date(thought.timestamp);
-        let cutoffDate = new Date();
+        const cutoffDate = new Date();
         
         switch (dateRange) {
           case 'today':

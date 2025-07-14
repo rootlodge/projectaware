@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMetacognitionEngine } from '../route';
+import { getMetacognitionEngine } from '@/lib/shared/instances';
 
 /**
  * GET /api/metacognition/bias-detection
@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
       decision_id, 
       suspected_bias_type, 
       description, 
-      evidence, 
-      severity 
+      evidence: _evidence, 
+      severity: _severity 
     } = data;
 
     if (!decision_id || !suspected_bias_type || !description) {

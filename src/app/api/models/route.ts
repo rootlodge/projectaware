@@ -3,7 +3,7 @@ import { MemorySystem } from '@/lib/core/memory';
 
 const memorySystem = new MemorySystem();
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     await memorySystem.initialize();
     const models = await memorySystem.getModelPreferences();

@@ -82,7 +82,7 @@ async function getSystemUpdates() {
       cache_stats: responseCache.getStats(),
       timestamp: new Date().toISOString()
     };
-  } catch (error) {
+  } catch (_error) {
     return { error: 'Failed to get system updates' };
   }
 }
@@ -97,7 +97,7 @@ function getEmotionUpdates() {
       recent_history: history,
       timestamp: new Date().toISOString()
     };
-  } catch (error) {
+  } catch (_error) {
     return { error: 'Failed to get emotion updates' };
   }
 }
@@ -113,7 +113,7 @@ function getAgentUpdates() {
       execution_details: activeExecutions.slice(0, 3), // Last 3 executions
       timestamp: new Date().toISOString()
     };
-  } catch (error) {
+  } catch (_error) {
     return { error: 'Failed to get agent updates' };
   }
 }
@@ -133,7 +133,7 @@ async function getMemoryUpdates() {
       recent_messages: recentMessages,
       timestamp: new Date().toISOString()
     };
-  } catch (error) {
+  } catch (_error) {
     return { error: 'Failed to get memory updates' };
   }
 }
@@ -153,7 +153,7 @@ async function getConversationUpdates() {
       recent_learning: learningEvents,
       timestamp: new Date().toISOString()
     };
-  } catch (error) {
+  } catch (_error) {
     return { error: 'Failed to get conversation updates' };
   }
 }

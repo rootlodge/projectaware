@@ -4,7 +4,7 @@ import { thoughtStream } from '@/lib/shared/instances';
 export async function GET(request: NextRequest) {
   try {
     // Get all events from the thought stream
-    const events = thoughtStream.getEvents();
+    const events = thoughtStream.getHistory();
     
     // Generate analytics data
     const analytics = {

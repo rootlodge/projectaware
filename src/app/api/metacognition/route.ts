@@ -1,57 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MetacognitionEngine } from '@/lib/systems/MetacognitionEngine';
-import { CognitiveSelfMonitor } from '@/lib/systems/CognitiveSelfMonitor';
-import { getAutonomousThinkingSystem } from '@/lib/systems/autonomousThinkingInstance';
-import { getStateManager, getEmotionEngine, getMemorySystem, getCentralBrainAgent } from '@/lib/shared/instances';
-
-let metacognitionEngine: MetacognitionEngine | null = null;
-let cognitiveSelfMonitor: CognitiveSelfMonitor | null = null;
-
-export async function getMetacognitionEngine(): Promise<MetacognitionEngine> {
-  if (!metacognitionEngine) {
-    const stateManager = getStateManager();
-    const emotionEngine = getEmotionEngine();
-    const memorySystem = await getMemorySystem();
-    const autonomousThinking = await getAutonomousThinkingSystem();
-    const centralBrain = getCentralBrainAgent();
-
-    metacognitionEngine = new MetacognitionEngine(
-      stateManager,
-      emotionEngine,
-      memorySystem,
-      autonomousThinking,
-      centralBrain
-    );
-
-    console.log('[Metacognition API] Engine initialized');
-  }
-  return metacognitionEngine;
-}
-
-export async function getCognitiveSelfMonitor(): Promise<CognitiveSelfMonitor> {
-  if (!cognitiveSelfMonitor) {
-    const metacognition = await getMetacognitionEngine();
-    const autonomousThinking = await getAutonomousThinkingSystem();
-    const stateManager = getStateManager();
-    const emotionEngine = getEmotionEngine();
-
-    cognitiveSelfMonitor = new CognitiveSelfMonitor(
-      metacognition,
-      autonomousThinking,
-      stateManager,
-      emotionEngine
-    );
-
-    console.log('[Metacognition API] Cognitive self-monitor initialized');
-  }
-  return cognitiveSelfMonitor;
-}
+import { getMetacognitionEngine, getCognitiveSelfMonitor } from '@/lib/shared/instances';
 
 /**
  * GET /api/metacognition/status
  * Get current metacognitive state and status
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const metacognition = await getMetacognitionEngine();
     const monitor = await getCognitiveSelfMonitor();

@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     const allInteractions = await thinkingSystem.getAllInteractions(50000); // Very large limit to get everything
     
     // Apply filters
-    let filteredInteractions = allInteractions.filter(interaction => {
+    const filteredInteractions = allInteractions.filter(interaction => {
       // Type filter
       if (types.length > 0 && !types.includes(interaction.type)) {
         return false;
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       if (dateRange !== 'all') {
         const now = new Date();
         const itemDate = new Date(interaction.timestamp);
-        let cutoffDate = new Date();
+        const cutoffDate = new Date();
         
         switch (dateRange) {
           case 'today':

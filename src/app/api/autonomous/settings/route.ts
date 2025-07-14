@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAutonomousThinkingSystem } from '@/lib/systems/autonomousThinkingInstance';
+import fs from 'fs/promises';
+import path from 'path';
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,8 +24,6 @@ export async function POST(req: NextRequest) {
       case 'update_throttle':
         if (config && config.thought_throttling) {
           // Update config file first
-          const fs = require('fs/promises');
-          const path = require('path');
           const configPath = path.join(process.cwd(), 'src', 'lib', 'config', 'config.json');
           
           const currentConfig = JSON.parse(await fs.readFile(configPath, 'utf-8'));

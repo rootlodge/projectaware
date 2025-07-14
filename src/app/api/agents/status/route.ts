@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-async function getAgentMetrics(agentId: string) {
+async function getAgentMetrics(_agentId: string) {
   // TODO: Implement real metrics tracking
   // For now, return simulated metrics
   return {
@@ -104,7 +104,7 @@ async function getAgentMetrics(agentId: string) {
   };
 }
 
-async function getAgentRecentActivity(agentId: string) {
+async function getAgentRecentActivity(_agentId: string) {
   // TODO: Implement real activity tracking
   // For now, return simulated recent activity
   const activities = [];

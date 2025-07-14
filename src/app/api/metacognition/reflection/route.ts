@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMetacognitionEngine, getCognitiveSelfMonitor } from '../route';
+import { getMetacognitionEngine } from '@/lib/shared/instances';
 import { SelfReflectionSession } from '@/lib/systems/MetacognitionEngine';
 
 /**
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const { reason, session_type } = data;
+    const { reason, session_type: _session_type } = data;
 
     if (!reason) {
       return NextResponse.json(

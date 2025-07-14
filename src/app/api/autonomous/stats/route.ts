@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAutonomousThinkingSystem } from '@/lib/systems/autonomousThinkingInstance';
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const thinkingSystem = await getAutonomousThinkingSystem();
     const stats = thinkingSystem.getThinkingStats();

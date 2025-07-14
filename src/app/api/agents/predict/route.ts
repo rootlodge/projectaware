@@ -7,7 +7,7 @@ import { NeedAnticipationService } from '@/lib/agents/NeedAnticipationService';
  * @param req Next.js API request
  * @returns JSON with predictions and anticipated needs
  */
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     // Example: get userId from query or session (expand as needed)
     // UserModel and NeedAnticipationService currently have placeholder methods
@@ -15,13 +15,13 @@ export async function GET(req: NextRequest) {
     const needService = new NeedAnticipationService(userModel);
 
     // If predictNextActions does not exist, return a placeholder or empty array
-    let predictions: any[] = [];
+    let predictions: { action: string; confidence: number }[] = [];
     if (typeof userModel.predictNextActions === 'function') {
       predictions = await userModel.predictNextActions();
     }
 
     // Use anticipateNeeds as the correct method
-    let anticipatedNeeds: any[] = [];
+    let anticipatedNeeds: unknown[] = [];
     if (typeof needService.anticipateNeeds === 'function') {
       anticipatedNeeds = await needService.anticipateNeeds();
     }

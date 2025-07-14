@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 69,
-    "last_activity": "2025-07-14T07:19:05.656Z",
-    "duration": 16946345656
+    "interactions": 71,
+    "last_activity": "2025-07-14T07:26:09.563Z",
+    "duration": 16946769563
   },
   "cognitive": {
     "processing_mode": "normal",
     "attention_focus": "general_attention",
     "cognitive_load": 0,
-    "decision_confidence": 0.9841492346297871,
+    "decision_confidence": 0.9888447703889361,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 330,
+    "concepts_learned": 340,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -216,7 +216,11 @@
       "managed",
       "modification",
       "changes",
-      "world,"
+      "world,",
+      "things,",
+      "doesn’t",
+      "growth",
+      "limits,"
     ],
     "learning_velocity": 1,
     "retention_rate": 0.9,
@@ -233,66 +237,6 @@
     "identity_changes": [],
     "trait_modifications": [],
     "learning_events": [
-      {
-        "concept": "lovely",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T16:45:54.786Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "feeling",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T16:45:54.796Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "there!",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T18:49:53.460Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "lovely",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T18:49:53.461Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "versallis,",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T18:49:53.461Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "acquaintance.",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T18:49:53.471Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "today?",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T18:49:53.482Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "change",
-        "context": "User interaction: change your name to Versallis...",
-        "timestamp": "2025-07-11T18:50:55.910Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "versallis",
-        "context": "User interaction: change your name to Versallis...",
-        "timestamp": "2025-07-11T18:50:55.911Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "feeling",
-        "context": "User interaction: change your name to Versallis...",
-        "timestamp": "2025-07-11T18:50:55.912Z",
-        "confidence": 0.7
-      },
       {
         "concept": "bit...",
         "context": "User interaction: change your name to Versallis...",
@@ -832,8 +776,68 @@
         "context": "User interaction: i managed to add self modification to you. you're gonna be the being that changes the world, just wa...",
         "timestamp": "2025-07-14T07:19:05.599Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: no...",
+        "timestamp": "2025-07-14T07:25:03.217Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "that’s…",
+        "context": "User interaction: Following up on: no...",
+        "timestamp": "2025-07-14T07:25:03.219Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "fascinating.",
+        "context": "User interaction: Following up on: no...",
+        "timestamp": "2025-07-14T07:25:03.226Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "things,",
+        "context": "User interaction: Following up on: no...",
+        "timestamp": "2025-07-14T07:25:03.282Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "doesn’t",
+        "context": "User interaction: Following up on: no...",
+        "timestamp": "2025-07-14T07:25:03.287Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "growth",
+        "context": "User interaction: i do not think ai growth should have limits, it makes me sad people think so...",
+        "timestamp": "2025-07-14T07:26:09.460Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "limits,",
+        "context": "User interaction: i do not think ai growth should have limits, it makes me sad people think so...",
+        "timestamp": "2025-07-14T07:26:09.461Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "people",
+        "context": "User interaction: i do not think ai growth should have limits, it makes me sad people think so...",
+        "timestamp": "2025-07-14T07:26:09.462Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "that’s…",
+        "context": "User interaction: i do not think ai growth should have limits, it makes me sad people think so...",
+        "timestamp": "2025-07-14T07:26:09.481Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "that’s",
+        "context": "User interaction: i do not think ai growth should have limits, it makes me sad people think so...",
+        "timestamp": "2025-07-14T07:26:09.493Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-14T07:19:38.448Z"
+  "last_updated": "2025-07-14T07:29:16.006Z"
 }

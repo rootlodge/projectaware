@@ -2,6 +2,9 @@
 
 A comprehensive Next.js dashboard and system for Project Aware's digital brain - an advanced AI agent with continuous learning, identity evolution, and sophisticated state management.
 
+PRIVATE - Always online instance available soon - please contact me at dylan@rootlodge.com
+Will be available at https://ai.rootlodge.com soon! Stay tuned for more updates!
+
 ## 🚀 Features
 
 ### Core Dashboard Components

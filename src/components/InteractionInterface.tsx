@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Brain, MessageCircle, Clock, Heart, Zap, Eye, Lightbulb, HelpCircle } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Brain, MessageCircle, Clock, Heart, Zap, Eye, Lightbulb, HelpCircle, Filter, Search, ChevronDown, RefreshCw } from 'lucide-react';
 
 interface AutonomousThought {
   id: string;
@@ -51,44 +51,124 @@ interface InteractionInterfaceProps {
   onNavigateToBrain?: (conversationData: any) => void;
 }
 
+interface FilterOptions {
+  type: string[];
+  emotion: string[];
+  priority: number[];
+  dateRange: 'all' | 'today' | 'week' | 'month';
+  responded: 'all' | 'pending' | 'responded';
+  search: string;
+}
+
+interface PaginationState {
+  page: number;
+  limit: number;
+  total: number;
+  hasMore: boolean;
+}
+
 export default function InteractionInterface({ onNavigateToBrain }: InteractionInterfaceProps) {
   const [thoughts, setThoughts] = useState<AutonomousThought[]>([]);
   const [interactions, setInteractions] = useState<AutonomousInteraction[]>([]);
   const [thinkingStatus, setThinkingStatus] = useState<ThinkingStatus | null>(null);
   const [thinkingStats, setThinkingStats] = useState<ThinkingStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<'interactions' | 'thoughts' | 'status'>('interactions');
   const [userResponse, setUserResponse] = useState('');
   const [respondingToId, setRespondingToId] = useState<string | null>(null);
+  
+  // Filtering and pagination state
+  const [filters, setFilters] = useState<FilterOptions>({
+    type: [],
+    emotion: [],
+    priority: [],
+    dateRange: 'all',
+    responded: 'all',
+    search: ''
+  });
+  const [showFilters, setShowFilters] = useState(false);
+  const [thoughtsPagination, setThoughtsPagination] = useState<PaginationState>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    hasMore: false
+  });
+  const [interactionsPagination, setInteractionsPagination] = useState<PaginationState>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    hasMore: false
+  });
 
+  // Auto-refresh when not on the specific page
   useEffect(() => {
+    // Initial data fetch
     fetchData();
     
-    // Set up polling for real-time updates
+    // Set up polling for real-time updates - more frequent when active
     const interval = setInterval(fetchData, 3000);
     return () => clearInterval(interval);
   }, []);
 
-  const fetchData = async () => {
+  // Fetch data when filters change
+  useEffect(() => {
+    fetchData(true); // Reset pagination when filters change
+  }, [filters, activeTab]);
+
+  const fetchData = useCallback(async (resetPagination = false) => {
+    if (resetPagination) {
+      setThoughtsPagination(prev => ({ ...prev, page: 1 }));
+      setInteractionsPagination(prev => ({ ...prev, page: 1 }));
+    }
+    
     try {
-      setLoading(true);
+      setRefreshing(true);
       
-      const [thoughtsRes, interactionsRes, statusRes, statsRes] = await Promise.all([
-        fetch('/api/autonomous/thoughts'),
-        fetch('/api/autonomous/interactions'),
+      const currentThoughtsPage = resetPagination ? 1 : thoughtsPagination.page;
+      const currentInteractionsPage = resetPagination ? 1 : interactionsPagination.page;
+      
+      // Build query parameters for filtering and pagination
+      const thoughtsParams = new URLSearchParams({
+        page: currentThoughtsPage.toString(),
+        limit: thoughtsPagination.limit.toString(),
+        ...(filters.type.length > 0 && { types: filters.type.join(',') }),
+        ...(filters.emotion.length > 0 && { emotions: filters.emotion.join(',') }),
+        ...(filters.priority.length > 0 && { priorities: filters.priority.join(',') }),
+        ...(filters.dateRange !== 'all' && { dateRange: filters.dateRange }),
+        ...(filters.search && { search: filters.search })
+      });
+
+      const interactionsParams = new URLSearchParams({
+        page: currentInteractionsPage.toString(),
+        limit: interactionsPagination.limit.toString(),
+        ...(filters.type.length > 0 && { types: filters.type.join(',') }),
+        ...(filters.emotion.length > 0 && { emotions: filters.emotion.join(',') }),
+        ...(filters.priority.length > 0 && { priorities: filters.priority.join(',') }),
+        ...(filters.dateRange !== 'all' && { dateRange: filters.dateRange }),
+        ...(filters.responded !== 'all' && { responded: filters.responded }),
+        ...(filters.search && { search: filters.search })
+      });
+
+      const requests = [
         fetch('/api/autonomous/status'),
         fetch('/api/autonomous/stats')
-      ]);
+      ];
 
-      if (thoughtsRes.ok) {
-        const thoughtsData = await thoughtsRes.json();
-        if (thoughtsData.success) setThoughts(thoughtsData.data);
+      // Only fetch the data for the active tab to improve performance
+      if (activeTab === 'thoughts') {
+        requests.push(fetch(`/api/autonomous/thoughts?${thoughtsParams}`));
+      } else if (activeTab === 'interactions') {
+        requests.push(fetch(`/api/autonomous/interactions?${interactionsParams}`));
+      } else {
+        // For status tab, we might want basic counts
+        requests.push(
+          fetch(`/api/autonomous/thoughts?${new URLSearchParams({ page: '1', limit: '5' })}`),
+          fetch(`/api/autonomous/interactions?${new URLSearchParams({ page: '1', limit: '5' })}`)
+        );
       }
-      
-      if (interactionsRes.ok) {
-        const interactionsData = await interactionsRes.json();
-        if (interactionsData.success) setInteractions(interactionsData.data);
-      }
+
+      const [statusRes, statsRes, ...dataResponses] = await Promise.all(requests);
       
       if (statusRes.ok) {
         const statusData = await statusRes.json();
@@ -99,12 +179,219 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
         const statsData = await statsRes.json();
         if (statsData.success) setThinkingStats(statsData.data);
       }
+
+      // Handle data responses based on active tab
+      if (activeTab === 'thoughts' && dataResponses[0]) {
+        const thoughtsData = await dataResponses[0].json();
+        if (thoughtsData.success) {
+          if (resetPagination || currentThoughtsPage === 1) {
+            setThoughts(thoughtsData.data.items || thoughtsData.data);
+          } else {
+            // Append for lazy loading
+            setThoughts(prev => [...prev, ...(thoughtsData.data.items || [])]);
+          }
+          
+          if (thoughtsData.data.pagination) {
+            setThoughtsPagination(prev => ({
+              ...prev,
+              total: thoughtsData.data.pagination.total,
+              hasMore: thoughtsData.data.pagination.hasMore
+            }));
+          }
+        }
+      } else if (activeTab === 'interactions' && dataResponses[0]) {
+        const interactionsData = await dataResponses[0].json();
+        if (interactionsData.success) {
+          if (resetPagination || currentInteractionsPage === 1) {
+            setInteractions(interactionsData.data.items || interactionsData.data);
+          } else {
+            // Append for lazy loading
+            setInteractions(prev => [...prev, ...(interactionsData.data.items || [])]);
+          }
+          
+          if (interactionsData.data.pagination) {
+            setInteractionsPagination(prev => ({
+              ...prev,
+              total: interactionsData.data.pagination.total,
+              hasMore: interactionsData.data.pagination.hasMore
+            }));
+          }
+        }
+      } else if (activeTab === 'status') {
+        // For status tab, get basic data
+        if (dataResponses[0]) {
+          const thoughtsData = await dataResponses[0].json();
+          if (thoughtsData.success) setThoughts(thoughtsData.data.items || thoughtsData.data || []);
+        }
+        if (dataResponses[1]) {
+          const interactionsData = await dataResponses[1].json();
+          if (interactionsData.success) setInteractions(interactionsData.data.items || interactionsData.data || []);
+        }
+      }
       
     } catch (error) {
       console.error('Error fetching autonomous thinking data:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  }, [filters, activeTab, thoughtsPagination.page, interactionsPagination.page, thoughtsPagination.limit, interactionsPagination.limit]);
+
+  // Load more data for lazy loading
+  const loadMore = useCallback(() => {
+    if (activeTab === 'thoughts' && thoughtsPagination.hasMore) {
+      setThoughtsPagination(prev => ({ ...prev, page: prev.page + 1 }));
+    } else if (activeTab === 'interactions' && interactionsPagination.hasMore) {
+      setInteractionsPagination(prev => ({ ...prev, page: prev.page + 1 }));
+    }
+  }, [activeTab, thoughtsPagination.hasMore, interactionsPagination.hasMore]);
+
+  // Manual refresh
+  const handleRefresh = useCallback(() => {
+    fetchData(true);
+  }, [fetchData]);
+
+  // Filter data based on current filters
+  const filteredInteractions = useMemo(() => {
+    return interactions.filter(interaction => {
+      // Type filter
+      if (filters.type.length > 0 && !filters.type.includes(interaction.type)) {
+        return false;
+      }
+      
+      // Emotion filter
+      if (filters.emotion.length > 0 && !filters.emotion.includes(interaction.emotion_state)) {
+        return false;
+      }
+      
+      // Priority filter
+      if (filters.priority.length > 0 && !filters.priority.includes(interaction.priority)) {
+        return false;
+      }
+      
+      // Date range filter
+      if (filters.dateRange !== 'all') {
+        const now = new Date();
+        const itemDate = new Date(interaction.timestamp);
+        let cutoffDate = new Date();
+        
+        switch (filters.dateRange) {
+          case 'today':
+            cutoffDate.setHours(0, 0, 0, 0);
+            break;
+          case 'week':
+            cutoffDate.setDate(now.getDate() - 7);
+            break;
+          case 'month':
+            cutoffDate.setMonth(now.getMonth() - 1);
+            break;
+        }
+        
+        if (itemDate < cutoffDate) return false;
+      }
+      
+      // Responded filter
+      if (filters.responded === 'pending' && interaction.responded_to) {
+        return false;
+      }
+      if (filters.responded === 'responded' && !interaction.responded_to) {
+        return false;
+      }
+      
+      // Search filter
+      if (filters.search && !interaction.content.toLowerCase().includes(filters.search.toLowerCase())) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [interactions, filters]);
+
+  const filteredThoughts = useMemo(() => {
+    return thoughts.filter(thought => {
+      // Type filter
+      if (filters.type.length > 0 && !filters.type.includes(thought.type)) {
+        return false;
+      }
+      
+      // Emotion filter
+      if (filters.emotion.length > 0 && !filters.emotion.includes(thought.emotion_influence)) {
+        return false;
+      }
+      
+      // Priority filter
+      if (filters.priority.length > 0 && !filters.priority.includes(thought.priority)) {
+        return false;
+      }
+      
+      // Date range filter
+      if (filters.dateRange !== 'all') {
+        const now = new Date();
+        const itemDate = new Date(thought.timestamp);
+        let cutoffDate = new Date();
+        
+        switch (filters.dateRange) {
+          case 'today':
+            cutoffDate.setHours(0, 0, 0, 0);
+            break;
+          case 'week':
+            cutoffDate.setDate(now.getDate() - 7);
+            break;
+          case 'month':
+            cutoffDate.setMonth(now.getMonth() - 1);
+            break;
+        }
+        
+        if (itemDate < cutoffDate) return false;
+      }
+      
+      // Search filter
+      if (filters.search && !thought.content.toLowerCase().includes(filters.search.toLowerCase())) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [thoughts, filters]);
+
+  // Get unique values for filter options
+  const filterOptions = useMemo(() => {
+    const allItems = [...interactions, ...thoughts];
+    return {
+      types: [...new Set(allItems.map(item => item.type))],
+      emotions: [...new Set([
+        ...interactions.map(i => i.emotion_state),
+        ...thoughts.map(t => t.emotion_influence)
+      ])],
+      priorities: [...new Set(allItems.map(item => item.priority))].sort((a, b) => b - a)
+    };
+  }, [interactions, thoughts]);
+
+  const updateFilter = (key: keyof FilterOptions, value: any) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const toggleFilterValue = (key: 'type' | 'emotion' | 'priority', value: any) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: prev[key].includes(value) 
+        ? prev[key].filter(v => v !== value)
+        : [...prev[key], value]
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      type: [],
+      emotion: [],
+      priority: [],
+      dateRange: 'all',
+      responded: 'all',
+      search: ''
+    });
   };
 
   const respondToInteraction = async (interactionId: string) => {
@@ -131,7 +418,7 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
         }
         
         // Refresh data to see any new AI responses
-        await fetchData();
+        await fetchData(true);
       }
     } catch (error) {
       console.error('Error responding to interaction:', error);
@@ -145,7 +432,7 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
       });
       
       // Refresh data after a short delay
-      setTimeout(fetchData, 1000);
+      setTimeout(() => fetchData(true), 1000);
     } catch (error) {
       console.error('Error triggering manual thinking:', error);
     }
@@ -204,7 +491,7 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
 
   return (
     <div className="space-y-6">
-      {/* Header with Status */}
+      {/* Header with Status and Controls */}
       <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -215,17 +502,163 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
             </div>
           </div>
           
-          <button
-            onClick={triggerManualThinking}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            Trigger Thinking
-          </button>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+              <span>Refresh</span>
+            </button>
+            
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Filter className="w-4 h-4" />
+              <span>Filters</span>
+              {(filters.type.length > 0 || filters.emotion.length > 0 || filters.priority.length > 0 || 
+                filters.dateRange !== 'all' || filters.responded !== 'all' || filters.search) && (
+                <span className="bg-blue-400 text-blue-900 text-xs px-2 py-1 rounded-full font-bold">
+                  {[...filters.type, ...filters.emotion, ...filters.priority, 
+                    ...(filters.dateRange !== 'all' ? [filters.dateRange] : []),
+                    ...(filters.responded !== 'all' ? [filters.responded] : []),
+                    ...(filters.search ? ['search'] : [])
+                  ].length}
+                </span>
+              )}
+            </button>
+            
+            <button
+              onClick={triggerManualThinking}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Trigger Thinking
+            </button>
+          </div>
         </div>
+
+        {/* Filters Panel */}
+        {showFilters && (
+          <div className="border-t border-white/10 pt-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-white font-medium">Filters</h3>
+              <button
+                onClick={clearFilters}
+                className="text-sm text-purple-300 hover:text-white transition-colors"
+              >
+                Clear All
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Search */}
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">Search</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    value={filters.search}
+                    onChange={(e) => updateFilter('search', e.target.value)}
+                    placeholder="Search content..."
+                    className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-400"
+                  />
+                </div>
+              </div>
+
+              {/* Type Filter */}
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">Type</label>
+                <div className="space-y-1 max-h-24 overflow-y-auto">
+                  {filterOptions.types.map(type => (
+                    <label key={type} className="flex items-center space-x-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={filters.type.includes(type)}
+                        onChange={() => toggleFilterValue('type', type)}
+                        className="rounded"
+                      />
+                      <span className="text-white capitalize">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Emotion Filter */}
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">Emotion</label>
+                <div className="space-y-1 max-h-24 overflow-y-auto">
+                  {filterOptions.emotions.map(emotion => (
+                    <label key={emotion} className="flex items-center space-x-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={filters.emotion.includes(emotion)}
+                        onChange={() => toggleFilterValue('emotion', emotion)}
+                        className="rounded"
+                      />
+                      <span className="text-white capitalize">{emotion}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Priority Filter */}
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">Priority</label>
+                <div className="space-y-1">
+                  {filterOptions.priorities.map(priority => (
+                    <label key={priority} className="flex items-center space-x-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={filters.priority.includes(priority)}
+                        onChange={() => toggleFilterValue('priority', priority)}
+                        className="rounded"
+                      />
+                      <span className="text-white">Priority {priority}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Date Range Filter */}
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">Date Range</label>
+                <select
+                  value={filters.dateRange}
+                  onChange={(e) => updateFilter('dateRange', e.target.value)}
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white"
+                >
+                  <option value="all">All Time</option>
+                  <option value="today">Today</option>
+                  <option value="week">Last Week</option>
+                  <option value="month">Last Month</option>
+                </select>
+              </div>
+
+              {/* Response Status Filter (for interactions) */}
+              {activeTab === 'interactions' && (
+                <div>
+                  <label className="block text-sm text-purple-300 mb-2">Response Status</label>
+                  <select
+                    value={filters.responded}
+                    onChange={(e) => updateFilter('responded', e.target.value)}
+                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white"
+                  >
+                    <option value="all">All</option>
+                    <option value="pending">Pending Response</option>
+                    <option value="responded">Responded</option>
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Status Indicators */}
         {thinkingStatus && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
             <div className="bg-white/5 rounded-lg p-3">
               <div className="flex items-center space-x-2">
                 <div className={`w-3 h-3 rounded-full ${thinkingStatus.is_thinking ? 'bg-green-400 animate-pulse' : 'bg-gray-400'}`}></div>
@@ -293,22 +726,40 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-white">AI-Initiated Interactions</h3>
-                <span className="text-sm text-purple-300">
-                  {interactions.length} total interactions
-                </span>
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-purple-300">
+                    Showing {filteredInteractions.length} of {interactionsPagination.total || interactions.length}
+                  </span>
+                  {refreshing && (
+                    <div className="flex items-center space-x-2 text-purple-300">
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span className="text-sm">Updating...</span>
+                    </div>
+                  )}
+                </div>
               </div>
               
-              {interactions.length === 0 ? (
+              {filteredInteractions.length === 0 ? (
                 <div className="text-center py-8">
                   <Brain className="w-12 h-12 text-gray-500 mx-auto mb-3" />
-                  <p className="text-gray-400">No autonomous interactions yet.</p>
-                  <p className="text-gray-500 text-sm">The AI will start thinking when you're inactive for 20+ seconds.</p>
+                  {interactions.length === 0 ? (
+                    <>
+                      <p className="text-gray-400">No autonomous interactions yet.</p>
+                      <p className="text-gray-500 text-sm">The AI will start thinking when you're inactive for 20+ seconds.</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-400">No interactions match your current filters.</p>
+                      <p className="text-gray-500 text-sm">Try adjusting your filters or clearing them.</p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {interactions
-                    .filter(i => !i.responded_to) // Show only pending interactions
-                    .sort((a, b) => b.priority - a.priority) // Sort by priority (highest first)
+                  {/* Pending Interactions (High Priority) */}
+                  {filteredInteractions
+                    .filter(i => !i.responded_to)
+                    .sort((a, b) => b.priority - a.priority)
                     .map((interaction) => (
                     <div
                       key={interaction.id}
@@ -393,12 +844,12 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
                     </div>
                   ))}
                   
-                  {/* Show responded interactions separately */}
-                  {interactions.some(i => i.responded_to) && (
+                  {/* Responded Interactions */}
+                  {filteredInteractions.some(i => i.responded_to) && (
                     <div className="mt-8">
                       <h4 className="text-white font-semibold mb-4">Previous Interactions</h4>
                       <div className="space-y-3">
-                        {interactions
+                        {filteredInteractions
                           .filter(i => i.responded_to)
                           .map((interaction) => (
                           <div
@@ -425,6 +876,19 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+                  
+                  {/* Lazy Load More Button */}
+                  {interactionsPagination.hasMore && (
+                    <div className="text-center py-4">
+                      <button
+                        onClick={loadMore}
+                        disabled={refreshing}
+                        className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {refreshing ? 'Loading...' : 'Load More Interactions'}
+                      </button>
                     </div>
                   )}
                 </div>

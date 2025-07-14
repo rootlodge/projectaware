@@ -8,7 +8,7 @@ import InteractionInterface from '@/components/InteractionInterface';
 import AgentManager from '@/components/AgentManager';
 import EmotionDisplay from '@/components/EmotionDisplay';
 import ModelSelectorNew from '@/components/ModelSelectorNew';
-import OllamaTest from '@/components/OllamaTest';
+import OllamaTest from '@/components/MainSettings';
 import MemoryDashboard from '@/components/MemoryDashboard';
 import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap, Eye, ChevronDown } from 'lucide-react';
 import dynamic from 'next/dynamic';

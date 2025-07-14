@@ -31,5 +31,12 @@
     "max_context_messages": 20000,
     "min_message_length": 10,
     "filter_repetitive": true
+  },
+  "thought_throttling": {
+    "enabled": true,
+    "max_thoughts_per_minute": 20,
+    "unlimited": false,
+    "adaptive_throttling": true,
+    "performance_threshold": 0.8
   }
 }

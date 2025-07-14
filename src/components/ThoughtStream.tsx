@@ -229,8 +229,12 @@ export default function ThoughtStreamPage() {
   const [stats, setStats] = useState<ThoughtStreamStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [visibleCards, setVisibleCards] = useState(20); // For lazy loading cards
   const scrollRef = useRef<HTMLDivElement>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch data from API
   const fetchData = useCallback(async () => {
@@ -377,6 +381,57 @@ export default function ThoughtStreamPage() {
       return true;
     });
   }, [events, filters]);
+
+  // Pagination calculations (only for timeline view)
+  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedEvents = viewMode === 'timeline' ? filteredEvents.slice(startIndex, endIndex) : filteredEvents;
+
+  // Lazy loading for cards view
+  const visibleCardsEvents = viewMode === 'cards' ? filteredEvents.slice(0, visibleCards) : filteredEvents;
+
+  // Reset to first page when filters change (timeline only)
+  React.useEffect(() => {
+    if (viewMode === 'timeline') {
+      setCurrentPage(1);
+    }
+  }, [filters, viewMode]);
+
+  // Reset visible cards when switching to cards view or filters change
+  React.useEffect(() => {
+    if (viewMode === 'cards') {
+      setVisibleCards(20);
+    }
+  }, [filters, viewMode]);
+
+  // Lazy loading intersection observer for cards view
+  React.useEffect(() => {
+    if (viewMode !== 'cards' || !cardsContainerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && visibleCards < filteredEvents.length) {
+          setVisibleCards(prev => Math.min(prev + 20, filteredEvents.length));
+        }
+      },
+      {
+        rootMargin: '100px', // Start loading 100px before the element comes into view
+        threshold: 0.1
+      }
+    );
+
+    // Observe the last few cards to trigger loading
+    const cards = cardsContainerRef.current.children;
+    if (cards.length > 3) {
+      observer.observe(cards[cards.length - 3] as Element);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [viewMode, visibleCards, filteredEvents.length, visibleCardsEvents]);
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -525,7 +580,7 @@ export default function ThoughtStreamPage() {
 
   const renderTimeline = React.useCallback(() => (
     <div className="space-y-6" ref={scrollRef}>
-      {filteredEvents.length === 0 ? (
+      {paginatedEvents.length === 0 ? (
         <div className="text-center py-12">
           <Brain className="w-16 h-16 text-purple-400 mx-auto mb-4 opacity-50" />
           <p className="text-purple-300 text-lg mb-2">No thought events found</p>
@@ -548,11 +603,11 @@ export default function ThoughtStreamPage() {
           </div>
         </div>
       ) : (
-        filteredEvents.map((event, index) => (
+        paginatedEvents.map((event, index) => (
           <div key={`${event.timestamp}-${index}`} className="flex items-start space-x-6">
             <div className="flex flex-col items-center">
               <div className="w-4 h-4 bg-purple-400 rounded-full flex-shrink-0"></div>
-              {index < filteredEvents.length - 1 && (
+              {index < paginatedEvents.length - 1 && (
                 <div className="w-0.5 h-16 bg-gradient-to-b from-purple-400 to-transparent mt-2"></div>
               )}
             </div>
@@ -563,37 +618,62 @@ export default function ThoughtStreamPage() {
         ))
       )}
     </div>
-  ), [filteredEvents, generateTestEvents, activateGoalEngine, renderEventCard]);
+  ), [paginatedEvents, generateTestEvents, activateGoalEngine, renderEventCard]);
 
   const renderCards = React.useCallback(() => (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      {filteredEvents.length === 0 ? (
-        <div className="col-span-full text-center py-12">
-          <Brain className="w-16 h-16 text-purple-400 mx-auto mb-4 opacity-50" />
-          <p className="text-purple-300 text-lg mb-2">No thought events found</p>
-          <p className="text-purple-400 text-sm mb-6">
-            Adjust your filters or generate test events to see cognitive activity
+    <div>
+      <div ref={cardsContainerRef} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {visibleCardsEvents.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <Brain className="w-16 h-16 text-purple-400 mx-auto mb-4 opacity-50" />
+            <p className="text-purple-300 text-lg mb-2">No thought events found</p>
+            <p className="text-purple-400 text-sm mb-6">
+              Adjust your filters or generate test events to see cognitive activity
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={generateTestEvents}
+                className="px-6 py-3 bg-purple-500/20 text-purple-200 rounded-lg border border-purple-400/30 hover:bg-purple-500/30 transition-colors"
+              >
+                Generate Test Events
+              </button>
+              <button
+                onClick={activateGoalEngine}
+                className="px-6 py-3 bg-blue-500/20 text-blue-200 rounded-lg border border-blue-400/30 hover:bg-blue-500/30 transition-colors"
+              >
+                Activate Goal Engine
+              </button>
+            </div>
+          </div>
+        ) : (
+          visibleCardsEvents.map((event, index) => renderEventCard(event, index))
+        )}
+      </div>
+      
+      {/* Lazy Loading Indicator */}
+      {viewMode === 'cards' && visibleCards < filteredEvents.length && (
+        <div className="text-center py-8">
+          <div className="flex items-center justify-center space-x-3">
+            <Activity className="w-5 h-5 animate-spin text-purple-400" />
+            <span className="text-purple-300">Loading more events...</span>
+          </div>
+          <p className="text-purple-400 text-sm mt-2">
+            Showing {visibleCards} of {filteredEvents.length} events
           </p>
-          <div className="flex gap-4">
-            <button
-              onClick={generateTestEvents}
-              className="px-6 py-3 bg-purple-500/20 text-purple-200 rounded-lg border border-purple-400/30 hover:bg-purple-500/30 transition-colors"
-            >
-              Generate Test Events
-            </button>
-            <button
-              onClick={activateGoalEngine}
-              className="px-6 py-3 bg-blue-500/20 text-blue-200 rounded-lg border border-blue-400/30 hover:bg-blue-500/30 transition-colors"
-            >
-              Activate Goal Engine
-            </button>
+        </div>
+      )}
+      
+      {/* All Cards Loaded Indicator */}
+      {viewMode === 'cards' && visibleCards >= filteredEvents.length && filteredEvents.length > 20 && (
+        <div className="text-center py-6">
+          <div className="flex items-center justify-center space-x-2 text-purple-400">
+            <CheckCircle className="w-5 h-5" />
+            <span>All {filteredEvents.length} events loaded</span>
           </div>
         </div>
-      ) : (
-        filteredEvents.map((event, index) => renderEventCard(event, index))
       )}
     </div>
-  ), [filteredEvents, generateTestEvents, activateGoalEngine, renderEventCard]);
+  ), [visibleCardsEvents, generateTestEvents, activateGoalEngine, renderEventCard, viewMode, visibleCards, filteredEvents.length]);
 
   const renderAnalytics = React.useCallback(() => {
     if (!analytics && !stats) {
@@ -1025,6 +1105,107 @@ export default function ThoughtStreamPage() {
         </div>
       </div>
 
+      {/* Pagination Controls (Timeline Only) */}
+      {viewMode === 'timeline' && filteredEvents.length > 0 && totalPages > 1 && (
+        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-purple-300">Items per page:</span>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1); // Reset to first page when changing items per page
+                  }}
+                  className="bg-black/20 border border-white/10 rounded-lg px-3 py-1 text-white text-sm focus:border-purple-400 focus:outline-none"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+              <div className="text-sm text-purple-300">
+                Showing {startIndex + 1}-{Math.min(endIndex, filteredEvents.length)} of {filteredEvents.length} events
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              {/* First Page */}
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="px-3 py-2 text-sm rounded-lg border border-white/10 bg-white/5 text-purple-300 hover:text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                First
+              </button>
+
+              {/* Previous Page */}
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-2 text-sm rounded-lg border border-white/10 bg-white/5 text-purple-300 hover:text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-1"
+              >
+                <ChevronUp className="w-4 h-4 rotate-[-90deg]" />
+                <span>Previous</span>
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex items-center space-x-1">
+                {(() => {
+                  const pages = [];
+                  const showPages = 5; // Number of page buttons to show
+                  let startPage = Math.max(1, currentPage - Math.floor(showPages / 2));
+                  let endPage = Math.min(totalPages, startPage + showPages - 1);
+                  
+                  // Adjust start if we're near the end
+                  if (endPage - startPage + 1 < showPages) {
+                    startPage = Math.max(1, endPage - showPages + 1);
+                  }
+
+                  for (let i = startPage; i <= endPage; i++) {
+                    pages.push(
+                      <button
+                        key={i}
+                        onClick={() => setCurrentPage(i)}
+                        className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                          currentPage === i
+                            ? 'border-purple-400 bg-purple-500/30 text-white'
+                            : 'border-white/10 bg-white/5 text-purple-300 hover:text-white hover:bg-white/10'
+                        }`}
+                      >
+                        {i}
+                      </button>
+                    );
+                  }
+                  return pages;
+                })()}
+              </div>
+
+              {/* Next Page */}
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-2 text-sm rounded-lg border border-white/10 bg-white/5 text-purple-300 hover:text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-1"
+              >
+                <span>Next</span>
+                <ChevronUp className="w-4 h-4 rotate-90" />
+              </button>
+
+              {/* Last Page */}
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-2 text-sm rounded-lg border border-white/10 bg-white/5 text-purple-300 hover:text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Last
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Event Detail Modal */}
       {selectedEvent && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -1193,7 +1374,44 @@ export default function ThoughtStreamPage() {
       <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center space-x-6 text-purple-300">
-            <span>Showing {filteredEvents.length} of {events.length} events</span>
+            {viewMode === 'timeline' ? (
+              <>
+                <span>
+                  Showing {filteredEvents.length > 0 ? startIndex + 1 : 0}-{Math.min(endIndex, filteredEvents.length)} of {filteredEvents.length} filtered events
+                  {filteredEvents.length !== events.length && (
+                    <span className="text-purple-400"> ({events.length} total)</span>
+                  )}
+                </span>
+                {totalPages > 1 && (
+                  <>
+                    <span>•</span>
+                    <span>Page {currentPage} of {totalPages}</span>
+                  </>
+                )}
+              </>
+            ) : viewMode === 'cards' ? (
+              <>
+                <span>
+                  Showing {visibleCards} of {filteredEvents.length} filtered events
+                  {filteredEvents.length !== events.length && (
+                    <span className="text-purple-400"> ({events.length} total)</span>
+                  )}
+                </span>
+                {visibleCards < filteredEvents.length && (
+                  <>
+                    <span>•</span>
+                    <span>Scroll down to load more</span>
+                  </>
+                )}
+              </>
+            ) : (
+              <span>
+                Analyzing {filteredEvents.length} filtered events
+                {filteredEvents.length !== events.length && (
+                  <span className="text-purple-400"> ({events.length} total)</span>
+                )}
+              </span>
+            )}
             {stats && (
               <>
                 <span>•</span>

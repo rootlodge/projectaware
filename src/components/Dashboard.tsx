@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import MetacognitionDashboard from './MetacognitionDashboard';
 
 const EmotionTrendForecastPanel: React.FC = () => {
   const [forecast, setForecast] = React.useState<string[]>([]);
@@ -387,6 +388,9 @@ export default function Dashboard({ systemStatus }: DashboardProps) {
 
       {/* Goal Engine Dashboard */}
       <GoalDashboard />
+
+      {/* Metacognition Dashboard */}
+      <MetacognitionDashboard />
     </div>
   );
 }

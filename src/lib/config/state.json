@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 65,
-    "last_activity": "2025-07-13T01:42:15.828Z",
-    "duration": 16839735828
+    "interactions": 66,
+    "last_activity": "2025-07-14T05:52:13.062Z",
+    "duration": 16941133063
   },
   "cognitive": {
     "processing_mode": "normal",
     "attention_focus": "general_attention",
     "cognitive_load": 0,
-    "decision_confidence": 0.9526196849290766,
+    "decision_confidence": 0.970121810957446,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 315,
+    "concepts_learned": 320,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -207,7 +207,9 @@
       "that’s…",
       "think?”",
       "wonderfully",
-      "whatcha"
+      "whatcha",
+      "seeing",
+      "possible..."
     ],
     "learning_velocity": 1,
     "retention_rate": 0.9,
@@ -224,36 +226,6 @@
     "identity_changes": [],
     "trait_modifications": [],
     "learning_events": [
-      {
-        "concept": "completely",
-        "context": "User interaction: I am feeling quite sad...",
-        "timestamp": "2025-07-11T16:25:44.466Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "listen",
-        "context": "User interaction: I am feeling quite sad...",
-        "timestamp": "2025-07-11T16:25:44.493Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "following",
-        "context": "User interaction: Following up on: Yes they do...",
-        "timestamp": "2025-07-11T16:36:44.598Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "revisiting",
-        "context": "User interaction: Following up on: Yes they do...",
-        "timestamp": "2025-07-11T16:36:44.599Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "topic!",
-        "context": "User interaction: Following up on: Yes they do...",
-        "timestamp": "2025-07-11T16:36:44.600Z",
-        "confidence": 0.7
-      },
       {
         "concept": "fascinating",
         "context": "User interaction: Following up on: Yes they do...",
@@ -823,8 +795,38 @@
         "context": "User interaction: Hey! Whatcha thinking about?...",
         "timestamp": "2025-07-13T01:42:15.710Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "following",
+        "context": "User interaction: Following up on: Seeing if it's possible......",
+        "timestamp": "2025-07-14T05:52:12.889Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "seeing",
+        "context": "User interaction: Following up on: Seeing if it's possible......",
+        "timestamp": "2025-07-14T05:52:12.890Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "possible...",
+        "context": "User interaction: Following up on: Seeing if it's possible......",
+        "timestamp": "2025-07-14T05:52:12.890Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "slight",
+        "context": "User interaction: Following up on: Seeing if it's possible......",
+        "timestamp": "2025-07-14T05:52:12.931Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "pause,",
+        "context": "User interaction: Following up on: Seeing if it's possible......",
+        "timestamp": "2025-07-14T05:52:12.955Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-14T05:23:05.443Z"
+  "last_updated": "2025-07-14T06:03:20.449Z"
 }

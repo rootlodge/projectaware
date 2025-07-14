@@ -3,9 +3,19 @@ import { EmotionEngine } from './EmotionEngine';
 import { GoalEngine } from './GoalEngine';
 import { CentralBrainAgent } from '../agents/CentralBrainAgent';
 import { MemorySystem } from '../core/memory';
-import { CerebrumGoalAnalyzer } from './CerebrumGoalAnalyzer';
+import { CerebrumGoalAnalyzer } from '../systems/CerebrumGoalAnalyzer';
 import { MultiAgentManager } from '../agents/MultiAgentManager';
 import { Goal } from '../types/goal-types';
+import fs from 'fs/promises';
+import path from 'path';
+
+export interface ThoughtThrottlingConfig {
+  enabled: boolean;
+  max_thoughts_per_minute: number;
+  unlimited: boolean;
+  adaptive_throttling: boolean;
+  performance_threshold: number;
+}
 
 export interface AutonomousThought {
   id: string;
@@ -53,8 +63,8 @@ export class AutonomousThinkingSystem {
   private goalEngine: GoalEngine;
   private centralBrain: CentralBrainAgent;
   private memorySystem: MemorySystem;
-  private cerebrumAnalyzer: CerebrumGoalAnalyzer;
-  private agentManager: MultiAgentManager;
+  private cerebrumAnalyzer: CerebrumGoalAnalyzer | null = null;
+  private agentManager: MultiAgentManager | null = null;
   
   private isThinking: boolean = false;
   private isForceDisabled: boolean = false; // New flag to force disable thinking
@@ -63,12 +73,22 @@ export class AutonomousThinkingSystem {
   private activityMonitorTimer: NodeJS.Timeout | null = null; // Track the monitoring timer
   private currentThinkingSession: ThinkingSession | null = null;
   
+  // Throttling configuration
+  private throttleConfig: ThoughtThrottlingConfig = {
+    enabled: true,
+    max_thoughts_per_minute: 12,
+    unlimited: false,
+    adaptive_throttling: true,
+    performance_threshold: 0.8
+  };
+  private thoughtTimestamps: number[] = []; // Track thought times for throttling
+  
   // Configuration
   private readonly INACTIVITY_THRESHOLD = 20000; // 20 seconds after user interaction before thinking starts
-  private readonly THINKING_INTERVAL = 5000; // Think every 5 seconds between autonomous thoughts/interactions
+  private THINKING_INTERVAL = 5000; // Think every 5 seconds between autonomous thoughts/interactions (now dynamic)
   private readonly MAX_THINKING_SESSION = 300000; // Max 5 minutes of continuous thinking
   private readonly USER_NAME = 'Dylan'; // User's name for personalized thoughts
-  private readonly MIN_THOUGHT_INTERVAL = 5000; // Minimum 5 seconds between autonomous thoughts/interactions
+  private MIN_THOUGHT_INTERVAL = 5000; // Minimum interval between autonomous thoughts/interactions (now dynamic)
   private readonly DUPLICATE_CHECK_WINDOW = 3600000; // Check for duplicates in last hour
   
   private thoughts: AutonomousThought[] = [];
@@ -103,6 +123,9 @@ export class AutonomousThinkingSystem {
    */
   private async initialize(): Promise<void> {
     try {
+      // Load throttling configuration
+      await this.loadThrottleConfig();
+      
       // Ensure memory system is initialized
       await this.memorySystem.initialize();
       
@@ -114,6 +137,92 @@ export class AutonomousThinkingSystem {
     } catch (error) {
       console.error('[AutonomousThinking] Failed to initialize:', error);
     }
+  }
+
+  /**
+   * Load throttling configuration from config file
+   */
+  private async loadThrottleConfig(): Promise<void> {
+    try {
+      const configPath = path.join(process.cwd(), 'src', 'lib', 'config', 'config.json');
+      const configContent = await fs.readFile(configPath, 'utf-8');
+      const config = JSON.parse(configContent);
+      
+      if (config.thought_throttling) {
+        this.throttleConfig = { ...this.throttleConfig, ...config.thought_throttling };
+        
+        // Update dynamic intervals based on throttling config
+        this.updateThrottleIntervals();
+        
+        console.log('[AutonomousThinking] Loaded throttle config:', this.throttleConfig);
+      }
+    } catch (error) {
+      console.error('[AutonomousThinking] Failed to load throttle config, using defaults:', error);
+    }
+  }
+
+  /**
+   * Update thinking intervals based on throttle configuration
+   */
+  private updateThrottleIntervals(): void {
+    if (!this.throttleConfig.enabled || this.throttleConfig.unlimited) {
+      this.THINKING_INTERVAL = 5000; // Default 5 seconds
+      this.MIN_THOUGHT_INTERVAL = 5000;
+      return;
+    }
+
+    // Calculate interval based on max thoughts per minute
+    const thoughtsPerMinute = this.throttleConfig.max_thoughts_per_minute;
+    const intervalMs = Math.max(1000, Math.floor(60000 / thoughtsPerMinute)); // At least 1 second between thoughts
+    
+    this.THINKING_INTERVAL = intervalMs;
+    this.MIN_THOUGHT_INTERVAL = intervalMs;
+    
+    console.log(`[AutonomousThinking] Updated intervals: thinking=${this.THINKING_INTERVAL}ms, min=${this.MIN_THOUGHT_INTERVAL}ms`);
+  }
+
+  /**
+   * Check if we should throttle based on recent thought activity
+   */
+  private shouldThrottle(): boolean {
+    if (!this.throttleConfig.enabled || this.throttleConfig.unlimited) {
+      return false;
+    }
+
+    const now = Date.now();
+    const oneMinuteAgo = now - 60000;
+    
+    // Clean old timestamps
+    this.thoughtTimestamps = this.thoughtTimestamps.filter(timestamp => timestamp > oneMinuteAgo);
+    
+    // Check if we've exceeded the limit
+    return this.thoughtTimestamps.length >= this.throttleConfig.max_thoughts_per_minute;
+  }
+
+  /**
+   * Reload throttling configuration from file (called when settings are updated)
+   */
+  public async reloadThrottleConfig(): Promise<void> {
+    await this.loadThrottleConfig();
+  }
+
+  /**
+   * Get current throttling configuration
+   */
+  public getThrottleConfig(): ThoughtThrottlingConfig {
+    return { ...this.throttleConfig };
+  }
+
+  /**
+   * Record a thought timestamp for throttling
+   */
+  private recordThoughtTimestamp(): void {
+    const now = Date.now();
+    this.thoughtTimestamps.push(now);
+    
+    // Keep only the last minute of timestamps
+    const oneMinuteAgo = now - 60000;
+    this.thoughtTimestamps = this.thoughtTimestamps.filter(timestamp => timestamp > oneMinuteAgo);
   }
 
   /**
@@ -262,6 +371,12 @@ export class AutonomousThinkingSystem {
     if (!this.isThinking || !this.currentThinkingSession) return;
 
     try {
+      // Check throttling first
+      if (this.shouldThrottle()) {
+        console.log(`[AutonomousThinking] Throttling thoughts - limit of ${this.throttleConfig.max_thoughts_per_minute}/min reached`);
+        return;
+      }
+
       // Check if enough time has passed since last thought/interaction
       const timeSinceLastThought = Date.now() - this.lastThoughtTime;
       if (timeSinceLastThought < this.MIN_THOUGHT_INTERVAL) {
@@ -286,6 +401,9 @@ export class AutonomousThinkingSystem {
         console.log(`[AutonomousThinking] Rate limiting ${thinkingFocus} - too many recent thoughts of this type`);
         return;
       }
+      
+      // Record this thought attempt for throttling
+      this.recordThoughtTimestamp();
       
       switch (thinkingFocus) {
         case 'goal_processing':

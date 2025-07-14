@@ -38,5 +38,87 @@
     "unlimited": false,
     "adaptive_throttling": true,
     "performance_threshold": 0.8
+  },
+  "model_settings": {
+    "available_models": [
+      {
+        "name": "llama3.2:latest",
+        "parameters": "3b",
+        "supports_tools": false,
+        "performance_tier": "fast",
+        "use_cases": [
+          "thinking",
+          "chatting",
+          "general"
+        ]
+      },
+      {
+        "name": "llama3.1:8b",
+        "parameters": "8b",
+        "supports_tools": true,
+        "performance_tier": "medium",
+        "use_cases": [
+          "tool_usage",
+          "complex_reasoning",
+          "code_editing"
+        ]
+      },
+      {
+        "name": "llama3.1:70b",
+        "parameters": "70b",
+        "supports_tools": true,
+        "performance_tier": "slow",
+        "use_cases": [
+          "complex_analysis",
+          "advanced_reasoning"
+        ]
+      },
+      {
+        "name": "gemma3:latest",
+        "parameters": "2b",
+        "supports_tools": false,
+        "performance_tier": "fast",
+        "use_cases": [
+          "thinking",
+          "quick_responses"
+        ]
+      }
+    ],
+    "specialized_models": {
+      "thinking": "gemma3:latest",
+      "chatting": "llama3.2:latest",
+      "tool_usage": "llama3.1:latest",
+      "goal_setting": "llama3.1:latest",
+      "code_editing": "llama3.1:latest",
+      "web_browsing": "llama3.1:latest",
+      "complex_analysis": "dolphin3:latest",
+      "quick_responses": "llama3.2:latest"
+    },
+    "performance_management": {
+      "tool_usage_throttling": {
+        "enabled": true,
+        "max_concurrent_tool_calls": 3,
+        "pause_other_llm_calls": true,
+        "reduced_thinking_rate": 6,
+        "cooldown_period_ms": 15000
+      },
+      "model_switching": {
+        "enabled": true,
+        "auto_switch_based_on_load": true,
+        "fallback_to_faster_models": true
+      }
+    },
+    "tool_settings": {
+      "enabled": true,
+      "supported_tools": [
+        "web_search",
+        "code_analysis",
+        "file_operations",
+        "calculation",
+        "data_processing"
+      ],
+      "tool_timeout_ms": 30000,
+      "max_tool_calls_per_conversation": 10
+    }
   }
 }

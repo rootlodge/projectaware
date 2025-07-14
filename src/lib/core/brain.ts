@@ -5,6 +5,7 @@ import { StateManager } from './StateManager';
 import { EmotionEngine } from '../systems/EmotionEngine';
 import { ResponseCache } from '../systems/ResponseCache';
 import { MemorySystem } from './memory';
+import { ModelManager, ToolUsageContext } from './ModelManager';
 
 export interface LLMConfig {
   hallucination_detection: {
@@ -44,6 +45,7 @@ export class Brain {
   private emotionEngine: EmotionEngine;
   private responseCache: ResponseCache;
   private memorySystem: MemorySystem;
+  private modelManager: ModelManager;
   private ollamaUrl: string = 'http://localhost:11434';
   private configPath: string;
   private corePath: string;
@@ -54,6 +56,7 @@ export class Brain {
     this.emotionEngine = emotionEngine;
     this.responseCache = responseCache;
     this.memorySystem = new MemorySystem();
+    this.modelManager = new ModelManager();
     
     // Set up paths for configuration files
     this.configPath = path.join(process.cwd(), 'src', 'lib', 'config', 'config.json');
@@ -129,11 +132,18 @@ export class Brain {
     return cleaned;
   }
 
-  async askLLM(prompt: string, model?: string, temperature?: number): Promise<string> {
+  async askLLM(prompt: string, model?: string, temperature?: number, useCase?: string, toolContext?: ToolUsageContext): Promise<string> {
     try {
       const config = this.loadConfig();
       const actualTemperature = temperature ?? config.llm_settings.temperature;
-      const actualModel = model || await this.getCurrentModel();
+      
+      // Determine the best model for this use case
+      let actualModel = model;
+      if (!actualModel && useCase) {
+        actualModel = await this.modelManager.getModelForUseCase(useCase, toolContext);
+      } else if (!actualModel) {
+        actualModel = await this.getCurrentModel();
+      }
       
       // Check cache first
       const cachedResponse = this.responseCache.get(prompt, actualModel, actualTemperature);
@@ -143,6 +153,7 @@ export class Brain {
       }
       
       console.log(`Cache miss for key: ${prompt.substring(0, 10)}...`);
+      console.log(`[Brain] Using model ${actualModel} for use case: ${useCase || 'general'}`);
       
       // Test Ollama connection first
       try {
@@ -164,9 +175,10 @@ export class Brain {
       
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-          console.log(`[Brain] Attempt ${attempt}/${maxRetries} for LLM request`);
+          console.log(`[Brain] Attempt ${attempt}/${maxRetries} for LLM request with model ${actualModel}`);
           
-          const response = await axios.post(`${this.ollamaUrl}/api/generate`, {
+          // Prepare request options
+          const requestOptions = {
             model: actualModel,
             prompt,
             stream: false,
@@ -176,8 +188,17 @@ export class Brain {
               repeat_penalty: config.llm_settings.repeat_penalty,
               num_predict: config.llm_settings.max_tokens
             }
-          }, {
-            timeout: 60000, // 60 second timeout
+          };
+
+          // Add tool support if model supports it and context requires it
+          if (toolContext?.requiresTools && await this.modelManager.modelSupportsTools(actualModel)) {
+            console.log(`[Brain] Enabling tool support for model ${actualModel}`);
+            // Note: Tool configuration would go here when Ollama supports it
+            // For now, we just log that we're using a tool-capable model
+          }
+          
+          const response = await axios.post(`${this.ollamaUrl}/api/generate`, requestOptions, {
+            timeout: toolContext?.requiresTools ? 90000 : 60000, // Longer timeout for tool usage
             maxContentLength: 50 * 1024 * 1024, // 50MB max response
             maxBodyLength: 50 * 1024 * 1024,
             headers: {
@@ -196,6 +217,11 @@ export class Brain {
           
           // Update model last used
           await this.updateModelLastUsed(actualModel);
+          
+          // Complete tool usage if it was a tool context
+          if (toolContext?.requiresTools) {
+            await this.modelManager.completeToolUsage();
+          }
           
           console.log(`[Brain] LLM request succeeded on attempt ${attempt}`);
           return validatedResponse;
@@ -216,9 +242,21 @@ export class Brain {
       // All retries failed, use fallback
       console.error(`[Brain] All ${maxRetries} attempts failed, using fallback response`);
       const fallbackResponse = this.generateFallbackResponse(prompt);
+      
+      // Complete tool usage even on failure
+      if (toolContext?.requiresTools) {
+        await this.modelManager.completeToolUsage();
+      }
+      
       return fallbackResponse;
     } catch (error) {
       console.error('LLM request failed:', error);
+      
+      // Complete tool usage on error
+      if (toolContext?.requiresTools) {
+        await this.modelManager.completeToolUsage();
+      }
+      
       return "Unable to process request.";
     }
   }
@@ -363,7 +401,7 @@ Context: ${context}
 
 Think about this situation and provide your thoughts. Be authentic to your identity and emotional state.`;
 
-    return await this.askLLM(prompt, 'gemma3:latest', 0.7);
+    return await this.askLLMForThinking(prompt);
   }
 
   async reflectOnMemory(memoryLog: string): Promise<string> {
@@ -376,7 +414,7 @@ ${memoryLog}
 
 Reflect on these interactions. What patterns do you notice? What have you learned? How might you improve? Be thoughtful and introspective.`;
 
-    return await this.askLLM(prompt, 'gemma3:latest', 0.3);
+    return await this.askLLMForThinking(prompt);
   }
 
   async analyzeSatisfaction(conversationHistory: any[]): Promise<{
@@ -401,7 +439,7 @@ Provide analysis in JSON format:
 JSON:`;
 
     try {
-      const result = await this.askLLM(prompt, 'gemma3:latest', 0.1);
+      const result = await this.askLLMForComplexAnalysis(prompt);
       const jsonMatch = result.match(/\{.*\}/s);
       
       if (jsonMatch) {
@@ -498,8 +536,25 @@ JSON:`;
       
       const fullPrompt = `${systemPrompt}${contextPrompt}User: ${userMessage}\n\nAI:`;
       
-      // Generate response
-      const response = await this.askLLM(fullPrompt, model);
+      // Generate response using the most appropriate method
+      let response: string;
+      
+      // Detect if this is a tool-requiring request
+      const requiresTools = this.detectToolRequirement(userMessage);
+      
+      if (requiresTools) {
+        console.log('[Brain] Detected tool requirement, using tool-capable model');
+        response = await this.askLLMWithTools(fullPrompt, ['web_search', 'code_analysis', 'file_operations']);
+      } else if (userMessage.toLowerCase().includes('code') || userMessage.toLowerCase().includes('programming')) {
+        response = await this.askLLMForCodeEditing(fullPrompt);
+      } else if (userMessage.toLowerCase().includes('goal') || userMessage.toLowerCase().includes('plan')) {
+        response = await this.askLLMForGoalSetting(fullPrompt);
+      } else if (userMessage.toLowerCase().includes('analyze') || userMessage.toLowerCase().includes('complex')) {
+        response = await this.askLLMForComplexAnalysis(fullPrompt);
+      } else {
+        // Default to chatting for regular conversation
+        response = await this.askLLMForChatting(fullPrompt);
+      }
       
       // Analyze the interaction for learning events
       const learningEvents = this.extractLearningEvents(userMessage, response, emotionState);
@@ -726,5 +781,138 @@ Instructions:
     
     // Default fallback for any other prompt
     return "I'm currently experiencing connectivity issues with my main language processing system. While I can't provide my usual detailed responses right now, I'm still here and will be back to full capacity shortly. Please try again in a moment.";
+  }
+
+  /**
+   * Specialized method for thinking/reflection tasks
+   */
+  async askLLMForThinking(prompt: string, temperature?: number): Promise<string> {
+    return await this.askLLM(prompt, undefined, temperature || 0.7, 'thinking');
+  }
+
+  /**
+   * Specialized method for chatting/conversation
+   */
+  async askLLMForChatting(prompt: string, temperature?: number): Promise<string> {
+    return await this.askLLM(prompt, undefined, temperature || 0.6, 'chatting');
+  }
+
+  /**
+   * Specialized method for tool usage (requires tool-capable model)
+   */
+  async askLLMWithTools(prompt: string, tools: string[], temperature?: number): Promise<string> {
+    const toolContext: ToolUsageContext = {
+      useCase: 'tool_usage',
+      priority: 'high',
+      requiresTools: true,
+      expectedComplexity: 'complex'
+    };
+    
+    return await this.askLLM(prompt, undefined, temperature || 0.3, 'tool_usage', toolContext);
+  }
+
+  /**
+   * Specialized method for code editing
+   */
+  async askLLMForCodeEditing(prompt: string, temperature?: number): Promise<string> {
+    const codeContext: ToolUsageContext = {
+      useCase: 'code_editing',
+      priority: 'high',
+      requiresTools: false,
+      expectedComplexity: 'complex'
+    };
+    
+    return await this.askLLM(prompt, undefined, temperature || 0.2, 'code_editing', codeContext);
+  }
+
+  /**
+   * Specialized method for goal setting
+   */
+  async askLLMForGoalSetting(prompt: string, temperature?: number): Promise<string> {
+    return await this.askLLM(prompt, undefined, temperature || 0.4, 'goal_setting');
+  }
+
+  /**
+   * Specialized method for web browsing tasks
+   */
+  async askLLMForWebBrowsing(prompt: string, temperature?: number): Promise<string> {
+    const webContext: ToolUsageContext = {
+      useCase: 'web_browsing',
+      priority: 'medium',
+      requiresTools: true,
+      expectedComplexity: 'complex'
+    };
+    
+    return await this.askLLM(prompt, undefined, temperature || 0.3, 'web_browsing', webContext);
+  }
+
+  /**
+   * Specialized method for quick responses
+   */
+  async askLLMForQuickResponse(prompt: string, temperature?: number): Promise<string> {
+    return await this.askLLM(prompt, undefined, temperature || 0.4, 'quick_responses');
+  }
+
+  /**
+   * Specialized method for complex analysis
+   */
+  async askLLMForComplexAnalysis(prompt: string, temperature?: number): Promise<string> {
+    const analysisContext: ToolUsageContext = {
+      useCase: 'complex_analysis',
+      priority: 'high',
+      requiresTools: false,
+      expectedComplexity: 'complex'
+    };
+    
+    return await this.askLLM(prompt, undefined, temperature || 0.2, 'complex_analysis', analysisContext);
+  }
+
+  /**
+   * Get model recommendations for a specific use case
+   */
+  async getModelRecommendationsForUseCase(useCase: string): Promise<{
+    recommended: string;
+    alternatives: string[];
+    reasoning: string;
+  }> {
+    return await this.modelManager.getModelRecommendations(useCase);
+  }
+
+  /**
+   * Get performance state of model manager
+   */
+  getModelPerformanceState() {
+    return this.modelManager.getPerformanceState();
+  }
+
+  /**
+   * Get available tool-capable models
+   */
+  async getToolCapableModels(): Promise<string[]> {
+    return await this.modelManager.getToolCapableModels();
+  }
+
+  /**
+   * Detect if a user message requires tool usage
+   */
+  private detectToolRequirement(userMessage: string): boolean {
+    const toolIndicators = [
+      'search for',
+      'look up',
+      'find information about',
+      'browse',
+      'download',
+      'calculate',
+      'run code',
+      'execute',
+      'fetch data',
+      'get weather',
+      'check website',
+      'analyze file',
+      'process data'
+    ];
+    
+    const lowerMessage = userMessage.toLowerCase();
+    return toolIndicators.some(indicator => lowerMessage.includes(indicator));
   }
 }

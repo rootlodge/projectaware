@@ -10,7 +10,7 @@ To enable tool calling, provide a list of available tools via the tools field in
 import ollama
 
 response = ollama.chat(
-    model='llama3.1',
+    model='llama3.1:latest',
     messages=[{'role': 'user', 'content':
         'What is the weather in Toronto?'}],
 

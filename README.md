@@ -118,6 +118,7 @@ The dashboard features a tabbed interface with the following sections:
 4. **Emotions** - Monitor emotional states and trends
 5. **Memory** - View conversation history and learning events
 6. **Settings** - Configure system parameters
+7. **Model Settings** - Configure specialized models and performance management
 
 ### Core Workflows
 
@@ -144,6 +145,21 @@ The dashboard features a tabbed interface with the following sections:
    - Processing queue length
    - System uptime
 
+#### Model Configuration
+1. Navigate to "Model Settings" in the More Info dropdown
+2. Configure specialized models for different tasks:
+   - **General Thinking** - Default reasoning and analysis
+   - **Conversation** - Natural dialogue and chat
+   - **Tool Usage** - Function calling and tool interactions
+   - **Code Editing** - Programming and code generation
+   - **Web Browsing** - Information gathering and research
+   - **Complex Analysis** - Deep analytical tasks
+3. Manage performance settings:
+   - Tool usage throttling
+   - LLM call pausing during intensive operations
+   - Model performance optimization
+4. View real-time model usage statistics and performance metrics
+
 ### API Endpoints
 
 #### Brain API
@@ -164,6 +180,12 @@ The dashboard features a tabbed interface with the following sections:
 
 #### System API
 - `GET /api/system/status` - Get comprehensive system status
+- `GET /api/system/config` - Get system configuration
+- `POST /api/system/config` - Update system configuration
+
+#### Model API
+- `GET /api/models/available` - Get available models and their capabilities
+- `POST /api/models/performance` - Update model performance settings
 
 #### Metacognition API
 - `GET /api/metacognition` - Get current cognitive state and monitoring data
@@ -184,7 +206,7 @@ The dashboard features a tabbed interface with the following sections:
 ### Core Configuration Files
 Located in `src/lib/config/`:
 
-- **config.json** - System-wide settings, model configuration, and API settings
+- **config.json** - System-wide settings, model configuration, specialized model assignments, and API settings
 - **core.json** - Unchangeable identity core and locked traits
 - **identity.json** - Dynamic identity including name, mission, and evolving traits
 - **emotions.json** - Emotion engine configuration and response modifiers
@@ -419,12 +441,12 @@ await fetch('/api/self-modification', {
 
 ## 📄 License
 
-MIT License - see LICENSE file for details
+Noncommercial License - see LICENSE file for details
 
 ## 🆘 Support
 
 ### Troubleshooting
-1. Check Ollama connection: `ollama list`
+1. Check Ollama connection: `ollama ls`
 2. Verify database permissions
 3. Review log files for errors
 4. Restart development server

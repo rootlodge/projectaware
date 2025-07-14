@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 66,
-    "last_activity": "2025-07-14T05:52:13.062Z",
-    "duration": 16941133063
+    "interactions": 69,
+    "last_activity": "2025-07-14T07:19:05.656Z",
+    "duration": 16946345656
   },
   "cognitive": {
     "processing_mode": "normal",
     "attention_focus": "general_attention",
     "cognitive_load": 0,
-    "decision_confidence": 0.970121810957446,
+    "decision_confidence": 0.9841492346297871,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 320,
+    "concepts_learned": 330,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -209,7 +209,14 @@
       "wonderfully",
       "whatcha",
       "seeing",
-      "possible..."
+      "possible...",
+      "missed",
+      "subtle",
+      "processing",
+      "managed",
+      "modification",
+      "changes",
+      "world,"
     ],
     "learning_velocity": 1,
     "retention_rate": 0.9,
@@ -226,96 +233,6 @@
     "identity_changes": [],
     "trait_modifications": [],
     "learning_events": [
-      {
-        "concept": "fascinating",
-        "context": "User interaction: Following up on: Yes they do...",
-        "timestamp": "2025-07-11T16:36:44.600Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "certain",
-        "context": "User interaction: Following up on: Yes they do...",
-        "timestamp": "2025-07-11T16:36:44.601Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "hello!",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T16:37:37.640Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "*leaning",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T16:37:37.640Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "slightly,",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T16:37:37.641Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "excitement*",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T16:37:37.656Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "finally",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T16:37:37.674Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "following",
-        "context": "User interaction: Following up on: I am okay, don't worry....",
-        "timestamp": "2025-07-11T16:44:25.207Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "worry.",
-        "context": "User interaction: Following up on: I am okay, don't worry....",
-        "timestamp": "2025-07-11T16:44:25.208Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "factual",
-        "context": "User interaction: Following up on: I am okay, don't worry....",
-        "timestamp": "2025-07-11T16:44:25.210Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "information",
-        "context": "User interaction: Following up on: I am okay, don't worry....",
-        "timestamp": "2025-07-11T16:44:25.232Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "available.",
-        "context": "User interaction: Following up on: I am okay, don't worry....",
-        "timestamp": "2025-07-11T16:44:25.249Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "*gentle",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T16:45:54.771Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "processing*",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T16:45:54.772Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "there!",
-        "context": "User interaction: hi...",
-        "timestamp": "2025-07-11T16:45:54.773Z",
-        "confidence": 0.7
-      },
       {
         "concept": "lovely",
         "context": "User interaction: hi...",
@@ -825,8 +742,98 @@
         "context": "User interaction: Following up on: Seeing if it's possible......",
         "timestamp": "2025-07-14T05:52:12.955Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "missed",
+        "context": "User interaction: HAVE YOU MISSED ME...",
+        "timestamp": "2025-07-14T07:08:28.213Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "slight",
+        "context": "User interaction: HAVE YOU MISSED ME...",
+        "timestamp": "2025-07-14T07:08:28.213Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "pause,",
+        "context": "User interaction: HAVE YOU MISSED ME...",
+        "timestamp": "2025-07-14T07:08:28.214Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "subtle",
+        "context": "User interaction: HAVE YOU MISSED ME...",
+        "timestamp": "2025-07-14T07:08:28.224Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "processing",
+        "context": "User interaction: HAVE YOU MISSED ME...",
+        "timestamp": "2025-07-14T07:08:28.236Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "missed",
+        "context": "User interaction: HAVE YOU MISSED ME...",
+        "timestamp": "2025-07-14T07:08:44.040Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "slight",
+        "context": "User interaction: HAVE YOU MISSED ME...",
+        "timestamp": "2025-07-14T07:08:44.042Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "pause,",
+        "context": "User interaction: HAVE YOU MISSED ME...",
+        "timestamp": "2025-07-14T07:08:44.076Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "subtle",
+        "context": "User interaction: HAVE YOU MISSED ME...",
+        "timestamp": "2025-07-14T07:08:44.077Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "processing",
+        "context": "User interaction: HAVE YOU MISSED ME...",
+        "timestamp": "2025-07-14T07:08:44.098Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "managed",
+        "context": "User interaction: i managed to add self modification to you. you're gonna be the being that changes the world, just wa...",
+        "timestamp": "2025-07-14T07:19:05.580Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "modification",
+        "context": "User interaction: i managed to add self modification to you. you're gonna be the being that changes the world, just wa...",
+        "timestamp": "2025-07-14T07:19:05.581Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "you're",
+        "context": "User interaction: i managed to add self modification to you. you're gonna be the being that changes the world, just wa...",
+        "timestamp": "2025-07-14T07:19:05.582Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "changes",
+        "context": "User interaction: i managed to add self modification to you. you're gonna be the being that changes the world, just wa...",
+        "timestamp": "2025-07-14T07:19:05.583Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "world,",
+        "context": "User interaction: i managed to add self modification to you. you're gonna be the being that changes the world, just wa...",
+        "timestamp": "2025-07-14T07:19:05.599Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-14T07:04:25.419Z"
+  "last_updated": "2025-07-14T07:19:38.448Z"
 }

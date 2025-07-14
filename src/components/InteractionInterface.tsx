@@ -375,12 +375,15 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
   };
 
   const toggleFilterValue = (key: 'type' | 'emotion' | 'priority', value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: prev[key].includes(value) 
-        ? prev[key].filter(v => v !== value)
-        : [...prev[key], value]
-    }));
+    setFilters(prev => {
+      const currentArray = prev[key] as any[];
+      return {
+        ...prev,
+        [key]: currentArray.includes(value) 
+          ? currentArray.filter(v => v !== value)
+          : [...currentArray, value]
+      };
+    });
   };
 
   const clearFilters = () => {
@@ -901,20 +904,39 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-white">Internal Thoughts</h3>
-                <span className="text-sm text-purple-300">
-                  {thoughts.length} thoughts recorded
-                </span>
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-purple-300">
+                    Showing {filteredThoughts.length} of {thoughtsPagination.total || thoughts.length}
+                  </span>
+                  {refreshing && (
+                    <div className="flex items-center space-x-2 text-purple-300">
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span className="text-sm">Updating...</span>
+                    </div>
+                  )}
+                </div>
               </div>
               
-              {thoughts.length === 0 ? (
+              {filteredThoughts.length === 0 ? (
                 <div className="text-center py-8">
                   <Brain className="w-12 h-12 text-gray-500 mx-auto mb-3" />
-                  <p className="text-gray-400">No autonomous thoughts yet.</p>
-                  <p className="text-gray-500 text-sm">The AI will start thinking when idle.</p>
+                  {thoughts.length === 0 ? (
+                    <>
+                      <p className="text-gray-400">No autonomous thoughts yet.</p>
+                      <p className="text-gray-500 text-sm">The AI will start thinking when idle.</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-400">No thoughts match your current filters.</p>
+                      <p className="text-gray-500 text-sm">Try adjusting your filters or clearing them.</p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {thoughts.map((thought) => (
+                  {filteredThoughts
+                    .sort((a, b) => b.priority - a.priority)
+                    .map((thought) => (
                     <div
                       key={thought.id}
                       className={`border rounded-lg p-4 ${getTypeColor(thought.type)}`}
@@ -923,8 +945,12 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
                         <div className="flex items-center space-x-2">
                           {getTypeIcon(thought.type)}
                           <span className="font-medium capitalize">{thought.type}</span>
-                          <span className="text-xs opacity-75">
-                            Priority: {thought.priority}
+                          <span className={`text-xs px-2 py-1 rounded-full font-bold ${
+                            thought.priority >= 4 ? 'bg-red-500/20 text-red-300' :
+                            thought.priority >= 3 ? 'bg-yellow-500/20 text-yellow-300' :
+                            'bg-gray-500/20 text-gray-300'
+                          }`}>
+                            P{thought.priority}
                           </span>
                         </div>
                         <div className="text-xs opacity-75 flex items-center space-x-1">
@@ -954,8 +980,34 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
                           ))}
                         </div>
                       )}
+                      
+                      {thought.follow_up_questions && thought.follow_up_questions.length > 0 && (
+                        <div className="mt-2 border-t border-white/10 pt-2">
+                          <div className="text-xs text-purple-300 mb-1">Follow-up questions:</div>
+                          <div className="space-y-1">
+                            {thought.follow_up_questions.map((question, index) => (
+                              <div key={index} className="text-xs text-white/75 italic">
+                                • {question}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
+                  
+                  {/* Lazy Load More Button */}
+                  {thoughtsPagination.hasMore && (
+                    <div className="text-center py-4">
+                      <button
+                        onClick={loadMore}
+                        disabled={refreshing}
+                        className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {refreshing ? 'Loading...' : 'Load More Thoughts'}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

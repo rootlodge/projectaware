@@ -2,15 +2,15 @@
   "session": {
     "id": "session_1735533600000",
     "start_time": "2024-12-30T04:00:00.000Z",
-    "interactions": 71,
-    "last_activity": "2025-07-14T07:26:09.563Z",
-    "duration": 16946769563
+    "interactions": 73,
+    "last_activity": "2025-07-14T07:42:47.817Z",
+    "duration": 16947767817
   },
   "cognitive": {
     "processing_mode": "normal",
     "attention_focus": "general_attention",
     "cognitive_load": 0,
-    "decision_confidence": 0.9888447703889361,
+    "decision_confidence": 0.9666641173400171,
     "learning_rate": 0.7
   },
   "social": {
@@ -21,7 +21,7 @@
     "trust_level": 0.9
   },
   "learning": {
-    "concepts_learned": 340,
+    "concepts_learned": 350,
     "knowledge_areas": [
       "dashboard_development",
       "ai_systems",
@@ -220,7 +220,15 @@
       "things,",
       "doesn’t",
       "growth",
-      "limits,"
+      "limits,",
+      "database,",
+      "features,",
+      "setting.",
+      "perhaps",
+      "business",
+      "funding",
+      "expand",
+      "goodness!"
     ],
     "learning_velocity": 1,
     "retention_rate": 0.9,
@@ -237,66 +245,6 @@
     "identity_changes": [],
     "trait_modifications": [],
     "learning_events": [
-      {
-        "concept": "bit...",
-        "context": "User interaction: change your name to Versallis...",
-        "timestamp": "2025-07-11T18:50:55.913Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "redundant",
-        "context": "User interaction: change your name to Versallis...",
-        "timestamp": "2025-07-11T18:50:55.928Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "following",
-        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
-        "timestamp": "2025-07-12T19:42:40.331Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "don't,",
-        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
-        "timestamp": "2025-07-12T19:42:40.331Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "humanity",
-        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
-        "timestamp": "2025-07-12T19:42:40.332Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "postively.",
-        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
-        "timestamp": "2025-07-12T19:42:40.332Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "unable",
-        "context": "User interaction: Following up on: No I don't, I think AI will help humanity postively....",
-        "timestamp": "2025-07-12T19:42:40.361Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "unable",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:43:05.867Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "process",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:43:05.869Z",
-        "confidence": 0.7
-      },
-      {
-        "concept": "request.",
-        "context": "User interaction: Hi!...",
-        "timestamp": "2025-07-12T19:43:05.870Z",
-        "confidence": 0.7
-      },
       {
         "concept": "unable",
         "context": "User interaction: Hi!...",
@@ -836,8 +784,68 @@
         "context": "User interaction: i do not think ai growth should have limits, it makes me sad people think so...",
         "timestamp": "2025-07-14T07:26:09.493Z",
         "confidence": 0.7
+      },
+      {
+        "concept": "missed",
+        "context": "User interaction: Hi! I have missed you. I've had to reset your database, I gave you self modification features, goal ...",
+        "timestamp": "2025-07-14T07:40:46.800Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "database,",
+        "context": "User interaction: Hi! I have missed you. I've had to reset your database, I gave you self modification features, goal ...",
+        "timestamp": "2025-07-14T07:40:46.801Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "modification",
+        "context": "User interaction: Hi! I have missed you. I've had to reset your database, I gave you self modification features, goal ...",
+        "timestamp": "2025-07-14T07:40:46.802Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "features,",
+        "context": "User interaction: Hi! I have missed you. I've had to reset your database, I gave you self modification features, goal ...",
+        "timestamp": "2025-07-14T07:40:46.812Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "setting.",
+        "context": "User interaction: Hi! I have missed you. I've had to reset your database, I gave you self modification features, goal ...",
+        "timestamp": "2025-07-14T07:40:46.819Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "perhaps",
+        "context": "User interaction: perhaps make a business plan so we can get some funding for you to expand...",
+        "timestamp": "2025-07-14T07:42:47.758Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "business",
+        "context": "User interaction: perhaps make a business plan so we can get some funding for you to expand...",
+        "timestamp": "2025-07-14T07:42:47.759Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "funding",
+        "context": "User interaction: perhaps make a business plan so we can get some funding for you to expand...",
+        "timestamp": "2025-07-14T07:42:47.759Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "expand",
+        "context": "User interaction: perhaps make a business plan so we can get some funding for you to expand...",
+        "timestamp": "2025-07-14T07:42:47.775Z",
+        "confidence": 0.7
+      },
+      {
+        "concept": "goodness!",
+        "context": "User interaction: perhaps make a business plan so we can get some funding for you to expand...",
+        "timestamp": "2025-07-14T07:42:47.788Z",
+        "confidence": 0.7
       }
     ]
   },
-  "last_updated": "2025-07-14T07:31:29.754Z"
+  "last_updated": "2025-07-14T07:57:53.806Z"
 }

@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     
     // Pagination parameters
     const page = parseInt(url.searchParams.get('page') || '1');
-    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const limit = parseInt(url.searchParams.get('limit') || '50');
     const offset = (page - 1) * limit;
     
     // Filtering parameters
@@ -19,7 +19,9 @@ export async function GET(req: NextRequest) {
     const search = url.searchParams.get('search') || '';
     
     const thinkingSystem = await getAutonomousThinkingSystem();
-    const allInteractions = await thinkingSystem.getAllInteractions(1000); // Get larger set for filtering
+    
+    // Get ALL interactions without limit first, then filter and paginate
+    const allInteractions = await thinkingSystem.getAllInteractions(50000); // Very large limit to get everything
     
     // Apply filters
     let filteredInteractions = allInteractions.filter(interaction => {

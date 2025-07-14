@@ -90,13 +90,13 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
   const [showFilters, setShowFilters] = useState(false);
   const [thoughtsPagination, setThoughtsPagination] = useState<PaginationState>({
     page: 1,
-    limit: 10,
+    limit: 50, // Increased to show more items
     total: 0,
     hasMore: false
   });
   const [interactionsPagination, setInteractionsPagination] = useState<PaginationState>({
     page: 1,
-    limit: 10,
+    limit: 50, // Increased to show more items
     total: 0,
     hasMore: false
   });
@@ -111,10 +111,10 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch data when filters change
+  // Fetch data when filters change only (not when activeTab changes)
   useEffect(() => {
     fetchData(true); // Reset pagination when filters change
-  }, [filters, activeTab]);
+  }, [filters]);
 
   const fetchData = useCallback(async (resetPagination = false) => {
     if (resetPagination) {
@@ -150,25 +150,15 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
         ...(filters.search && { search: filters.search })
       });
 
+      // Always fetch status, stats, AND both interactions and thoughts data
       const requests = [
         fetch('/api/autonomous/status'),
-        fetch('/api/autonomous/stats')
+        fetch('/api/autonomous/stats'),
+        fetch(`/api/autonomous/thoughts?${thoughtsParams}`),
+        fetch(`/api/autonomous/interactions?${interactionsParams}`)
       ];
 
-      // Only fetch the data for the active tab to improve performance
-      if (activeTab === 'thoughts') {
-        requests.push(fetch(`/api/autonomous/thoughts?${thoughtsParams}`));
-      } else if (activeTab === 'interactions') {
-        requests.push(fetch(`/api/autonomous/interactions?${interactionsParams}`));
-      } else {
-        // For status tab, we might want basic counts
-        requests.push(
-          fetch(`/api/autonomous/thoughts?${new URLSearchParams({ page: '1', limit: '5' })}`),
-          fetch(`/api/autonomous/interactions?${new URLSearchParams({ page: '1', limit: '5' })}`)
-        );
-      }
-
-      const [statusRes, statsRes, ...dataResponses] = await Promise.all(requests);
+      const [statusRes, statsRes, thoughtsRes, interactionsRes] = await Promise.all(requests);
       
       if (statusRes.ok) {
         const statusData = await statusRes.json();
@@ -180,12 +170,13 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
         if (statsData.success) setThinkingStats(statsData.data);
       }
 
-      // Handle data responses based on active tab
-      if (activeTab === 'thoughts' && dataResponses[0]) {
-        const thoughtsData = await dataResponses[0].json();
+      // Always fetch thoughts data
+      if (thoughtsRes.ok) {
+        const thoughtsData = await thoughtsRes.json();
+        console.log('Fetched thoughts data:', thoughtsData); // Debug log
         if (thoughtsData.success) {
           if (resetPagination || currentThoughtsPage === 1) {
-            setThoughts(thoughtsData.data.items || thoughtsData.data);
+            setThoughts(thoughtsData.data.items || thoughtsData.data || []);
           } else {
             // Append for lazy loading
             setThoughts(prev => [...prev, ...(thoughtsData.data.items || [])]);
@@ -199,11 +190,15 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
             }));
           }
         }
-      } else if (activeTab === 'interactions' && dataResponses[0]) {
-        const interactionsData = await dataResponses[0].json();
+      }
+
+      // Always fetch interactions data
+      if (interactionsRes.ok) {
+        const interactionsData = await interactionsRes.json();
+        console.log('Fetched interactions data:', interactionsData); // Debug log
         if (interactionsData.success) {
           if (resetPagination || currentInteractionsPage === 1) {
-            setInteractions(interactionsData.data.items || interactionsData.data);
+            setInteractions(interactionsData.data.items || interactionsData.data || []);
           } else {
             // Append for lazy loading
             setInteractions(prev => [...prev, ...(interactionsData.data.items || [])]);
@@ -217,16 +212,6 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
             }));
           }
         }
-      } else if (activeTab === 'status') {
-        // For status tab, get basic data
-        if (dataResponses[0]) {
-          const thoughtsData = await dataResponses[0].json();
-          if (thoughtsData.success) setThoughts(thoughtsData.data.items || thoughtsData.data || []);
-        }
-        if (dataResponses[1]) {
-          const interactionsData = await dataResponses[1].json();
-          if (interactionsData.success) setInteractions(interactionsData.data.items || interactionsData.data || []);
-        }
       }
       
     } catch (error) {
@@ -235,7 +220,7 @@ export default function InteractionInterface({ onNavigateToBrain }: InteractionI
       setLoading(false);
       setRefreshing(false);
     }
-  }, [filters, activeTab, thoughtsPagination.page, interactionsPagination.page, thoughtsPagination.limit, interactionsPagination.limit]);
+  }, [filters, thoughtsPagination.page, interactionsPagination.page, thoughtsPagination.limit, interactionsPagination.limit]);
 
   // Load more data for lazy loading
   const loadMore = useCallback(() => {

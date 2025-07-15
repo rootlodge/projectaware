@@ -52,14 +52,18 @@ class UserContextService {
       } else {
         // Local mode - check for existing local user or create default
         const localUser = await this.getOrCreateLocalUser();
-        this.currentUser = {
-          id: localUser.id,
-          username: localUser.username,
-          display_name: localUser.display_name,
-          email: localUser.email,
-          isAuthenticated: false,
-          preferences: await this.getUserPreferences(localUser.id!),
-        };
+        if (localUser) {
+          this.currentUser = {
+            id: localUser.id,
+            username: localUser.username,
+            display_name: localUser.display_name,
+            email: localUser.email,
+            isAuthenticated: false,
+            preferences: await this.getUserPreferences(localUser.id!),
+          };
+        } else {
+          throw new Error('Failed to create local user');
+        }
       }
 
       return this.currentUser;
@@ -138,7 +142,7 @@ class UserContextService {
     if (!this.currentUser?.id) return;
     
     try {
-      await this.memory.saveUserPreference(this.currentUser.id, category, key, value);
+      await this.memory.setUserPreference(this.currentUser.id, category, key, value.toString());
       
       // Update local cache
       if (!this.currentUser.preferences) {

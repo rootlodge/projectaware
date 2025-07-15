@@ -14,9 +14,7 @@ export function OnboardingCheck({ children }: OnboardingCheckProps) {
   const { data: session, status } = useSession();
   const [isChecking, setIsChecking] = useState(true);
   const [shouldShowOnboarding, setShouldShowOnboarding] = useState(false);
-
-  // Check if ONCLOUD is enabled
-  const isCloudMode = process.env.NEXT_PUBLIC_ONCLOUD === 'true';
+  const [cloudMode, setCloudMode] = useState(false);
 
   useEffect(() => {
     if (status === 'loading') return; // Still loading session
@@ -31,17 +29,27 @@ export function OnboardingCheck({ children }: OnboardingCheckProps) {
         return;
       }
 
-      // If cloud mode is enabled and user is not authenticated, redirect to sign-in
-      if (isCloudMode && !session) {
-        router.push('/auth/signin');
-        return;
+      // Check configuration for cloud mode and onboarding status
+      const configResponse = await fetch('/api/config?section=auth');
+      if (configResponse.ok) {
+        const configData = await configResponse.json();
+        const isCloudMode = configData.data?.cloudEnabled || false;
+        setCloudMode(isCloudMode);
+
+        // If cloud mode is enabled and user is not authenticated, redirect to sign-in
+        if (isCloudMode && !session) {
+          router.push('/auth/signin');
+          return;
+        }
       }
 
-      const response = await fetch('/api/onboarding/status');
-      if (response.ok) {
-        const data = await response.json();
+      // Check onboarding status from configuration
+      const onboardingResponse = await fetch('/api/config?section=onboarding');
+      if (onboardingResponse.ok) {
+        const onboardingData = await onboardingResponse.json();
+        const onboardingConfig = onboardingData.data;
         
-        if (data.isFirstTime) {
+        if (onboardingConfig?.firstTime && !onboardingConfig?.onboardingComplete) {
           setShouldShowOnboarding(true);
           router.push('/onboarding');
           return;

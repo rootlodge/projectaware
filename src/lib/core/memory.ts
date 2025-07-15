@@ -2,6 +2,47 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 import fs from 'fs-extra';
 
+export interface UserProfile {
+  id?: string;
+  username: string;
+  display_name: string;
+  email?: string;
+  bio?: string;
+  avatar_url?: string;
+  onboarding_completed: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserPreference {
+  id?: string;
+  user_id: string;
+  category: string;
+  preference_key: string;
+  preference_value: string;
+  created_at: string;
+}
+
+export interface UserGoal {
+  id?: string;
+  user_id: string;
+  title: string;
+  description: string;
+  priority: number;
+  status: 'active' | 'completed' | 'paused' | 'archived';
+  target_date?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OnboardingState {
+  current_step: number;
+  completed_steps: string[];
+  user_data: Record<string, any>;
+  started_at: string;
+  updated_at: string;
+}
+
 export interface Message {
   id?: number;
   type: string;
@@ -159,8 +200,52 @@ export class MemorySystem {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
+      `CREATE TABLE IF NOT EXISTS user_profiles (
+        id TEXT PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL,
+        display_name TEXT NOT NULL,
+        email TEXT UNIQUE,
+        bio TEXT,
+        avatar_url TEXT,
+        onboarding_completed BOOLEAN DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+      `CREATE TABLE IF NOT EXISTS user_preferences (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        category TEXT NOT NULL,
+        preference_key TEXT NOT NULL,
+        preference_value TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES user_profiles(id) ON DELETE CASCADE
+      )`,
+      `CREATE TABLE IF NOT EXISTS user_goals (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        priority INTEGER DEFAULT 1 CHECK(priority BETWEEN 1 AND 5),
+        status TEXT DEFAULT 'active' CHECK(status IN ('active', 'completed', 'paused', 'archived')),
+        target_date DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES user_profiles(id) ON DELETE CASCADE
+      )`,
+      `CREATE TABLE IF NOT EXISTS onboarding_state (
+        id INTEGER PRIMARY KEY CHECK(id = 1),
+        current_step INTEGER DEFAULT 0,
+        completed_steps TEXT DEFAULT '[]',
+        user_data TEXT DEFAULT '{}',
+        started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
       `CREATE INDEX IF NOT EXISTS idx_configurations_category ON configurations(category)`,
-      `CREATE INDEX IF NOT EXISTS idx_configurations_key ON configurations(key)`
+      `CREATE INDEX IF NOT EXISTS idx_configurations_key ON configurations(key)`,
+      `CREATE INDEX IF NOT EXISTS idx_user_preferences_user_id ON user_preferences(user_id)`,
+      `CREATE INDEX IF NOT EXISTS idx_user_preferences_category ON user_preferences(category)`,
+      `CREATE INDEX IF NOT EXISTS idx_user_goals_user_id ON user_goals(user_id)`,
+      `CREATE INDEX IF NOT EXISTS idx_user_goals_status ON user_goals(status)`
     ];
 
     for (const table of tables) {
@@ -944,5 +1029,236 @@ export class MemorySystem {
 
   async clearAllConfigurations(): Promise<void> {
     await this.runQuery('DELETE FROM configurations');
+  }
+
+  // User Profile Management
+  async createUserProfile(profile: Omit<UserProfile, 'id' | 'created_at' | 'updated_at'>): Promise<string> {
+    const id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const now = new Date().toISOString();
+    
+    await this.runQuery(
+      `INSERT INTO user_profiles (id, username, display_name, email, bio, avatar_url, onboarding_completed, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, profile.username, profile.display_name, profile.email, profile.bio, profile.avatar_url, profile.onboarding_completed ? 1 : 0, now, now]
+    );
+    
+    return id;
+  }
+
+  async getUserProfile(userId: string): Promise<UserProfile | null> {
+    const result = await this.getQuery(
+      'SELECT * FROM user_profiles WHERE id = ?',
+      [userId]
+    ) as UserProfile | undefined;
+    
+    if (result) {
+      result.onboarding_completed = Boolean(result.onboarding_completed);
+    }
+    
+    return result || null;
+  }
+
+  async getUserProfileByUsername(username: string): Promise<UserProfile | null> {
+    const result = await this.getQuery(
+      'SELECT * FROM user_profiles WHERE username = ?',
+      [username]
+    ) as UserProfile | undefined;
+    
+    if (result) {
+      result.onboarding_completed = Boolean(result.onboarding_completed);
+    }
+    
+    return result || null;
+  }
+
+  async updateUserProfile(userId: string, updates: Partial<UserProfile>): Promise<void> {
+    const fields = [];
+    const values = [];
+    
+    for (const [key, value] of Object.entries(updates)) {
+      if (key !== 'id' && key !== 'created_at') {
+        fields.push(`${key} = ?`);
+        values.push(key === 'onboarding_completed' ? (value ? 1 : 0) : value);
+      }
+    }
+    
+    if (fields.length > 0) {
+      fields.push('updated_at = ?');
+      values.push(new Date().toISOString());
+      values.push(userId);
+      
+      await this.runQuery(
+        `UPDATE user_profiles SET ${fields.join(', ')} WHERE id = ?`,
+        values
+      );
+    }
+  }
+
+  // User Preferences Management
+  async setUserPreference(userId: string, category: string, key: string, value: string): Promise<void> {
+    const id = `pref_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    await this.runQuery(
+      `INSERT OR REPLACE INTO user_preferences (id, user_id, category, preference_key, preference_value, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [id, userId, category, key, value, new Date().toISOString()]
+    );
+  }
+
+  async getUserPreference(userId: string, category: string, key: string): Promise<string | null> {
+    const result = await this.getQuery(
+      'SELECT preference_value FROM user_preferences WHERE user_id = ? AND category = ? AND preference_key = ?',
+      [userId, category, key]
+    ) as { preference_value: string } | undefined;
+    
+    return result?.preference_value || null;
+  }
+
+  async getUserPreferences(userId: string, category?: string): Promise<UserPreference[]> {
+    const query = category 
+      ? 'SELECT * FROM user_preferences WHERE user_id = ? AND category = ?'
+      : 'SELECT * FROM user_preferences WHERE user_id = ?';
+    const params = category ? [userId, category] : [userId];
+    
+    return await this.getAllQuery(query, params) as UserPreference[];
+  }
+
+  // User Goals Management
+  async createUserGoal(goal: Omit<UserGoal, 'id' | 'created_at' | 'updated_at'>): Promise<string> {
+    const id = `goal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const now = new Date().toISOString();
+    
+    await this.runQuery(
+      `INSERT INTO user_goals (id, user_id, title, description, priority, status, target_date, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, goal.user_id, goal.title, goal.description, goal.priority, goal.status, goal.target_date, now, now]
+    );
+    
+    return id;
+  }
+
+  async getUserGoals(userId: string, status?: string): Promise<UserGoal[]> {
+    const query = status 
+      ? 'SELECT * FROM user_goals WHERE user_id = ? AND status = ? ORDER BY priority DESC, created_at DESC'
+      : 'SELECT * FROM user_goals WHERE user_id = ? ORDER BY priority DESC, created_at DESC';
+    const params = status ? [userId, status] : [userId];
+    
+    return await this.getAllQuery(query, params) as UserGoal[];
+  }
+
+  async updateUserGoal(goalId: string, updates: Partial<UserGoal>): Promise<void> {
+    const fields = [];
+    const values = [];
+    
+    for (const [key, value] of Object.entries(updates)) {
+      if (key !== 'id' && key !== 'user_id' && key !== 'created_at') {
+        fields.push(`${key} = ?`);
+        values.push(value);
+      }
+    }
+    
+    if (fields.length > 0) {
+      fields.push('updated_at = ?');
+      values.push(new Date().toISOString());
+      values.push(goalId);
+      
+      await this.runQuery(
+        `UPDATE user_goals SET ${fields.join(', ')} WHERE id = ?`,
+        values
+      );
+    }
+  }
+
+  // Onboarding State Management
+  async getOnboardingState(): Promise<OnboardingState | null> {
+    const result = await this.getQuery(
+      'SELECT * FROM onboarding_state WHERE id = 1'
+    ) as any;
+    
+    if (!result) return null;
+    
+    return {
+      current_step: result.current_step,
+      completed_steps: JSON.parse(result.completed_steps),
+      user_data: JSON.parse(result.user_data),
+      started_at: result.started_at,
+      updated_at: result.updated_at
+    };
+  }
+
+  async updateOnboardingState(state: Partial<OnboardingState>): Promise<void> {
+    const existingState = await this.getOnboardingState();
+    const now = new Date().toISOString();
+    
+    if (!existingState) {
+      await this.runQuery(
+        `INSERT INTO onboarding_state (id, current_step, completed_steps, user_data, started_at, updated_at)
+         VALUES (1, ?, ?, ?, ?, ?)`,
+        [
+          state.current_step || 0,
+          JSON.stringify(state.completed_steps || []),
+          JSON.stringify(state.user_data || {}),
+          now,
+          now
+        ]
+      );
+    } else {
+      const updates = [];
+      const values = [];
+      
+      if (state.current_step !== undefined) {
+        updates.push('current_step = ?');
+        values.push(state.current_step);
+      }
+      
+      if (state.completed_steps !== undefined) {
+        updates.push('completed_steps = ?');
+        values.push(JSON.stringify(state.completed_steps));
+      }
+      
+      if (state.user_data !== undefined) {
+        updates.push('user_data = ?');
+        values.push(JSON.stringify(state.user_data));
+      }
+      
+      if (updates.length > 0) {
+        updates.push('updated_at = ?');
+        values.push(now);
+        
+        await this.runQuery(
+          `UPDATE onboarding_state SET ${updates.join(', ')} WHERE id = 1`,
+          values
+        );
+      }
+    }
+  }
+
+  async isFirstTimeUser(): Promise<boolean> {
+    const result = await this.getQuery(
+      'SELECT COUNT(*) as count FROM user_profiles'
+    ) as { count: number };
+    
+    return result.count === 0;
+  }
+
+  async getCurrentUser(): Promise<UserProfile | null> {
+    // For now, get the first user (single-user system)
+    // In multi-user setup, this would check current session
+    const result = await this.getQuery(
+      'SELECT * FROM user_profiles ORDER BY created_at ASC LIMIT 1'
+    ) as UserProfile | undefined;
+    
+    if (result) {
+      result.onboarding_completed = Boolean(result.onboarding_completed);
+    }
+    
+    return result || null;
+  }
+
+  async resetUserData(): Promise<void> {
+    await this.runQuery('DELETE FROM onboarding_state WHERE id = 1');
+    await this.runQuery('DELETE FROM user_profiles');
+    await this.runQuery('DELETE FROM user_preferences');
+    await this.runQuery('DELETE FROM user_goals');
   }
 }

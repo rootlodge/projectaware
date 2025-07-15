@@ -1,0 +1,337 @@
+# Project Aware v2.0 - Docker Compose Configuration
+# Multi-service containerized environment with MariaDB, Redis, Nginx, Ollama, and monitoring
+
+version: '3.8'
+
+services:
+  # ================================
+  # APPLICATION SERVICE
+  # ================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: projectaware-app
+    hostname: app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DOCKER_CONTAINER=true
+      - DB_HOST=database
+      - DB_PORT=3306
+      - DB_NAME=projectaware
+      - DB_USER=projectaware
+      - DB_PASSWORD=projectaware_secure_2025
+      - DB_SSL=false
+      - DB_POOL_SIZE=20
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - OLLAMA_HOST=ollama
+      - OLLAMA_PORT=11434
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - app_logs:/app/logs
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - projectaware-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ================================
+  # MARIADB DATABASE SERVICE
+  # ================================
+  database:
+    image: mariadb:11.2
+    container_name: projectaware-database
+    hostname: database
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=projectaware_root_2025
+      - MYSQL_DATABASE=projectaware
+      - MYSQL_USER=projectaware
+      - MYSQL_PASSWORD=projectaware_secure_2025
+      - MYSQL_CHARSET=utf8mb4
+      - MYSQL_COLLATION=utf8mb4_unicode_ci
+    volumes:
+      - database_data:/var/lib/mysql
+      - database_config:/etc/mysql/conf.d
+      - database_logs:/var/log/mysql
+      - ./docker/mariadb/init:/docker-entrypoint-initdb.d:ro
+      - ./docker/mariadb/config/mariadb.cnf:/etc/mysql/conf.d/mariadb.cnf:ro
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --max_connections=200
+      --innodb_buffer_pool_size=256M
+      --innodb_log_file_size=64M
+      --innodb_flush_log_at_trx_commit=2
+      --innodb_flush_method=O_DIRECT
+      --query_cache_type=1
+      --query_cache_size=64M
+      --slow_query_log=1
+      --slow_query_log_file=/var/log/mysql/slow.log
+      --long_query_time=2
+      --log_queries_not_using_indexes=1
+      --general_log=1
+      --general_log_file=/var/log/mysql/general.log
+    networks:
+      - projectaware-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  # ================================
+  # REDIS CACHE SERVICE
+  # ================================
+  redis:
+    image: redis:7.2-alpine
+    container_name: projectaware-redis
+    hostname: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/etc/redis/redis.conf:ro
+    command: redis-server /etc/redis/redis.conf
+    networks:
+      - projectaware-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ================================
+  # NGINX REVERSE PROXY
+  # ================================
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: projectaware-nginx
+    hostname: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - app
+    networks:
+      - projectaware-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # OLLAMA LOCAL LLM SERVICE
+  # ================================
+  ollama:
+    image: ollama/ollama:latest
+    container_name: projectaware-ollama
+    hostname: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_ORIGINS=http://localhost:3000,http://app:3000
+      - OLLAMA_HOST=0.0.0.0
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./docker/ollama/models:/models
+    networks:
+      - projectaware-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ================================
+  # MONITORING SERVICES
+  # ================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: projectaware-prometheus
+    hostname: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - projectaware-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: projectaware-grafana
+    hostname: grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=projectaware_admin_2025
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    networks:
+      - projectaware-network
+
+  # ================================
+  # BACKUP SERVICE
+  # ================================
+  backup:
+    image: alpine:3.19
+    container_name: projectaware-backup
+    hostname: backup
+    restart: "no"
+    volumes:
+      - database_data:/backup/database:ro
+      - app_logs:/backup/logs:ro
+      - backup_storage:/backup/output
+      - ./docker/backup/backup.sh:/backup/backup.sh:ro
+    environment:
+      - BACKUP_RETENTION_DAYS=30
+      - MYSQL_HOST=database
+      - MYSQL_DATABASE=projectaware
+      - MYSQL_USER=projectaware
+      - MYSQL_PASSWORD=projectaware_secure_2025
+    depends_on:
+      - database
+    networks:
+      - projectaware-network
+    command: sh /backup/backup.sh
+
+# ================================
+# NETWORKS
+# ================================
+networks:
+  projectaware-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# ================================
+# VOLUMES
+# ================================
+volumes:
+  # Database storage
+  database_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/volumes/database/data
+
+  database_config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/volumes/database/config
+
+  database_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/volumes/database/logs
+
+  # Redis storage
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/volumes/redis/data
+
+  # Application logs
+  app_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/volumes/app/logs
+
+  # Nginx logs
+  nginx_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/volumes/nginx/logs
+
+  # Ollama data
+  ollama_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/volumes/ollama/data
+
+  # Monitoring data
+  prometheus_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/volumes/prometheus/data
+
+  grafana_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/volumes/grafana/data
+
+  # Backup storage
+  backup_storage:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/volumes/backup/storage

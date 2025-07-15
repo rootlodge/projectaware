@@ -5,9 +5,9 @@ export interface Goal {
   type: 'short_term' | 'long_term' | 'micro_task' | 'project_based' | 'learning_objective' | 'system_optimization' | 'user_support';
   /**
    * Category of the goal. Must match database constraint and allowed values.
-   * Allowed: 'soul_driven', 'emotion_driven', 'user_driven', 'system_driven'
+   * Allowed: 'agent_driven', 'emotion_driven', 'user_driven', 'system_driven'
    */
-  category: 'soul_driven' | 'emotion_driven' | 'user_driven' | 'system_driven';
+  category: 'agent_driven' | 'emotion_driven' | 'user_driven' | 'system_driven';
   tier: GoalTier;
   origin: GoalOrigin;
   priority: number; // 1-10, 10 being highest

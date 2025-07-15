@@ -56,6 +56,22 @@ export interface ModelPreference {
   last_used: string;
 }
 
+export interface Configuration {
+  id?: number;
+  key: string;
+  value: string;
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  description?: string;
+  category: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ConfigurationStats {
+  total: number;
+  byCategory: Record<string, number>;
+}
+
 export class MemorySystem {
   private db: sqlite3.Database | null = null;
   private dbPath: string;
@@ -132,7 +148,19 @@ export class MemorySystem {
         is_default BOOLEAN DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         last_used DATETIME
-      )`
+      )`,
+      `CREATE TABLE IF NOT EXISTS configurations (
+        id TEXT PRIMARY KEY,
+        key TEXT NOT NULL,
+        value TEXT NOT NULL,
+        type TEXT NOT NULL CHECK(type IN ('string', 'number', 'boolean', 'object', 'array')),
+        description TEXT,
+        category TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+      `CREATE INDEX IF NOT EXISTS idx_configurations_category ON configurations(category)`,
+      `CREATE INDEX IF NOT EXISTS idx_configurations_key ON configurations(key)`
     ];
 
     for (const table of tables) {
@@ -772,5 +800,149 @@ export class MemorySystem {
       console.error('Failed to get response quality metrics:', error);
       return {};
     }
+  }
+
+  // Configuration Management Methods
+  async saveConfiguration(config: Omit<Configuration, 'id' | 'created_at' | 'updated_at'>): Promise<string> {
+    const id = `config_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const now = new Date().toISOString();
+    
+    await this.runQuery(`
+      INSERT OR REPLACE INTO configurations (id, key, value, type, description, category, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `, [id, config.key, config.value, config.type, config.description || '', config.category, now, now]);
+    
+    return id;
+  }
+
+  async getConfiguration(id: string): Promise<Configuration | null> {
+    const config = await this.getQuery('SELECT * FROM configurations WHERE id = ?', [id]);
+    return config as Configuration | null;
+  }
+
+  async getConfigurationByKey(key: string, category?: string): Promise<Configuration | null> {
+    const query = category 
+      ? 'SELECT * FROM configurations WHERE key = ? AND category = ?'
+      : 'SELECT * FROM configurations WHERE key = ?';
+    const params = category ? [key, category] : [key];
+    
+    const config = await this.getQuery(query, params);
+    return config as Configuration | null;
+  }
+
+  async getAllConfigurations(category?: string, search?: string): Promise<Configuration[]> {
+    let query = 'SELECT * FROM configurations';
+    const params: any[] = [];
+    const conditions: string[] = [];
+
+    if (category) {
+      conditions.push('category = ?');
+      params.push(category);
+    }
+
+    if (search) {
+      conditions.push('(key LIKE ? OR description LIKE ?)');
+      params.push(`%${search}%`, `%${search}%`);
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    query += ' ORDER BY category, key';
+    
+    const configs = await this.getAllQuery(query, params);
+    return configs as Configuration[];
+  }
+
+  async updateConfiguration(id: string, updates: Partial<Omit<Configuration, 'id' | 'created_at'>>): Promise<void> {
+    const now = new Date().toISOString();
+    const fields = Object.keys(updates).filter(key => key !== 'id' && key !== 'created_at');
+    
+    if (fields.length === 0) return;
+
+    const setClause = fields.map(field => `${field} = ?`).join(', ');
+    const values = fields.map(field => (updates as any)[field]);
+    values.push(now, id);
+
+    await this.runQuery(`
+      UPDATE configurations 
+      SET ${setClause}, updated_at = ?
+      WHERE id = ?
+    `, values);
+  }
+
+  async deleteConfiguration(id: string): Promise<void> {
+    await this.runQuery('DELETE FROM configurations WHERE id = ?', [id]);
+  }
+
+  async getConfigurationStats(): Promise<ConfigurationStats> {
+    const total = await this.getQuery('SELECT COUNT(*) as count FROM configurations');
+    const byCategory = await this.getAllQuery(`
+      SELECT category, COUNT(*) as count 
+      FROM configurations 
+      GROUP BY category 
+      ORDER BY category
+    `);
+
+    const categoryMap: Record<string, number> = {};
+    byCategory.forEach((row: any) => {
+      categoryMap[row.category] = row.count;
+    });
+
+    return {
+      total: total?.count || 0,
+      byCategory: categoryMap
+    };
+  }
+
+  async migrateJsonToDatabase(jsonData: Record<string, any>, category: string): Promise<number> {
+    let migratedCount = 0;
+    const now = new Date().toISOString();
+
+    for (const [key, value] of Object.entries(jsonData)) {
+      try {
+        const id = `migrated_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        let type: string;
+        let serializedValue: string;
+
+        if (typeof value === 'string') {
+          type = 'string';
+          serializedValue = JSON.stringify(value);
+        } else if (typeof value === 'number') {
+          type = 'number';
+          serializedValue = JSON.stringify(value);
+        } else if (typeof value === 'boolean') {
+          type = 'boolean';
+          serializedValue = JSON.stringify(value);
+        } else if (Array.isArray(value)) {
+          type = 'array';
+          serializedValue = JSON.stringify(value);
+        } else if (typeof value === 'object' && value !== null) {
+          type = 'object';
+          serializedValue = JSON.stringify(value);
+        } else {
+          type = 'string';
+          serializedValue = JSON.stringify(String(value));
+        }
+
+        const description = `Migrated from ${category}.json`;
+
+        await this.runQuery(`
+          INSERT OR REPLACE INTO configurations (id, key, value, type, description, category, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `, [id, key, serializedValue, type, description, category, now, now]);
+
+        migratedCount++;
+      } catch (error) {
+        console.error(`Error migrating key ${key} from ${category}:`, error);
+      }
+    }
+
+    return migratedCount;
+  }
+
+  async clearAllConfigurations(): Promise<void> {
+    await this.runQuery('DELETE FROM configurations');
   }
 }

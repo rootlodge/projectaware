@@ -211,7 +211,7 @@ export default function GoalDashboard() {
                   {(activeGoal.type || 'short_term').replace('_', ' ')}
                 </span>
                 <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  (activeGoal.category || 'system_driven') === 'soul_driven' ? 'bg-purple-100 text-purple-800' :
+                  (activeGoal.category || 'system_driven') === 'agent_driven' ? 'bg-purple-100 text-purple-800' :
                   (activeGoal.category || 'system_driven') === 'emotion_driven' ? 'bg-pink-100 text-pink-800' :
                   (activeGoal.category || 'system_driven') === 'user_driven' ? 'bg-green-100 text-green-800' :
                   'bg-gray-100 text-gray-800'

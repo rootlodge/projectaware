@@ -10,12 +10,13 @@ import EmotionDisplay from '@/components/EmotionDisplay';
 import ModelSelectorNew from '@/components/ModelSelectorNew';
 import OllamaTest from '@/components/MainSettings';
 import MemoryDashboard from '@/components/MemoryDashboard';
-import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap, Eye, ChevronDown, Dna, Cog } from 'lucide-react';
+import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap, Eye, ChevronDown, Dna, Cog, HardDrive } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import AgentOrchestrationDashboard from '@/components/AgentOrchestrationDashboard';
 import ThoughtStreamPage from '@/components/ThoughtStream'; 
 import AISelfModificationPage from '@/components/SelfModificationDashboard';
 import ModelSettingsPage from '@/components/ModelSettingsPage';
+import DatabaseManagement from '@/components/DatabaseManagement';
 
 
 export default function Home() {
@@ -119,7 +120,8 @@ export default function Home() {
     { id: 'memory', name: 'Memory Analytics', icon: Database },
     { id: 'orchestration', name: 'Orchestration', icon: Zap },
     { id: 'thoughtstream', name: 'Thought Stream', icon: Eye },
-    { id: 'modelsettings', name: 'Model Settings', icon: Cog }
+    { id: 'modelsettings', name: 'Model Settings', icon: Cog },
+    { id: 'database', name: 'Database Management', icon: HardDrive }
   ];
 
 
@@ -236,6 +238,7 @@ export default function Home() {
         {activeTab === 'orchestration' && <AgentOrchestrationDashboard />}
         {activeTab === 'thoughtstream' && <ThoughtStreamPage />}
         {activeTab === 'modelsettings' && <ModelSettingsPage />}
+        {activeTab === 'database' && <DatabaseManagement />}
         {activeTab === 'system' && <SystemStatus />}
         {activeTab === 'settings' && (
           <div className="space-y-6">

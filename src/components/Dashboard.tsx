@@ -75,6 +75,7 @@ async function fetchPredictions() {
 }
 import { BarChart3, Brain, Users, Heart, Activity, Zap, Database, Clock } from 'lucide-react';
 import SoulDashboard from './SoulDashboard';
+import AgentCoreDashboard from './AgentCoreDashboard';
 import GoalDashboard from './GoalDashboard';
 
 interface DashboardProps {
@@ -395,8 +396,8 @@ export default function Dashboard({ systemStatus }: DashboardProps) {
       {/* Metacognition & Self-Awareness Dashboard */}
       <MetacognitionDashboard />
 
-      {/* Soul System Dashboard */}
-      <SoulDashboard />
+      {/* Agent Core System Dashboard */}
+      <AgentCoreDashboard />
 
       {/* Goal Engine Dashboard */}
       <GoalDashboard />

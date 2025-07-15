@@ -1,5 +1,5 @@
 import { GoalDatabase } from '@/lib/core/GoalDatabase';
-import { SoulSystem } from './SoulSystem';
+import { AgentCoreSystem } from './AgentCoreSystem';
 import { getEmotionEngine } from '@/lib/shared/instances';
 import { EmotionEngine } from './EmotionEngine';
 import { MemorySystem } from '@/lib/core/memory';
@@ -21,7 +21,7 @@ import { ThoughtStream } from '@/lib/core/ThoughtStream';
 export class GoalEngine {
   private static instance: GoalEngine | null = null;
   private db: GoalDatabase;
-  private soulSystem: SoulSystem;
+  private agentCore: AgentCoreSystem;
   private emotionEngine: EmotionEngine;
   private memorySystem: MemorySystem;
   private stateManager: StateManager;
@@ -36,7 +36,7 @@ export class GoalEngine {
 
   private constructor() {
     this.db = new GoalDatabase();
-    this.soulSystem = new SoulSystem();
+    this.agentCore = new AgentCoreSystem();
     this.emotionEngine = getEmotionEngine();
     this.memorySystem = new MemorySystem();
     this.stateManager = new StateManager();
@@ -113,13 +113,13 @@ export class GoalEngine {
     // Separate goals by category
     const userGoals = allGoals.filter(g => g.category === 'user_driven');
     const systemGoals = allGoals.filter(g => g.category === 'system_driven');
-    const soulGoals = allGoals.filter(g => g.category === 'soul_driven');
+    const agentGoals = allGoals.filter(g => g.category === 'agent_driven');
     const emotionGoals = allGoals.filter(g => g.category === 'emotion_driven');
 
     // Process each category with appropriate logic
     await this.processUserDerivedGoals(userGoals);
     await this.processInternalSystemGoals(systemGoals);
-    await this.processSoulDrivenGoals(soulGoals);
+    await this.processAgentDrivenGoals(agentGoals);
     await this.processEmotionDrivenGoals(emotionGoals);
   }
 
@@ -145,9 +145,9 @@ export class GoalEngine {
     }
   }
 
-  private async processSoulDrivenGoals(goals: Goal[]): Promise<void> {
+  private async processAgentDrivenGoals(goals: Goal[]): Promise<void> {
     for (const goal of goals) {
-      // Add soul-driven specific logic here if needed
+      // Add agent-driven specific logic here if needed
     }
   }
 
@@ -422,12 +422,12 @@ export class GoalEngine {
     try {
       // Get current context
       const currentEmotion = this.emotionEngine.getCurrentEmotion();
-      const soulValues = this.soulSystem.getCoreValues();
+      const agentValues = this.agentCore.getCoreValues();
       const activeGoals = await this.db.getActiveGoals();
       
-      // Create goals based on soul alignment
-      const soulAlignmentGoals = await this.createSoulAlignmentGoals(soulValues, activeGoals);
-      createdGoals.push(...soulAlignmentGoals);
+      // Create goals based on agent core alignment
+      const agentAlignmentGoals = await this.createAgentAlignmentGoals(agentValues, activeGoals);
+      createdGoals.push(...agentAlignmentGoals);
       
       // Create goals based on emotional state
       const emotionalGoals = await this.createEmotionalGoals(currentEmotion);
@@ -454,11 +454,11 @@ export class GoalEngine {
     }
   }
 
-  private async createSoulAlignmentGoals(soulValues: any, activeGoals: Goal[]): Promise<Goal[]> {
+  private async createAgentAlignmentGoals(agentValues: any, activeGoals: Goal[]): Promise<Goal[]> {
     const goals: Goal[] = [];
     
     // Check if we need goals for each core value
-    for (const [key, value] of Object.entries(soulValues)) {
+    for (const [key, value] of Object.entries(agentValues)) {
       const hasActiveGoal = activeGoals.some(g => 
         g.description.toLowerCase().includes(key.toLowerCase()) &&
         g.status === 'active'
@@ -470,7 +470,7 @@ export class GoalEngine {
           title: `Strengthen ${key} alignment`,
           description: `Work on embodying the core value of ${key}: ${value}`,
           type: 'long_term',
-          category: 'soul_driven',
+          category: 'agent_driven',
           priority: 5,
           status: 'active',
           progress: 0,
@@ -479,7 +479,7 @@ export class GoalEngine {
           target_completion: this.getTargetCompletion('long_term'),
           actual_completion: null,
           triggered_by: {
-            system_events: [`soul_value_${key}`]
+            system_events: [`agent_value_${key}`]
           },
           success_criteria: {
             description: `Successfully embody ${key} in daily interactions`,
@@ -511,7 +511,7 @@ export class GoalEngine {
           agent_interactions: [],
           tier: {
             level: 'cerebrum_autonomous',
-            description: 'AI-generated goal from soul analysis',
+            description: 'AI-generated goal from agent analysis',
             characteristics: {
               autonomous_execution: true,
               requires_user_approval: false,
@@ -525,7 +525,7 @@ export class GoalEngine {
           origin: {
             source: 'cerebrum_analysis',
             confidence: 0.8,
-            evidence: ['Soul system analysis', 'Value alignment patterns'],
+            evidence: ['Agent system analysis', 'Value alignment patterns'],
             timestamp: new Date().toISOString(),
             creator_agent: 'CerebrumGoalAnalyzer'
           }
@@ -787,8 +787,8 @@ export class GoalEngine {
     const hoursSinceCreation = (Date.now() - new Date(goal.created_at).getTime()) / (1000 * 60 * 60);
     urgencyFactor += Math.min(hoursSinceCreation * 0.1, 2);
 
-    // Soul-driven bonus
-    if (goal.category === 'soul_driven') {
+    // Agent-driven bonus
+    if (goal.category === 'agent_driven') {
       importanceFactor += 0.3;
     }
     // Emotion-driven urgency
@@ -807,7 +807,7 @@ export class GoalEngine {
       resource_requirements: this.getResourceRequirements(goal),
       estimated_time: this.estimateTime(goal),
       dependencies_met: true, // Simplified for now
-      cerebrum_priority_boost: goal.category === 'soul_driven' ? 0.2 : 0,
+      cerebrum_priority_boost: goal.category === 'agent_driven' ? 0.2 : 0,
       last_updated: new Date().toISOString()
     };
   }
@@ -1114,11 +1114,11 @@ export class GoalEngine {
 
   public async getAllGoals(): Promise<Goal[]> {
     // Get all goals from different categories
-    const soulGoals = await this.db.getGoalsByCategory('soul_driven');
+    const agentGoals = await this.db.getGoalsByCategory('agent_driven');
     const emotionGoals = await this.db.getGoalsByCategory('emotion_driven');
     const userGoals = await this.db.getGoalsByCategory('user_driven');
     const systemGoals = await this.db.getGoalsByCategory('system_driven');
-    return [...soulGoals, ...emotionGoals, ...userGoals, ...systemGoals];
+    return [...agentGoals, ...emotionGoals, ...userGoals, ...systemGoals];
   }
 
   public async getGoalsByStatus(status: Goal['status']): Promise<Goal[]> {

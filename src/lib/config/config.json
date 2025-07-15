@@ -64,16 +64,6 @@
         ]
       },
       {
-        "name": "llama3.1:70b",
-        "parameters": "70b",
-        "supports_tools": true,
-        "performance_tier": "slow",
-        "use_cases": [
-          "complex_analysis",
-          "advanced_reasoning"
-        ]
-      },
-      {
         "name": "gemma3:latest",
         "parameters": "2b",
         "supports_tools": false,

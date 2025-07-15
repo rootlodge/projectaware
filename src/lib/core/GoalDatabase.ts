@@ -21,7 +21,7 @@ export class GoalDatabase {
         title TEXT NOT NULL,
         description TEXT NOT NULL,
         type TEXT NOT NULL CHECK (type IN ('short_term', 'long_term')),
-        category TEXT NOT NULL CHECK (category IN ('soul_driven', 'emotion_driven', 'user_driven', 'system_driven')),
+        category TEXT NOT NULL CHECK (category IN ('agent_driven', 'emotion_driven', 'user_driven', 'system_driven')),
         priority INTEGER NOT NULL CHECK (priority >= 1 AND priority <= 10),
         status TEXT NOT NULL CHECK (status IN ('active', 'completed', 'paused', 'failed', 'cancelled')),
         progress INTEGER NOT NULL DEFAULT 0 CHECK (progress >= 0 AND progress <= 100),

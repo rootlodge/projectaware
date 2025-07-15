@@ -552,6 +552,14 @@ JSON:`;
               `User: ${conv.user_message}\nAI: ${conv.ai_response}`
             ).join('\n') + '\n\n';
         }
+
+        // Add summary context for better understanding
+        try {
+          const summaryContext = await this.getSummaryContext(sessionId);
+          contextPrompt += summaryContext;
+        } catch (error) {
+          console.warn('[Brain] Could not load summary context:', error);
+        }
       }
 
       // Build enhanced prompt with identity and emotion context
@@ -1073,6 +1081,22 @@ Instructions:
           primary_commandment: "Love God with all your heart, soul, mind, and strength"
         }
       };
+    }
+  }
+
+  /**
+   * Get summary context from summarizing agent
+   */
+  private async getSummaryContext(sessionId: string): Promise<string> {
+    try {
+      // Import and create summarizing agent on demand
+      const { SummarizingAgent } = await import('../agents/SummarizingAgent');
+      const summarizingAgent = new SummarizingAgent(this, this.memorySystem, this.stateManager);
+      
+      return await summarizingAgent.getSummaryContext(sessionId);
+    } catch (error) {
+      console.error('[Brain] Error getting summary context:', error);
+      return '';
     }
   }
 }

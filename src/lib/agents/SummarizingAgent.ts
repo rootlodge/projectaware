@@ -345,73 +345,14 @@ Provide only the JSON response, no additional text.`;
   }
 
   /**
-   * Save summary to database
-   */
-  private async saveSummary(summary: ConversationSummary): Promise<void> {
-    const query = `
-      INSERT INTO conversation_summaries (
-        session_id, summary_text, start_timestamp, end_timestamp, 
-        message_count, key_topics, sentiment, importance_score, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    
-    try {
-      await this.memorySystem.db.run(query, [
-        summary.session_id,
-        summary.summary_text,
-        summary.start_timestamp,
-        summary.end_timestamp,
-        summary.message_count,
-        JSON.stringify(summary.key_topics),
-        summary.sentiment,
-        summary.importance_score,
-        summary.created_at
-      ]);
-    } catch (error) {
-      console.error('[SummarizingAgent] Error saving summary:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Mark conversations as summarized
-   */
-  private async markConversationsAsSummarized(conversationIds: number[]): Promise<void> {
-    if (conversationIds.length === 0) return;
-    
-    const placeholders = conversationIds.map(() => '?').join(',');
-    const query = `UPDATE conversations SET summarized = 1 WHERE id IN (${placeholders})`;
-    
-    try {
-      await this.memorySystem.db.run(query, conversationIds);
-    } catch (error) {
-      console.error('[SummarizingAgent] Error marking conversations as summarized:', error);
-      throw error;
-    }
-  }
-
-  /**
    * Get summaries for context (used by Brain)
    */
   async getRecentSummaries(sessionId?: string, limit: number = 5): Promise<ConversationSummary[]> {
-    let query = `
-      SELECT * FROM conversation_summaries 
-      ${sessionId ? 'WHERE session_id = ?' : ''}
-      ORDER BY created_at DESC 
-      LIMIT ?
-    `;
-    
-    const params = sessionId ? [sessionId, limit] : [limit];
-    
     try {
       await this.memorySystem.initialize();
-      const results = await this.memorySystem.db.all(query, params);
+      const results = await this.memorySystem.getConversationSummaries(sessionId, limit);
       await this.memorySystem.close();
-      
-      return results.map((row: any) => ({
-        ...row,
-        key_topics: JSON.parse(row.key_topics || '[]')
-      }));
+      return results;
     } catch (error) {
       console.error('[SummarizingAgent] Error getting recent summaries:', error);
       return [];

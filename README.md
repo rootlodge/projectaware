@@ -20,6 +20,7 @@ Will be available at https://ai.rootlodge.com soon! Stay tuned for more updates!
 - **Self-Awareness & Metacognition** - Real-time cognitive monitoring, decision tracking, and bias detection
 - **AI Self-Modification System** - Autonomous improvement proposals with safety constraints and rollback capabilities
 - **Multi-Agent Workflows** - Collaborative agent system for complex task execution
+- **Summarizing Agent** - Intelligent conversation summarization system that provides context-aware summaries for better AI understanding
 - **Emotion Engine** - Sophisticated emotion detection and state management
 - **Response Caching** - Intelligent LLM response caching for improved performance
 - **State Management** - Comprehensive system state tracking and persistence
@@ -51,7 +52,8 @@ src/
     │   └── StateManager.ts # State tracking
     ├── agents/          # Multi-agent system
     │   ├── CentralBrainAgent.ts
-    │   └── MultiAgentManager.ts
+    │   ├── MultiAgentManager.ts
+    │   └── SummarizingAgent.ts
     ├── systems/         # Supporting systems
     │   ├── EmotionEngine.ts
     │   ├── MetacognitionEngine.ts    # Self-awareness core
@@ -203,6 +205,13 @@ The dashboard features a tabbed interface with the following sections:
 - `GET /api/self-modification?action=opportunities` - Get improvement opportunities
 - `GET /api/self-modification?action=pending` - Get pending modification proposals
 - `POST /api/self-modification` - Submit, approve, reject, or rollback modifications
+
+#### Summarizing Agent API
+- `GET /api/summarizing-agent?action=status` - Get agent status and processing information
+- `GET /api/summarizing-agent?action=summaries&sessionId={id}&limit={n}` - Get conversation summaries
+- `GET /api/summarizing-agent?action=context&sessionId={id}` - Get summary context for session
+- `GET /api/summarizing-agent?action=check` - Trigger summarization check
+- `POST /api/summarizing-agent` - Manually trigger summarization with body `{ "action": "trigger", "triggerType": "cerebrum_request", "sessionId": "optional" }`
 
 ## 🔧 Configuration
 
@@ -386,6 +395,62 @@ The self-modification system enables autonomous improvement while maintaining st
 - **Manual/Auto Mode** - Choose between manual approval and automatic low-risk improvements
 - **Trigger Analysis** - On-demand system analysis for improvement opportunities
 - **Proposal Management** - Review, approve, reject, or rollback any modification
+
+### Summarizing Agent System
+
+The Summarizing Agent is an intelligent background service that automatically creates contextual summaries of user conversations to enhance AI understanding and provide better context for future interactions.
+
+#### Key Features
+- **Automatic Summarization** - Runs periodically (at least hourly) to summarize conversation sessions
+- **Intelligent Triggering** - Activates based on message count, time elapsed, topic changes, or Cerebrum requests
+- **Context Enhancement** - Provides summarized conversation history to the main AI for better contextual responses
+- **Importance Scoring** - Evaluates conversation importance to prioritize meaningful interactions
+- **Multi-Session Support** - Tracks and summarizes conversations across different sessions
+
+#### How It Works
+
+1. **Background Monitoring** - Continuously monitors conversation sessions for summarization needs
+2. **Trigger Conditions**:
+   - **Time-based**: At least once per hour regardless of activity
+   - **Message Count**: When sessions have 5+ unsummarized messages
+   - **Cerebrum Request**: Manual triggering by the central brain system
+   - **Session End**: When conversation sessions conclude
+
+3. **Summarization Process**:
+   - Analyzes conversation content for key topics, sentiment, and importance
+   - Uses specialized LLM prompts to generate comprehensive summaries
+   - Extracts key insights, user needs, and follow-up opportunities
+   - Stores summaries in persistent database with metadata
+
+4. **Context Integration**:
+   - Automatically provides summary context to the main AI during conversations
+   - Enhances responses with knowledge from previous conversation sessions
+   - Maintains conversation continuity across time gaps
+
+#### Benefits
+
+- **Enhanced Context Awareness** - AI understands conversation history without processing full message logs
+- **Improved Response Quality** - Better continuity and personalization in AI responses
+- **Efficient Memory Usage** - Compressed conversation history reduces token usage
+- **Long-term Memory** - Maintains understanding of user preferences and patterns over time
+- **Automatic Operation** - No manual intervention required, runs intelligently in background
+
+#### Configuration
+
+The summarizing agent is automatically integrated into the brain interface and requires no manual setup. It operates with sensible defaults:
+
+- **Minimum Messages**: 5 messages before summarization
+- **Maximum Time**: 1 hour between summarizations
+- **Importance Threshold**: 0.3 (conversations below this threshold are skipped)
+- **Check Interval**: Every 10 minutes for new summarization needs
+
+#### API Integration
+
+The summarizing agent can be controlled via the `/api/summarizing-agent` endpoint for:
+- Checking agent status and processing state
+- Manually triggering summarization for specific sessions
+- Retrieving existing summaries for analysis
+- Getting summary context for external integrations
 
 ### Usage Examples
 

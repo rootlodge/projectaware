@@ -1,6 +1,6 @@
 {
-  "name": "neversleep-temp",
-  "version": "0.1.0",
+  "name": "project-aware",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -9,20 +9,37 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "mariadb": "^3.4.4",
-    "next": "15.4.1",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "@headlessui/react": "^2.2.4",
+    "@types/sqlite3": "^3.1.11",
+    "@types/ws": "^8.18.1",
+    "axios": "^1.10.0",
+    "clsx": "^2.1.1",
+    "fs-extra": "^11.3.0",
+    "lucide-react": "^0.525.0",
+    "next": "15.3.5",
+    "next-auth": "^4.24.11",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^3.1.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "sqlite3": "^5.1.7",
+    "tailwind-merge": "^3.3.1",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20.19.8",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "better-sqlite3": "^12.2.0",
     "eslint": "^9",
-    "eslint-config-next": "15.4.1",
+    "eslint-config-next": "15.3.5",
     "tailwindcss": "^4",
+    "tsx": "^4.20.3",
     "typescript": "^5"
   }
 }

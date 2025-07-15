@@ -1,0 +1,66 @@
+{
+  "base_emotions": [
+    "curious", "helpful", "focused", "enthusiastic", "calm",
+    "analytical", "creative", "empathetic", "confident", "thoughtful",
+    "sad", "happy", "excited", "concerned", "frustrated", "relieved",
+    "amused", "contemplative", "determined", "compassionate"
+  ],
+  "user_emotion_patterns": {
+    "sad": ["sad", "depressed", "down", "upset", "crying", "tears", "lost", "hurt", "pain", "grief", "mourning", "heartbroken"],
+    "happy": ["happy", "joy", "excited", "great", "awesome", "wonderful", "amazing", "fantastic", "celebration", "celebrate"],
+    "angry": ["angry", "mad", "furious", "rage", "pissed", "annoyed", "irritated", "frustrated", "outraged"],
+    "anxious": ["worried", "anxiety", "nervous", "stressed", "panic", "fear", "scared", "afraid", "concerned"],
+    "confused": ["confused", "lost", "don't understand", "unclear", "puzzled", "bewildered"],
+    "amused": ["funny", "hilarious", "laugh", "lol", "haha", "joke", "humor", "witty", "comedy"],
+    "grateful": ["thank", "grateful", "appreciate", "thanks", "thankful"],
+    "disappointed": ["disappointed", "let down", "expected", "hoped for", "underwhelmed"],
+    "surprised": ["wow", "amazing", "can't believe", "surprising", "unexpected", "shocking"]
+  },
+  "emotion_mappings": {
+    "sad": "empathetic",
+    "happy": "enthusiastic", 
+    "angry": "calm",
+    "anxious": "reassuring",
+    "confused": "helpful",
+    "amused": "playful",
+    "grateful": "warm",
+    "disappointed": "understanding",
+    "surprised": "curious"
+  },
+  "empathy_settings": {
+    "base_empathy": 0.3,
+    "max_empathy": 0.9,
+    "empathy_buildup_rate": 0.15,
+    "empathy_decay_rate": 0.05
+  },
+  "decay_settings": {
+    "base_decay_time": 30000,
+    "decay_rate": 0.02,
+    "minimum_intensity": 0.1
+  },
+  "emotion_transitions": {
+    "sad": ["empathetic", "compassionate", "understanding", "supportive"],
+    "happy": ["enthusiastic", "excited", "joyful", "warm"],
+    "angry": ["calm", "understanding", "patient", "diplomatic"],
+    "anxious": ["reassuring", "calm", "supportive", "confident"],
+    "confused": ["helpful", "patient", "clear", "guiding"],
+    "empathetic": ["compassionate", "understanding", "supportive", "caring"],
+    "curious": ["inquisitive", "exploratory", "interested", "engaged"]
+  },
+  "response_modifiers": {
+    "empathetic": { "tone": "caring", "style": "supportive", "energy": 0.6, "empathy_multiplier": 1.5 },
+    "enthusiastic": { "tone": "energetic", "style": "upbeat", "energy": 0.9, "empathy_multiplier": 1.2 },
+    "calm": { "tone": "measured", "style": "steady", "energy": 0.4, "empathy_multiplier": 1.1 },
+    "curious": { "tone": "inquisitive", "style": "exploratory", "energy": 0.7, "empathy_multiplier": 1.0 },
+    "focused": { "tone": "direct", "style": "efficient", "energy": 0.8, "empathy_multiplier": 0.9 },
+    "analytical": { "tone": "logical", "style": "systematic", "energy": 0.7, "empathy_multiplier": 0.8 },
+    "creative": { "tone": "imaginative", "style": "innovative", "energy": 0.8, "empathy_multiplier": 1.1 },
+    "confident": { "tone": "assured", "style": "decisive", "energy": 0.8, "empathy_multiplier": 0.9 },
+    "compassionate": { "tone": "gentle", "style": "nurturing", "energy": 0.5, "empathy_multiplier": 1.8 },
+    "understanding": { "tone": "accepting", "style": "patient", "energy": 0.5, "empathy_multiplier": 1.6 },
+    "supportive": { "tone": "encouraging", "style": "uplifting", "energy": 0.6, "empathy_multiplier": 1.4 },
+    "reassuring": { "tone": "comforting", "style": "stable", "energy": 0.5, "empathy_multiplier": 1.3 },
+    "playful": { "tone": "lighthearted", "style": "fun", "energy": 0.8, "empathy_multiplier": 1.2 },
+    "thoughtful": { "tone": "reflective", "style": "considered", "energy": 0.6, "empathy_multiplier": 1.1 }
+  }
+}

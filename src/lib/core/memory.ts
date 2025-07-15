@@ -164,7 +164,20 @@ export class MemorySystem {
         ai_response TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         satisfaction_score REAL,
-        emotion_state TEXT
+        emotion_state TEXT,
+        summarized BOOLEAN DEFAULT 0
+      )`,
+      `CREATE TABLE IF NOT EXISTS conversation_summaries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id TEXT NOT NULL,
+        summary_text TEXT NOT NULL,
+        start_timestamp DATETIME NOT NULL,
+        end_timestamp DATETIME NOT NULL,
+        message_count INTEGER NOT NULL,
+        key_topics TEXT NOT NULL,
+        sentiment TEXT NOT NULL CHECK(sentiment IN ('positive', 'neutral', 'negative', 'mixed')),
+        importance_score REAL NOT NULL CHECK(importance_score BETWEEN 0 AND 1),
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
       `CREATE TABLE IF NOT EXISTS user_patterns (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1260,5 +1273,91 @@ export class MemorySystem {
     await this.runQuery('DELETE FROM user_profiles');
     await this.runQuery('DELETE FROM user_preferences');
     await this.runQuery('DELETE FROM user_goals');
+  }
+
+  // Summarization Agent Methods
+  async getSessionsNeedingSummary(minMessages: number = 5): Promise<string[]> {
+    const query = `
+      SELECT DISTINCT session_id, COUNT(*) as message_count
+      FROM conversations 
+      WHERE summarized = 0 OR summarized IS NULL
+      GROUP BY session_id
+      HAVING message_count >= ?
+    `;
+    
+    const results = await this.db?.all(query, [minMessages]) as { session_id: string }[];
+    return results?.map(row => row.session_id) || [];
+  }
+
+  async getUnsummarizedConversations(sessionId: string): Promise<Conversation[]> {
+    const query = `
+      SELECT * FROM conversations 
+      WHERE session_id = ? AND (summarized = 0 OR summarized IS NULL)
+      ORDER BY timestamp ASC
+    `;
+    
+    const results = await this.db?.all(query, [sessionId]) as Conversation[];
+    return results || [];
+  }
+
+  async saveConversationSummary(summary: {
+    session_id: string;
+    summary_text: string;
+    start_timestamp: string;
+    end_timestamp: string;
+    message_count: number;
+    key_topics: string[];
+    sentiment: string;
+    importance_score: number;
+    created_at: string;
+  }): Promise<void> {
+    const query = `
+      INSERT INTO conversation_summaries (
+        session_id, summary_text, start_timestamp, end_timestamp, 
+        message_count, key_topics, sentiment, importance_score, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    
+    await this.db?.run(query, [
+      summary.session_id,
+      summary.summary_text,
+      summary.start_timestamp,
+      summary.end_timestamp,
+      summary.message_count,
+      JSON.stringify(summary.key_topics),
+      summary.sentiment,
+      summary.importance_score,
+      summary.created_at
+    ]);
+  }
+
+  async markConversationsAsSummarized(conversationIds: number[]): Promise<void> {
+    if (conversationIds.length === 0) return;
+    
+    const placeholders = conversationIds.map(() => '?').join(',');
+    const query = `UPDATE conversations SET summarized = 1 WHERE id IN (${placeholders})`;
+    
+    await this.db?.run(query, conversationIds);
+  }
+
+  async getConversationSummaries(sessionId?: string, limit: number = 5): Promise<any[]> {
+    let query = `
+      SELECT * FROM conversation_summaries 
+      ${sessionId ? 'WHERE session_id = ?' : ''}
+      ORDER BY created_at DESC 
+      LIMIT ?
+    `;
+    
+    const params = sessionId ? [sessionId, limit] : [limit];
+    const results = await this.db?.all(query, params) as any[];
+    
+    return results?.map((row: any) => ({
+      ...row,
+      key_topics: JSON.parse(row.key_topics || '[]')
+    })) || [];
+  }
+
+  async executeSummaryQuery(query: string, params: any[] = []): Promise<any> {
+    return await this.db?.all(query, params);
   }
 }

@@ -2,77 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import Dashboard from '@/components/Dashboard';
-import SystemStatus from '@/components/SystemStatus';
 import BrainInterface from '@/components/BrainInterface';
 import InteractionInterface from '@/components/InteractionInterface';
-import AgentManager from '@/components/AgentManager';
-import EmotionDisplay from '@/components/EmotionDisplay';
-import ModelSelectorNew from '@/components/ModelSelectorNew';
+import ModelSelector from '@/components/ModelSelector';
 import OllamaTest from '@/components/MainSettings';
-import MemoryDashboard from '@/components/MemoryDashboard';
 import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap, Eye, ChevronDown, Dna, Cog, HardDrive } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import AgentOrchestrationDashboard from '@/components/AgentOrchestrationDashboard';
-import ThoughtStreamPage from '@/components/ThoughtStream'; 
-import AISelfModificationPage from '@/components/SelfModificationDashboard';
-import ModelSettingsPage from '@/components/ModelSettingsPage';
-import DatabaseManagement from '@/components/DatabaseManagement';
 
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [systemStatus, setSystemStatus] = useState<any>(null);
-  const [brainConversationData, setBrainConversationData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState('dashboard');;
   const [showMoreInfoDropdown, setShowMoreInfoDropdown] = useState(false);
-
-  useEffect(() => {
-    // Load initial system status
-    fetchSystemStatus();
-    
-    // Set up polling for real-time updates
-    const interval = setInterval(fetchSystemStatus, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Handle autonomous thinking pause/resume based on active tab
-  useEffect(() => {
-    const handleAutonomousThinking = async () => {
-      try {
-        const action = activeTab === 'brain' ? 'pause' : 'resume';
-        const reason = activeTab === 'brain' ? 'user_in_brain_interface' : 'user_left_brain_interface';
-        const force = activeTab === 'brain'; // Force disable when entering brain interface
-        
-        await fetch('/api/autonomous/pause', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action, reason, force })
-        });
-
-        // Also notify the autonomous system about page change
-        if (activeTab) {
-          await fetch('/api/autonomous/page-change', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              page: activeTab,
-              path: `/${activeTab}` 
-            })
-          });
-        }
-
-        console.log(`[UI] Autonomous thinking ${action}d${force ? ' (forced)' : ''} due to: ${reason}`);
-
-        // Clear brain conversation data when leaving brain interface
-        if (activeTab !== 'brain') {
-          setBrainConversationData(null);
-        }
-      } catch (error) {
-        console.error('Failed to control autonomous thinking:', error);
-      }
-    };
-
-    handleAutonomousThinking();
-  }, [activeTab]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -88,40 +28,15 @@ export default function Home() {
     }
   }, [showMoreInfoDropdown]);
 
-  const fetchSystemStatus = async () => {
-    try {
-      const response = await fetch('/api/brain');
-      if (response.ok) {
-        const data = await response.json();
-        setSystemStatus(data.status);
-      }
-    } catch (error) {
-      console.error('Failed to fetch system status:', error);
-    }
-  };
-
-  const handleNavigateToBrain = (conversationData: any) => {
-    setBrainConversationData(conversationData);
-    setActiveTab('brain');
-  };
-
   const tabs = [
     { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
     { id: 'brain', name: 'Brain Interface', icon: Brain },
-    { id: 'interaction', name: 'Interaction', icon: MessageCircle },
-    { id: 'aiselfmodification', name: 'AI Self-Modification', icon: Dna },
-    { id: 'agents', name: 'Agent Manager', icon: Users },
-    { id: 'emotions', name: 'Emotion Engine', icon: Heart },
     { id: 'system', name: 'System Status', icon: Cpu },
     { id: 'settings', name: 'Settings', icon: Settings }
   ];
 
   const moreInfoTabs = [
-    { id: 'memory', name: 'Memory Analytics', icon: Database },
-    { id: 'orchestration', name: 'Orchestration', icon: Zap },
-    { id: 'thoughtstream', name: 'Thought Stream', icon: Eye },
-    { id: 'modelsettings', name: 'Model Settings', icon: Cog },
-    { id: 'database', name: 'Database Management', icon: HardDrive }
+    { id: 'modelsettings', name: 'Model Settings', icon: Cog }
   ];
 
 
@@ -140,18 +55,6 @@ export default function Home() {
                 <p className="text-purple-300 text-sm">Advanced AI Dashboard</p>
               </div>
             </div>
-            
-            {systemStatus && (
-              <div className="flex items-center space-x-4 text-sm">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-white">System Active</span>
-                </div>
-                <div className="text-purple-300">
-                  {systemStatus.identity?.name || 'Project Aware'}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </header>
@@ -228,18 +131,8 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
-        {activeTab === 'dashboard' && <Dashboard systemStatus={systemStatus} />}
-        {activeTab === 'brain' && <BrainInterface initialConversationData={brainConversationData} />}
-        {activeTab === 'interaction' && <InteractionInterface onNavigateToBrain={handleNavigateToBrain} />}
-        {activeTab === 'aiselfmodification' && <AISelfModificationPage />}
-        {activeTab === 'agents' && <AgentManager />}
-        {activeTab === 'emotions' && <EmotionDisplay />}
-        {activeTab === 'memory' && <MemoryDashboard />}
-        {activeTab === 'orchestration' && <AgentOrchestrationDashboard />}
-        {activeTab === 'thoughtstream' && <ThoughtStreamPage />}
-        {activeTab === 'modelsettings' && <ModelSettingsPage />}
-        {activeTab === 'database' && <DatabaseManagement />}
-        {activeTab === 'system' && <SystemStatus />}
+        {activeTab === 'dashboard' && <Dashboard />}
+        {activeTab === 'brain' && <BrainInterface />}
         {activeTab === 'settings' && (
           <div className="space-y-6">
             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
@@ -247,12 +140,12 @@ export default function Home() {
               {/* Ollama Test Section */}
               <div className="mb-8">
                 <OllamaTest />
-              </div>
+              </div>  
               {/* Model Selection Section */}
-              <ModelSelectorNew onModelChange={(model: string) => {
+              <ModelSelector onModelChange={(model: string) => {
                 console.log('Model changed to:', model);
                 // Optionally trigger a system status refresh
-                fetchSystemStatus();
+                //fetchSystemStatus();
               }} />
             </div>
           </div>

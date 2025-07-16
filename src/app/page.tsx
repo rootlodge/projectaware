@@ -2,10 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Dashboard from '@/components/Dashboard';
-import BrainInterface from '@/components/BrainInterface';
-import InteractionInterface from '@/components/InteractionInterface';
-import ModelSelector from '@/components/ModelSelector';
-import OllamaTest from '@/components/MainSettings';
 import { Brain, Cpu, Users, Heart, Settings, BarChart3, Database, MessageCircle, Zap, Eye, ChevronDown, Dna, Cog, HardDrive } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
@@ -30,13 +26,11 @@ export default function Home() {
 
   const tabs = [
     { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-    { id: 'brain', name: 'Brain Interface', icon: Brain },
     { id: 'system', name: 'System Status', icon: Cpu },
-    { id: 'settings', name: 'Settings', icon: Settings }
   ];
 
   const moreInfoTabs = [
-    { id: 'modelsettings', name: 'Model Settings', icon: Cog }
+    { id: 'comingsoon', name: 'comingsoon', icon: Cog }
   ];
 
 
@@ -94,7 +88,6 @@ export default function Home() {
                     : 'text-purple-300 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <Settings className="w-4 h-4" />
                 <span>More Info</span>
                 <ChevronDown className={`w-4 h-4 transition-transform ${showMoreInfoDropdown ? 'rotate-180' : ''}`} />
               </button>
@@ -132,24 +125,6 @@ export default function Home() {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {activeTab === 'dashboard' && <Dashboard />}
-        {activeTab === 'brain' && <BrainInterface />}
-        {activeTab === 'settings' && (
-          <div className="space-y-6">
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
-              <h2 className="text-2xl font-bold text-white mb-6">Settings</h2>
-              {/* Ollama Test Section */}
-              <div className="mb-8">
-                <OllamaTest />
-              </div>  
-              {/* Model Selection Section */}
-              <ModelSelector onModelChange={(model: string) => {
-                console.log('Model changed to:', model);
-                // Optionally trigger a system status refresh
-                //fetchSystemStatus();
-              }} />
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );

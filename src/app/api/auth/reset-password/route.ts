@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     const result = await createResetToken(email);
 
     // Send reset email if token was created
-    if (result.success &&result.token) {
+    if (result.success && result.token) {
       const resetUrl = `${process.env.BETTER_AUTH_URL}/reset-password?token=${result.token}`;
       const template = emailTemplates.passwordReset(resetUrl);
 

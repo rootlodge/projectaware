@@ -10,10 +10,7 @@ if (!process.env.BETTER_AUTH_SECRET) {
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: process.env.DATABASE_TYPE === "postgresql" ? "pg" : "sqlite",
-    schema: {
-      user: schema.users,
-      session: schema.sessions,
-    },
+    schema,
   }),
   emailAndPassword: {
     enabled: true,

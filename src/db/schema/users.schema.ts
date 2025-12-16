@@ -1,7 +1,6 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
-import { pgTable, text as pgText, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text as pgText, timestamp, uuid, varchar, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { sql } from "drizzle-orm";
 
 // Determine database type from environment
 const isPostgres = process.env.DATABASE_TYPE === "postgresql";
@@ -36,12 +35,12 @@ export const usersPostgres = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }),
-  passwordHash: text("password_hash"),
+  passwordHash: pgText("password_hash"),
   role: varchar("role", { length: 50 }).notNull().default("user"),
-  emailVerified: timestamp("email_verified", { mode: "boolean" }).default(false),
-  verificationToken: text("verification_token"),
+  emailVerified: boolean("email_verified").default(false),
+  verificationToken: pgText("verification_token"),
   verificationExpires: timestamp("verification_expires"),
-  resetToken: text("reset_token"),
+  resetToken: pgText("reset_token"),
   resetExpires: timestamp("reset_expires"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

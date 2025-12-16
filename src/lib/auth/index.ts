@@ -21,19 +21,7 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 128,
-    requireEmailVerification: async (user) => {
-      // Check if SMTP is configured
-      const { testEmailConfig } = await import("@/lib/email");
-      const hasEmailProvider = await testEmailConfig();
-      if (!hasEmailProvider) return false;
-
-      // Check if this is the first user
-      const userCount = await db.select({ count: schema.users.id }).from(schema.users);
-      if (userCount.length === 1) return false;
-
-      // Otherwise, require verification
-      return true;
-    },
+    requireEmailVerification: !!process.env.SMTP_HOST && process.env.SMTP_USER !== "your-email@gmail.com",
     sendVerificationEmail: async ({ user, url }) => {
       const { sendEmail, emailTemplates } = await import("@/lib/email");
       const template = emailTemplates.verification(url, user.name || undefined);

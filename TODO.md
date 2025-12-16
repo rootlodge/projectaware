@@ -6,14 +6,14 @@
 
 **Current Status**: Phase 1 In Progress (Authentication & User Management)  
 **Next Phase**: Phase 2 (Core Infrastructure & Database)  
-**Architecture**: Next.js 15 + React 19 + TypeScript + SQLite/PostgreSQL + Drizzle ORM
+**Architecture**: Next.js + React + TypeScript + Drizzle Kit/ORM + SQLite/PostgreSQL (multi compatible with different database types, easily.)
 
 ---
 
 ## 📊 Progress Summary
 
 - [ ] **Phase 1**: Foundation & Authentication (In Progress)
-- 🔄 **Phase 2**: Core Infrastructure (In Progress)
+- [ ] **Phase 2**: Core Infrastructure (In Progress)
 - ⏳ **Phase 3-9**: Pending
 
 ---
@@ -25,28 +25,19 @@
 ### 1.1 Authentication System [ ]
 
 - [ ] Multi-provider authentication setup (local, OAuth ready, SAML ready)
-- [ ] JWT token implementation with refresh capabilities
-- [ ] Secure password hashing (bcryptjs)
-- [ ] Role-based access control (RBAC) - admin, developer, user
+- [ ] Better Auth System
+- [ ] Secure password hashing (bcrypt)
+- [ ] Role-based access control (RBAC) - admin, developer, team member, user.
 - [ ] Session management with database persistence
 - [ ] Database abstraction layer for cloud DB switching
 - [ ] Password policies and strength validation
 - [ ] Account verification endpoints
 - [ ] Password reset functionality
-- [ ] Email service integration
-
-**Deferred to Later Phases:**
-
-- [ ] Two-factor authentication (SMS/Email verification)
-- [ ] OAuth provider integration (Google, GitHub, etc.)
-- [ ] SAML SSO for enterprise
+- [ ] Email service integration (custom SMTP, SendGrid, etc. Configurable in database via a frontend/backend component.)
 
 ### 1.2 User Management [ ]
 
-- [ ] User profile system with customizable fields
-- [ ] User preference management (database schema + API)
 - [ ] User activity tracking and analytics
-- [ ] Notification system (email/push/in-app support)
 - [ ] Data export and deletion (GDPR compliance)
 - [ ] User onboarding flow system
 - [ ] Feedback and rating system (bug reports, feature requests)
@@ -57,7 +48,6 @@
 - [ ] Tenant provisioning and management
 - [ ] Tenant-specific configuration system
 - [ ] Resource limits and quota tracking
-- [ ] Billing and subscription schema (Stripe integration)
 - [ ] Usage tracking system
 
 **Deferred to Later Phases:**
@@ -213,7 +203,7 @@
   - [ ] Model registration API
   - [ ] Model versioning system
   - [ ] Model health monitoring
-- [ ] Multi-provider support
+- [ ] Multi-provider support - Usage based billing if tenants use site models. Their own API keys are allowed.
   - [ ] OpenAI adapter
   - [ ] Anthropic adapter
   - [ ] Ollama (local models) adapter

@@ -1,16 +1,12 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
-import { pgTable, text as pgText, timestamp, uuid, varchar, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-
-// Determine database type from environment
-const isPostgres = process.env.DATABASE_TYPE === "postgresql";
 
 // User roles
 export const userRoles = ["admin", "developer", "team_member", "user"] as const;
 export type UserRole = (typeof userRoles)[number];
 
-// SQLite schema
-export const usersSqlite = sqliteTable("users", {
+// SQLite User schema
+export const users = sqliteTable("users", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   email: text("email").notNull().unique(),
   name: text("name"),
@@ -30,25 +26,6 @@ export const usersSqlite = sqliteTable("users", {
   deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
 
-// PostgreSQL schema
-export const usersPostgres = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  name: varchar("name", { length: 255 }),
-  passwordHash: pgText("password_hash"),
-  role: varchar("role", { length: 50 }).notNull().default("user"),
-  emailVerified: boolean("email_verified").default(false),
-  verificationToken: pgText("verification_token"),
-  verificationExpires: timestamp("verification_expires"),
-  resetToken: pgText("reset_token"),
-  resetExpires: timestamp("reset_expires"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  deletedAt: timestamp("deleted_at"),
-});
-
-// Export the appropriate schema based on environment
-export const users = isPostgres ? usersPostgres : usersSqlite;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 

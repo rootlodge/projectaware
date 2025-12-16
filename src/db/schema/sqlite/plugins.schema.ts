@@ -1,17 +1,14 @@
 import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
-import { pgTable, timestamp, uuid, varchar, jsonb, boolean, index as pgIndex } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { users } from "./users.schema";
 import { tenants } from "./tenants.schema";
-
-const isPostgres = process.env.DATABASE_TYPE === "postgresql";
 
 // Plugin status
 export const pluginStatuses = ["active", "inactive", "disabled", "pending"] as const;
 export type PluginStatus = (typeof pluginStatuses)[number];
 
-// SQLite schema
-export const pluginsSqlite = sqliteTable("plugins", {
+// SQLite Plugins schema
+export const plugins = sqliteTable("plugins", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
@@ -40,38 +37,11 @@ export const pluginsSqlite = sqliteTable("plugins", {
   statusIdx: index("plugins_status_idx").on(table.status),
 }));
 
-// PostgreSQL schema
-export const pluginsPostgres = pgTable("plugins", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 255 }).notNull(),
-  slug: varchar("slug", { length: 255 }).notNull().unique(),
-  version: varchar("version", { length: 50 }).notNull(),
-  description: text ("description"),
-  author: varchar("author", { length: 255 }),
-  authorUrl: text("author_url"),
-  iconUrl: text("icon_url"),
-  category: varchar("category", { length: 100 }),
-  tags: jsonb("tags").$type<string[]>(),
-  status: varchar("status", { length: 50 }).notNull().default("inactive"),
-  manifestUrl: text("manifest_url"),
-  sourceUrl: text("source_url"),
-  documentationUrl: text("documentation_url"),
-  configuration: jsonb("configuration").$type<Record<string, unknown>>(),
-  permissions: jsonb("permissions").$type<string[]>(),
-  createdById: uuid("created_by_id").references(() => users.id),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-}, (table) => ({
-  slugIdx: pgIndex("plugins_slug_idx").on(table.slug),
-  statusIdx: pgIndex("plugins_status_idx").on(table.status),
-}));
-
-export const plugins = isPostgres ? pluginsPostgres : pluginsSqlite;
 export type Plugin = typeof plugins.$inferSelect;
 export type NewPlugin = typeof plugins.$inferInsert;
 
 // Plugin configurations per tenant
-export const pluginConfigsSqlite = sqliteTable("plugin_configs", {
+export const pluginConfigs = sqliteTable("plugin_configs", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   pluginId: text("plugin_id")
     .notNull()
@@ -89,26 +59,11 @@ export const pluginConfigsSqlite = sqliteTable("plugin_configs", {
   pluginTenantIdx: index("plugin_configs_plugin_tenant_idx").on(table.pluginId, table.tenantId),
 }));
 
-export const pluginConfigsPostgres = pgTable("plugin_configs", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  pluginId: uuid("plugin_id")
-    .notNull()
-    .references(() => plugins.id, { onDelete: "cascade" }),
-  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }),
-  isEnabled: boolean("is_enabled").notNull().default(false),
-  config: jsonb("config").$type<Record<string, unknown>>(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-}, (table) => ({
-  pluginTenantIdx: pgIndex("plugin_configs_plugin_tenant_idx").on(table.pluginId, table.tenantId),
-}));
-
-export const pluginConfigs = isPostgres ? pluginConfigsPostgres : pluginConfigsSqlite;
 export type PluginConfig = typeof pluginConfigs.$inferSelect;
 export type NewPluginConfig = typeof pluginConfigs.$inferInsert;
 
 // Plugin dependencies
-export const pluginDependenciesSqlite = sqliteTable("plugin_dependencies", {
+export const pluginDependencies = sqliteTable("plugin_dependencies", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   pluginId: text("plugin_id")
     .notNull()
@@ -123,22 +78,6 @@ export const pluginDependenciesSqlite = sqliteTable("plugin_dependencies", {
   pluginIdx: index("plugin_dependencies_plugin_idx").on(table.pluginId),
 }));
 
-export const pluginDependenciesPostgres = pgTable("plugin_dependencies", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  pluginId: uuid("plugin_id")
-    .notNull()
-    .references(() => plugins.id, { onDelete: "cascade" }),
-  dependsOnPluginId: uuid("depends_on_plugin_id")
-    .notNull()
-    .references(() => plugins.id, { onDelete: "cascade" }),
-  minVersion: varchar("min_version", { length: 50 }),
-  maxVersion: varchar("max_version", { length: 50 }),
-  required: boolean("required").notNull().default(true),
-}, (table) => ({
-  pluginIdx: pgIndex("plugin_dependencies_plugin_idx").on(table.pluginId),
-}));
-
-export const pluginDependencies = isPostgres ? pluginDependenciesPostgres : pluginDependenciesSqlite;
 export type PluginDependency = typeof pluginDependencies.$inferSelect;
 export type NewPluginDependency = typeof pluginDependencies.$inferInsert;
 

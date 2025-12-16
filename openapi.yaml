@@ -1,0 +1,211 @@
+openapi: 3.0.3
+info:
+  title: Project Aware API
+  description: |
+    Project Aware is a modular, selfaware AI platform with plugin architecture, multi-tenant support,
+    and enterprise-grade capabilities.
+
+    ## Authentication
+
+    All API endpoints require an API key to be included in the request header:
+    ```
+    X-API-Key: your-api-key-here
+    ```
+
+    Or using Bearer auth:
+    ```
+    Authorization: Bearer your-api-key-here
+    ```
+
+    ## Rate Limiting
+
+    API requests are rate-limited based on your authentication tier:
+    - **Free**: 60 requests per minute
+    - **Authenticated**: 300 requests per minute  
+    - **Premium**: 1000 requests per minute
+
+    Rate limit information is included in response headers:
+    - `X-RateLimit-Remaining`: Number of requests remaining
+    - `X-RateLimit-Reset`: When the rate limit resets (ISO 8601)
+
+  version: 2.0.0
+  contact:
+    name: Project Aware Support
+    email: support@projectaware.com
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development
+  - url: https://api.projectaware.com/v1
+    description: Production
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+            code:
+              type: string
+            statusCode:
+              type: integer
+
+    APIKey:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        scope:
+          type: string
+          enum: [read, write, admin]
+        lastUsedAt:
+          type: string
+          format: date-time
+          nullable: true
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+
+paths:
+  /example:
+    get:
+      summary: Example API endpoint
+      description: Test endpoint to verify API authentication is working
+      operationId: getExample
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  userId:
+                    type: string
+                  userRole:
+                    type: string
+                  tenantId:
+                    type: string
+                    nullable: true
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /keys:
+    get:
+      summary: List API keys
+      description: Get all API keys for the authenticated user
+      operationId: listAPIKeys
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keys:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/APIKey"
+    post:
+      summary: Create API key
+      description: Create a new API key
+      operationId: createAPIKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  description: Friendly name for the API key
+                scope:
+                  type: string
+                  enum: [read, write, admin]
+                  default: read
+                expiresInDays:
+                  type: integer
+                  description: Number of days until expiration (optional)
+      responses:
+        "200":
+          description: API key created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  key:
+                    type: string
+                    description: The actual API key (shown only once)
+                  message:
+                    type: string
+    delete:
+      summary: Revoke API key
+      description: Revoke an API key
+      operationId: revokeAPIKey
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the API key to revoke
+      responses:
+        "200":
+          description: API key revoked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string

@@ -1,7 +1,8 @@
 import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
-import { pgTable, text as pgText, timestamp, uuid, varchar, jsonb, index as pgIndex } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uuid, varchar, jsonb, index as pgIndex } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { users, tenants } from "./users.schema";
+import { users } from "./users.schema";
+import { tenants } from "./tenants.schema";
 
 const isPostgres = process.env.DATABASE_TYPE === "postgresql";
 

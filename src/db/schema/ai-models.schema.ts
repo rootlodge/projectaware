@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer, real, index } from "drizzle-orm/sqlite-core";
-import { pgTable, text as pgText, timestamp, uuid, varchar, jsonb, integer as pgInteger, doublePrecision, boolean, index as pgIndex } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uuid, varchar, jsonb, integer as pgInteger, doublePrecision, boolean, index as pgIndex } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { tenants } from "./tenants.schema";
 

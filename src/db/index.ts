@@ -6,7 +6,8 @@ import Database from "better-sqlite3";
 import { createClient } from "@libsql/client";
 import postgres from "postgres";
 
-import * as schema from "./schema";
+import * as schemaPostgres from "./schema/postgres";
+import * as schemaSqlite from "./schema/sqlite";
 
 const databaseType = process.env.DATABASE_TYPE ?? "sqlite";
 const databaseUrl = process.env.DATABASE_URL as string;
@@ -23,7 +24,7 @@ export function createDb() {
       connect_timeout: 10,
     });
 
-    return drizzlePostgres(client, { schema });
+    return drizzlePostgres(client, { schema: schemaPostgres });
   }
 
   if (
@@ -35,16 +36,16 @@ export function createDb() {
       authToken: process.env.DATABASE_AUTH_TOKEN,
     });
 
-    return drizzleLibsql(client, { schema });
+    return drizzleLibsql(client, { schema: schemaSqlite });
   }
 
   const sqlite = new Database(databaseUrl.replace("file:", ""));
   sqlite.pragma("journal_mode = WAL");
 
-  return drizzleSqlite(sqlite, { schema });
+  return drizzleSqlite(sqlite, { schema: schemaSqlite });
 }
 
 // ⚠️ single export boundary
 export const db = createDb();
 export type Database = typeof db;
-export { schema };
+export const schema = databaseType === "postgresql" ? schemaPostgres : schemaSqlite;

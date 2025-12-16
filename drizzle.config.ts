@@ -4,9 +4,12 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const databaseType = process.env.DATABASE_TYPE || "sqlite";
+const schemaPath = databaseType === "postgresql" 
+  ? "./src/db/schema/postgres/**/*.schema.ts"
+  : "./src/db/schema/sqlite/**/*.schema.ts";
 
 export default defineConfig({
-  schema: "./src/db/schema/index.ts",
+  schema: schemaPath,
   out: "./src/db/migrations",
   dialect: databaseType === "postgresql" ? "postgresql" : "sqlite",
   dbCredentials:
@@ -15,7 +18,7 @@ export default defineConfig({
           url: process.env.DATABASE_URL!,
         }
       : {
-          url: process.env.DATABASE_URL || "file:./data/projectaware.db",
+          url: "./data/projectaware.db",
         },
   verbose: true,
   strict: true,

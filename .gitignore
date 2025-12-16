@@ -21,7 +21,7 @@ dist
 # Database
 *.db
 *.db-journal
-data/
+data/projectaware.db
 
 # Logs
 npm-debug.log*

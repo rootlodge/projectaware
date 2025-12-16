@@ -21,10 +21,38 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 128,
-    requireEmailVerification: true,
+    requireEmailVerification: async (user) => {
+      // Check if SMTP is configured
+      const { testEmailConfig } = await import("@/lib/email");
+      const hasEmailProvider = await testEmailConfig();
+      if (!hasEmailProvider) return false;
+
+      // Check if this is the first user
+      const userCount = await db.select({ count: schema.users.id }).from(schema.users);
+      if (userCount.length === 1) return false;
+
+      // Otherwise, require verification
+      return true;
+    },
+    sendVerificationEmail: async ({ user, url }) => {
+      const { sendEmail, emailTemplates } = await import("@/lib/email");
+      const template = emailTemplates.verification(url, user.name || undefined);
+      await sendEmail({
+        to: user.email,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+      });
+    },
     sendResetPassword: async ({ user, url }) => {
-      // This will be handled by our email service
-      console.log(`Password reset email for ${user.email}: ${url}`);
+      const { sendEmail, emailTemplates } = await import("@/lib/email");
+      const template = emailTemplates.passwordReset(url);
+      await sendEmail({
+        to: user.email,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+      });
     },
   },
   session: {

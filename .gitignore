@@ -12,8 +12,7 @@ out
 build
 dist
 
-# Environment
-.env
+# Environment]
 .env.local
 .env.development.local
 .env.test.local
@@ -35,8 +34,7 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 
-# IDE
-.vscode
+# IDE\
 .idea
 *.swp
 *.swo

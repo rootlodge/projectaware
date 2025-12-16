@@ -27,7 +27,7 @@ export const userActivity = pgTable("user_activity", {
   action: varchar("action", { length: 50 }).notNull(),
   metadata: jsonb("metadata").$type<Record<string, unknown>>(),
   ipAddress: varchar("ip_address", { length: 45 }),
-  userAgent: PgText("user_agent"),
+  userAgent: text("user_agent"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

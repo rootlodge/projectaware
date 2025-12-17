@@ -65,10 +65,6 @@ export const auth = betterAuth({
   trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-
-  advanced: {
-    generateId: false, // Let PostgreSQL generate UUIDs using defaultRandom()
-  },
 });
 
 export type Session = typeof auth.$Infer.Session;

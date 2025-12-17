@@ -14,7 +14,7 @@ export type MessageRole = (typeof messageRoles)[number];
 // PostgreSQL Conversations schema
 export const conversations = pgTable("conversations", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }),

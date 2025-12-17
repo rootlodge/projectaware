@@ -21,7 +21,7 @@ export type ActivityType = (typeof activityTypes)[number];
 // PostgreSQL User Activity schema
 export const userActivity = pgTable("user_activity", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   action: varchar("action", { length: 50 }).notNull(),

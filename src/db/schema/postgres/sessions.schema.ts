@@ -5,7 +5,7 @@ import { users } from "./users.schema";
 // PostgreSQL Sessions schema
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   token: text("token").notNull().unique(),

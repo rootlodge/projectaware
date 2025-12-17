@@ -7,7 +7,7 @@ export type UserRole = (typeof userRoles)[number];
 
 // PostgreSQL User schema
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }),
   passwordHash: text("password_hash"),

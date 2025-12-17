@@ -97,7 +97,7 @@ export const pluginReviews = pgTable("plugin_reviews", {
   pluginId: uuid("plugin_id")
     .notNull()
     .references(() => plugins.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   rating: integer("rating").notNull(),

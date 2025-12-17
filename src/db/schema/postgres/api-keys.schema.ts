@@ -1,4 +1,4 @@
-import { pgTable, timestamp, uuid, varchar, boolean, integer, index } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uuid, varchar, boolean, integer, index, text } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { users } from "./users.schema";
 import { tenants } from "./tenants.schema";
@@ -12,7 +12,7 @@ export const apiKeys = pgTable("api_keys", {
   id: uuid("id").primaryKey().defaultRandom(),
   key: varchar("key", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }),

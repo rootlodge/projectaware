@@ -8,6 +8,20 @@
       "when": 1765924682607,
       "tag": "0000_mighty_squadron_supreme",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1766000114975,
+      "tag": "0001_special_scarecrow",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1766000700675,
+      "tag": "0002_married_celestials",
+      "breakpoints": true
     }
   ]
 }

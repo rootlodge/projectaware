@@ -13,13 +13,13 @@ const databaseType = process.env.DATABASE_TYPE ?? "sqlite";
 const databaseUrl = process.env.DATABASE_URL as string;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required");
+  console.log("DATABASE_URL is required");
 }
 
 export function createDb() {
   if (databaseType === "postgresql") {
     const client = postgres(databaseUrl, {
-      max: 10,
+      max: 50,
       idle_timeout: 20,
       connect_timeout: 10,
     });

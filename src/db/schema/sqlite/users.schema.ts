@@ -1,3 +1,4 @@
+
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
@@ -12,17 +13,21 @@ export const users = sqliteTable("users", {
   name: text("name"),
   passwordHash: text("password_hash"),
   role: text("role", { enum: userRoles }).notNull().default("user"),
-  emailVerified: integer("email_verified", { mode: "boolean" }).default(false),
+  image: text("image"),
+  emailVerified: integer("email_verified", { mode: "boolean" })
+    .notNull()
+    .default(false),
   verificationToken: text("verification_token"),
   verificationExpires: integer("verification_expires", { mode: "timestamp" }),
   resetToken: text("reset_token"),
   resetExpires: integer("reset_expires", { mode: "timestamp" }),
-  createdAt: integer("created_at", { mode: "timestamp" })
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
-    .$defaultFn(() => new Date()),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .default(new Date()), // Static default for migration compatibility
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
     .notNull()
-    .$defaultFn(() => new Date()),
+    .default(new Date())
+    .$onUpdate(() => new Date()),
   deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
 

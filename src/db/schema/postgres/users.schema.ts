@@ -12,13 +12,17 @@ export const users = pgTable("users", {
   name: varchar("name", { length: 255 }),
   passwordHash: text("password_hash"),
   role: varchar("role", { length: 50 }).notNull().default("user"),
-  emailVerified: boolean("email_verified").default(false),
+  image: text("image"),
+  emailVerified: boolean("email_verified").notNull().default(false),
   verificationToken: text("verification_token"),
   verificationExpires: timestamp("verification_expires"),
   resetToken: text("reset_token"),
   resetExpires: timestamp("reset_expires"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
   deletedAt: timestamp("deleted_at"),
 });
 

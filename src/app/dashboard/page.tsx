@@ -30,6 +30,12 @@ export default async function DashboardPage() {
                 Settings
               </a>
               <a
+                href="/dashboard/settings/ai"
+                className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                AI Configuration
+              </a>
+              <a
                 href="/feedback"
                 className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >

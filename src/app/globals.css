@@ -47,6 +47,29 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
   }
+
+  .cyberpunk {
+    --background: 260 50% 10%;
+    --foreground: 280 100% 90%;
+    --card: 260 50% 15%;
+    --card-foreground: 280 100% 90%;
+    --popover: 260 50% 15%;
+    --popover-foreground: 280 100% 90%;
+    --primary: 320 100% 60%; /* Neon Pink */
+    --primary-foreground: 260 50% 10%;
+    --secondary: 190 100% 50%; /* Cyan */
+    --secondary-foreground: 260 50% 10%;
+    --muted: 260 30% 25%;
+    --muted-foreground: 280 50% 70%;
+    --accent: 280 100% 60%; /* Purple */
+    --accent-foreground: 260 50% 10%;
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 260 50% 10%;
+    --border: 320 100% 60%;
+    --input: 190 100% 50%;
+    --ring: 320 100% 60%;
+    --radius: 0rem; /* Sharp edges for cyberpunk feel */
+  }
 }
 
 @layer base {

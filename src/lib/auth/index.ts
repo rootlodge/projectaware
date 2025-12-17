@@ -14,16 +14,25 @@ export const auth = betterAuth({
       user: schema.users,
       session: schema.sessions,
       account: schema.accounts,
-      ...schema,
     },
   }),
+
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 128,
-    requireEmailVerification: !!process.env.SMTP_HOST && process.env.SMTP_USER !== "your-email@gmail.com",
+    requireEmailVerification:
+      !!process.env.SMTP_HOST &&
+      process.env.SMTP_USER !== "your-email@gmail.com",
+  },
+
+  email: {
     sendVerificationEmail: async ({ user, url }) => {
-      const template = emailTemplates.verification(url, user.name || undefined);
+      const template = emailTemplates.verification(
+        url,
+        user.name ?? undefined
+      );
+
       await sendEmail({
         to: user.email,
         subject: template.subject,
@@ -31,8 +40,10 @@ export const auth = betterAuth({
         text: template.text,
       });
     },
-    sendResetPassword: async ({ user, url }) => {
+
+    sendResetPasswordEmail: async ({ user, url }) => {
       const template = emailTemplates.passwordReset(url);
+
       await sendEmail({
         to: user.email,
         subject: template.subject,
@@ -40,19 +51,24 @@ export const auth = betterAuth({
         text: template.text,
       });
     },
-  } as any,
+  },
+
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // 1 day
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60, // 5 minutes
+      maxAge: 5 * 60,
     },
   },
 
   trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+
+  advanced: {
+    generateId: false, // Let PostgreSQL generate UUIDs using defaultRandom()
+  },
 });
 
 export type Session = typeof auth.$Infer.Session;

@@ -78,14 +78,58 @@ export class TenantPluginLoader {
                   if (!PermissionManager.hasPermission(permissions, PermissionManager.SCOPES.STORAGE_READ)) {
                       throw new Error(`Plugin ${pluginId} missing permission: ${PermissionManager.SCOPES.STORAGE_READ}`);
                   }
-                  // Placeholder: In real app, this would get from a KV store or JSON column
-                  return null;
+                  
+                  // Look up the plugin's DB ID based on the slug (pluginId in this context)
+                  // In a real optimized system we'd pass the UUID down, but we can query it or assume it's available.
+                  // For now, let's query.
+                  const pluginRecord = await db.query.plugins.findFirst({
+                      where: eq(schema.plugins.slug, pluginId),
+                  });
+                  
+                  if (!pluginRecord) return null;
+
+                  const record = await db.query.pluginStorage.findFirst({
+                      where: and(
+                          eq(schema.pluginStorage.pluginId, pluginRecord.id),
+                          eq(schema.pluginStorage.tenantId, this.tenantId),
+                          eq(schema.pluginStorage.key, key)
+                      )
+                  });
+                  
+                  return record ? record.value : null;
               },
               set: async (key, value) => {
                   if (!PermissionManager.hasPermission(permissions, PermissionManager.SCOPES.STORAGE_WRITE)) {
                       throw new Error(`Plugin ${pluginId} missing permission: ${PermissionManager.SCOPES.STORAGE_WRITE}`);
                   }
-                   // Placeholder
+                  
+                  const pluginRecord = await db.query.plugins.findFirst({
+                      where: eq(schema.plugins.slug, pluginId),
+                  });
+                  
+                  if (!pluginRecord) throw new Error("Plugin record not found for storage");
+
+                  // Upsert logic
+                  const existing = await db.query.pluginStorage.findFirst({
+                      where: and(
+                          eq(schema.pluginStorage.pluginId, pluginRecord.id),
+                          eq(schema.pluginStorage.tenantId, this.tenantId),
+                          eq(schema.pluginStorage.key, key)
+                      )
+                  });
+
+                  if (existing) {
+                      await db.update(schema.pluginStorage)
+                        .set({ value: value, updatedAt: new Date() })
+                        .where(eq(schema.pluginStorage.id, existing.id));
+                  } else {
+                      await db.insert(schema.pluginStorage).values({
+                          pluginId: pluginRecord.id,
+                          tenantId: this.tenantId,
+                          key,
+                          value
+                      });
+                  }
               }
           },
           logger: {

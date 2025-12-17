@@ -1,4 +1,4 @@
-import { pgTable, timestamp, uuid, varchar, text, jsonb, boolean, index } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uuid, varchar, text, jsonb, boolean, index, integer } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { users } from "./users.schema";
 import { tenants } from "./tenants.schema";
@@ -73,6 +73,43 @@ export const pluginDependencies = pgTable("plugin_dependencies", {
 export type PluginDependency = typeof pluginDependencies.$inferSelect;
 export type NewPluginDependency = typeof pluginDependencies.$inferInsert;
 
+// Plugin Storage (Key-Value Store)
+export const pluginStorage = pgTable("plugin_storage", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pluginId: uuid("plugin_id")
+    .notNull()
+    .references(() => plugins.id, { onDelete: "cascade" }),
+  tenantId: uuid("tenant_id")
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  key: varchar("key", { length: 255 }).notNull(),
+  value: jsonb("value").$type<any>(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => ({
+  lookupIdx: index("plugin_storage_lookup_idx").on(table.pluginId, table.tenantId, table.key),
+}));
+
+export type PluginStorage = typeof pluginStorage.$inferSelect;
+export type NewPluginStorage = typeof pluginStorage.$inferInsert;
+
+// Plugin Reviews
+export const pluginReviews = pgTable("plugin_reviews", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pluginId: uuid("plugin_id")
+    .notNull()
+    .references(() => plugins.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  rating: integer("rating").notNull(),
+  review: text("review"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  pluginIdx: index("plugin_reviews_plugin_idx").on(table.pluginId),
+}));
+
+export type PluginReview = typeof pluginReviews.$inferSelect;
+export type NewPluginReview = typeof pluginReviews.$inferInsert;
+
 // Relations
 export const pluginsRelations = relations(plugins, ({ one, many }) => ({
   createdBy: one(users, {
@@ -82,6 +119,7 @@ export const pluginsRelations = relations(plugins, ({ one, many }) => ({
   configs: many(pluginConfigs),
   dependencies: many(pluginDependencies, { relationName: "plugin" }),
   dependents: many(pluginDependencies, { relationName: "dependsOn" }),
+  reviews: many(pluginReviews),
 }));
 
 export const pluginConfigsRelations = relations(pluginConfigs, ({ one }) => ({
@@ -105,5 +143,16 @@ export const pluginDependenciesRelations = relations(pluginDependencies, ({ one 
     fields: [pluginDependencies.dependsOnPluginId],
     references: [plugins.id],
     relationName: "dependsOn",
+  }),
+}));
+
+export const pluginReviewsRelations = relations(pluginReviews, ({ one }) => ({
+  plugin: one(plugins, {
+    fields: [pluginReviews.pluginId],
+    references: [plugins.id],
+  }),
+  user: one(users, {
+    fields: [pluginReviews.userId],
+    references: [users.id],
   }),
 }));

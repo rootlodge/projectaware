@@ -2,6 +2,7 @@ import { db, schema } from "@/db";
 import { eq, and } from "drizzle-orm";
 import { PluginRegistry } from "./registry";
 import { PluginInterface, PluginContext } from "./types";
+import { PermissionManager } from "./permissions";
 
 /**
  * Loads and initializes active plugins for a specific tenant
@@ -30,11 +31,15 @@ export class TenantPluginLoader {
         }
       });
 
+      // 1.5 Fetch all dependencies to build the graph
+      // Optimization: We could filter by the plugins involved, but fetching all dependencies is usually cheap enough
+      const allDependencies = await db.query.pluginDependencies.findMany();
+
+      // Implement topological sort
+      const sortedConfigs = this.topologicalSort(configs, allDependencies);
+      
       // 2. Instantiate and initialize each plugin
-      for (const config of configs) {
-        // Find the plugin class in the registry using the slug or ID matching
-        // Note: The registry uses internal IDs, but the DB uses UUIDs. 
-        // We need a mapping strategy. Ideally, the `slug` in DB matches the `id` in manifest.
+      for (const config of sortedConfigs) {
         const pluginItem = PluginRegistry.get(config.plugin.slug);
         
         if (!pluginItem) {
@@ -42,36 +47,52 @@ export class TenantPluginLoader {
             continue;
         }
 
-        const context: PluginContext = {
-            tenantId: this.tenantId,
-            config: (config.config as Record<string, any>) || {},
-            storage: {
-                get: async (key) => {
-                    // Placeholder: In real app, this would get from a KV store or JSON column
-                    return null;
-                },
-                set: async (key, value) => {
-                     // Placeholder
-                }
-            },
-            logger: {
-                info: (msg) => console.log(`[Plugin:${config.plugin.slug}] ${msg}`),
-                error: (msg, err) => console.error(`[Plugin:${config.plugin.slug}] ${msg}`, err)
-            }
-        };
+        // Create sandboxed context with restricted permissions
+        const context = this.createSandboxedContext(config.plugin.slug, config.config as Record<string, any>, config.plugin.permissions as string[] || []);
 
         const instance = new pluginItem.class();
         
         // Execute init hook
         if (instance.hooks.onInit) {
-            await instance.hooks.onInit(context);
+            try {
+                await instance.hooks.onInit(context);
+                this.initializedPlugins.set(config.plugin.slug, instance);
+            } catch (err) {
+                console.error(`Failed to initialize plugin ${config.plugin.slug}:`, err);
+            }
+        } else {
+             this.initializedPlugins.set(config.plugin.slug, instance);
         }
-
-        this.initializedPlugins.set(config.plugin.slug, instance);
       }
     } catch (error) {
         console.error("Failed to load tenant plugins:", error);
     }
+  }
+
+  private createSandboxedContext(pluginId: string, config: Record<string, any>, permissions: string[]): PluginContext {
+      return {
+          tenantId: this.tenantId,
+          config: config || {},
+          storage: {
+              get: async (key) => {
+                  if (!PermissionManager.hasPermission(permissions, PermissionManager.SCOPES.STORAGE_READ)) {
+                      throw new Error(`Plugin ${pluginId} missing permission: ${PermissionManager.SCOPES.STORAGE_READ}`);
+                  }
+                  // Placeholder: In real app, this would get from a KV store or JSON column
+                  return null;
+              },
+              set: async (key, value) => {
+                  if (!PermissionManager.hasPermission(permissions, PermissionManager.SCOPES.STORAGE_WRITE)) {
+                      throw new Error(`Plugin ${pluginId} missing permission: ${PermissionManager.SCOPES.STORAGE_WRITE}`);
+                  }
+                   // Placeholder
+              }
+          },
+          logger: {
+              info: (msg) => console.log(`[Plugin:${pluginId}] ${msg}`),
+              error: (msg, err) => console.error(`[Plugin:${pluginId}] ${msg}`, err)
+          }
+      };
   }
 
   /**
@@ -96,5 +117,57 @@ export class TenantPluginLoader {
   
   getActivePlugins() {
       return Array.from(this.initializedPlugins.values());
+  }
+
+  private topologicalSort(configs: any[], dependencies: any[]): any[] {
+    const graph = new Map<string, Set<string>>();
+    const configMap = new Map<string, any>();
+
+    // Initialize graph
+    for (const config of configs) {
+        configMap.set(config.pluginId, config);
+        graph.set(config.pluginId, new Set());
+    }
+
+    // Build dependency graph
+    for (const dep of dependencies) {
+        if (graph.has(dep.pluginId) && graph.has(dep.dependsOnPluginId)) {
+            graph.get(dep.pluginId).add(dep.dependsOnPluginId);
+        }
+    }
+
+    const visited = new Set<string>();
+    const sorted: any[] = [];
+    const visiting = new Set<string>();
+
+    const visit = (nodeId: string) => {
+        if (visited.has(nodeId)) return;
+        if (visiting.has(nodeId)) {
+            console.warn(`Circular dependency detected involving plugin ${nodeId}. Skipping cycle.`);
+            return;
+        }
+
+        visiting.add(nodeId);
+
+        const edges = graph.get(nodeId);
+        if (edges) {
+            for (const dependencyId of edges) {
+                visit(dependencyId);
+            }
+        }
+
+        visiting.delete(nodeId);
+        visited.add(nodeId);
+        
+        if (configMap.has(nodeId)) {
+            sorted.push(configMap.get(nodeId));
+        }
+    };
+
+    for (const config of configs) {
+        visit(config.pluginId);
+    }
+
+    return sorted;
   }
 }

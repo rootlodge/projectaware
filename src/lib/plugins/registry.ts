@@ -48,6 +48,10 @@ class PluginRegistryService {
   async loadFromDirectory(path: string) {
     // implementation for dynamic loading would go here
   }
+
+  getManifests() {
+      return Array.from(this.plugins.values()).map(p => p.manifest);
+  }
 }
 
 export const PluginRegistry = new PluginRegistryService();

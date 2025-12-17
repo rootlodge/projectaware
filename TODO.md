@@ -122,7 +122,7 @@
   - [ ] Hot-reload support for development
 - [ ] Plugin sandboxing and security
   - [ ] Define plugin permission system
-  - [ ] Resource isolation (CPU, memory limits)
+  - [ ] Resource isolation (CPU, memory limits) (optional)
   - [ ] API access control for plugins
   - [ ] Plugin code signing and verification
 
@@ -424,6 +424,8 @@
   - [ ] User name recognition
   - [ ] Relationship history tracking
   - [ ] Personalization engine
+
+### Phase
 
 ---
 
